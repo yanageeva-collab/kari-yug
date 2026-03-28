@@ -52,7 +52,7 @@ body{font-family:var(--font-sans);background:#fff}
 .rh{font-size:10px;color:#9ca3af;margin-bottom:8px;padding:5px 8px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:4px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 /* Таблица — белый фон как Excel */
 .tw{overflow:auto;max-height:70vh;border:1px solid #c6c6c6;border-radius:4px;background:#fff}
-table{width:100%;border-collapse:collapse;font-size:11px;background:#fff}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:11px;background:#fff}
 th{font-size:10px;font-weight:600;color:#374151;text-align:center;padding:6px 5px;border-bottom:2px solid #a3a3a3;border-right:1px solid #c6c6c6;background:#f0f0f0;cursor:pointer;white-space:nowrap;user-select:none;position:sticky;top:0;z-index:3}
 th:last-child{border-right:none}
 th.gh{background:#f0f0f0;color:#374151;border-right:1px solid #c6c6c6}
@@ -62,17 +62,24 @@ th:not(.sa):not(.sd)::after{content:" ↕";opacity:0.35}
 td{padding:4px 5px;border-bottom:1px solid #d9d9d9;border-right:1px solid #d9d9d9;white-space:nowrap;text-align:center;background:#fff}
 td:first-child,td:nth-child(2){text-align:left}
 td:last-child{border-right:none}
-/* Excel-зебра: чётные строки чуть теплее */
+/* Excel-зебра */
 tr:nth-child(even) td{background:#f8f8f8}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#dbeafe !important}
-/* Закреплённые первые 2 колонки */
-th:nth-child(1){position:sticky;left:0;top:0;z-index:5;background:#f0f0f0}
-th:nth-child(2){position:sticky;left:60px;top:0;z-index:5;background:#f0f0f0;box-shadow:2px 0 4px rgba(0,0,0,0.08)}
-td:nth-child(1){position:sticky;left:0;z-index:1;background:#fff}
-td:nth-child(2){position:sticky;left:60px;z-index:1;background:#fff;box-shadow:2px 0 4px rgba(0,0,0,0.08)}
-tr:nth-child(even) td:nth-child(1),tr:nth-child(even) td:nth-child(2){background:#f8f8f8}
+/* Закреплённые первые 2 колонки — фиксированная ширина для точного left */
+th:nth-child(1),td:nth-child(1){position:sticky;left:0;z-index:2;min-width:90px;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+th:nth-child(1){top:0;z-index:5;background:#f0f0f0}
+td:nth-child(1){background:#fff}
+th:nth-child(2),td:nth-child(2){position:sticky;left:90px;z-index:2;min-width:42px;border-right:2px solid #c6b8d0 !important;box-shadow:3px 0 8px rgba(0,0,0,0.10)}
+th:nth-child(2){top:0;z-index:5;background:#f0f0f0}
+td:nth-child(2){background:#fff}
+/* Зебра для закреплённых ячеек */
+tr:nth-child(even) td:nth-child(1){background:#f8f8f8}
+tr:nth-child(even) td:nth-child(2){background:#f8f8f8}
 tr:hover td:nth-child(1),tr:hover td:nth-child(2){background:#dbeafe !important}
+/* Специальные строки — розовый фон для закреплённых ячеек */
+tr.row-sum td:nth-child(1),tr.row-sum td:nth-child(2){background:#fce7f3 !important}
+tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !important}
 .crds{display:none;flex-direction:column;gap:8px}
 .crd{background:#fff;border:1px solid #d1d5db;border-radius:8px;padding:10px 12px}
 .ch{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
@@ -632,7 +639,7 @@ function re(t){
   function sumF(key){const v=d.map(s=>s[key]).filter(v=>v!==null);return v.length?v.reduce((a,b)=>a+b):null;}
   // sumRow — строка ИТОГО подразделения, данные из файла (sv), суммы из магазинов (sumF)
   const sumRow=pp&&d.length>0?(ig
-    ?`<tr style="background:#fce7f3;font-weight:700;border-bottom:2px solid #ad1472">
+    ?`<tr style="background:#fce7f3;font-weight:700;border-bottom:2px solid #ad1472" class="row-sum">
         <td style="font-size:11px;font-weight:700;color:#ad1472;text-align:left;padding:5px">${pp}</td>
         <td style="font-size:11px;color:#6b7280;text-align:left;padding:5px">${d.length} маг.</td>
         ${pi(cTG(sv('tYTo')),fm(sv('tYTo')))}
@@ -649,7 +656,7 @@ function re(t){
         ${pi(cS(sv('spas')),fm(sv('spas')))}
         ${pi(cV(sv('vPct')),fm(sv('vPct')))}<td><span class="p pN">${fm(sumF('vN'),'')}</span></td>
         ${pi(cK(sv('konv')),fm(sv('konv')))}<td><span class="p pN">${fr(avgF('sPod'))}₽</span></td></tr>`
-    :`<tr style="background:#fce7f3;font-weight:700;border-bottom:2px solid #ad1472">
+    :`<tr style="background:#fce7f3;font-weight:700;border-bottom:2px solid #ad1472" class="row-sum">
         <td style="font-size:11px;font-weight:700;color:#ad1472;text-align:left;padding:5px">${pp}</td>
         <td style="font-size:11px;color:#6b7280;text-align:left;padding:5px">${d.length} маг.</td>
         ${pi(cTN(sv('tYTo')),fm(sv('tYTo')))}
@@ -721,7 +728,7 @@ function re(t){
               <td><span class="p pN">—</span></td>
               ${pi(cc('konv'),fm(pd.konv))}<td><span class="p pN">—</span></td></tr>`;
       }
-      const regRowHtml=mkPodRow('РЕГИОН ЮГ',regD,'background:#fce7f3;font-weight:700;border-bottom:2px solid #ad1472');
+      const regRowHtml=mkPodRow('РЕГИОН ЮГ',regD,'background:#fce7f3;font-weight:700;border-bottom:2px solid #ad1472" class="row-reg');
       const podRowsHtml=podsT.map(p=>mkPodRow(p,totSrc[p]||{},'')).join('');
       document.getElementById('t'+t).innerHTML=regRowHtml+podRowsHtml;
     } else {

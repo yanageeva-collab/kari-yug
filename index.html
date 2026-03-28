@@ -149,7 +149,6 @@ tr:hover td:nth-child(1),tr:hover td:nth-child(2){background:#dbeafe !important}
   <div class="tab" onclick="sw('n')">Без золота день <span class="bdg bdg-b" id="nc">—</span></div>
   <div class="tab" onclick="sw('gm')">С золотом месяц <span class="bdg bdg-g" id="gcm">—</span></div>
   <div class="tab" onclick="sw('nm')">Без золота месяц <span class="bdg bdg-b" id="ncm">—</span></div>
-  <div class="tab" onclick="sw('pod')" style="color:#ad1472;font-weight:600">Подразделения</div>
 </div>
 
 <div class="panel on" id="pg">
@@ -310,9 +309,6 @@ tr:hover td:nth-child(1),tr:hover td:nth-child(2){background:#dbeafe !important}
   <div class="cnt" id="cnm"></div>
 </div>
 
-<div class="panel" id="ppod">
-  <div id="pod-content" style="padding:8px 0"></div>
-</div>
 </div>
 
 <script>
@@ -868,7 +864,7 @@ function renderPod(mode,view,podF){
     document.getElementById('pod-content').innerHTML=`${periodBar}<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px">${metrics.map(m=>podCard(m)).filter(Boolean).join('')}</div>`;
   }
 }
-function sw(t){const tabs=['g','n','gm','nm','pod'];document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('on',i===tabs.indexOf(t)));document.querySelectorAll('.panel').forEach(el=>el.classList.remove('on'));document.getElementById('p'+t).classList.add('on');if(t==='pod')renderPod('day');}
+function sw(t){const tabs=['g','n','gm','nm'];document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('on',i===tabs.indexOf(t)));document.querySelectorAll('.panel').forEach(el=>el.classList.remove('on'));document.getElementById('p'+t).classList.add('on');}
 ['g','n','gm','nm'].forEach(t=>{const d=t==='g'?gD:t==='n'?nD:t==='gm'?gDm:nDm;const pods=[...new Set(d.map(s=>s.pod))].sort();const sel=document.getElementById('pd'+t);pods.forEach(pp=>{const o=document.createElement('option');o.value=pp;o.textContent=pp;sel.appendChild(o);});
   // Заполняем список магазинов (по алфавиту по названию)
   const ms=document.getElementById('mag-'+t);if(ms){[...d].sort((a,b)=>a.tc.localeCompare(b.tc)).forEach(s=>{const o=document.createElement('option');o.value=s.mag;o.textContent=s.tc;ms.appendChild(o);});}

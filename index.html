@@ -724,7 +724,6 @@ function re(t){
           <div class="ci"><span class="cl">Ср.чек</span><span class="p ${cSrch(s.srch,avg)}">${fr(s.srch)}</span></div>
           <div class="ci"><span class="cl">Спасибо</span><span class="p ${cS(s.spas)}">${fm(s.spas)}</span></div>
           <div class="ci"><span class="cl">Конверсия</span><span class="p ${cK(s.konv)}">${fm(s.konv)}</span></div>
-          <div class="ci"><span class="cl">Выдано %</span><span class="p ${cV(s.vPct)}">${fm(s.vPct)}</span></div>
         </div>
         ${ig?`<div class="cgr">
           <div><span class="gb">Золото</span><div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -778,15 +777,14 @@ function re(t){
       }
       return`<div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:10px;margin-bottom:10px">
         <div style="font-size:12px;font-weight:700;color:#111827;margin-bottom:6px;padding-bottom:4px;border-bottom:2px solid #f0abdb">${podName}</div>
-        ${mini('ПЛАН %',plan,r('plan'),fP)}
         ${mini('ДОЛЯ ЮИ',g('tYTo'),r('tYTo'),fP)}
-        ${mini('LFL СЕРЕБРО',g('sLfl'),r('sLfl'),fL)}
+        ${mini('ПЛАН %',plan,r('plan'),fP)}
         ${ig?mini('LFL ЗОЛОТО',g('zLfl'),r('zLfl'),fL):''}
+        ${mini('LFL СЕРЕБРО',g('sLfl'),r('sLfl'),fL)}
         ${mini('СР.ЧЕК',g('srch'),r('srch'),fRr)}
-        ${mini('КОНВЕРСИЯ',g('konv'),r('konv'),fP)}
         ${mini('РАССРОЧКА',g('rass'),r('rass'),fP)}
         ${mini('СПАСИБО',g('spas'),r('spas'),fP)}
-        ${mini('ВЫДАЧА %',g('vPct'),r('vPct'),fP)}
+        ${mini('КОНВЕРСИЯ',g('konv'),r('konv'),fP)}
         ${lossHtml}
       </div>`;
     }
@@ -829,16 +827,15 @@ function re(t){
       }
     }
     mEl.innerHTML=[
-      cmpCard('ПЛАН %',sv('plan'),rv('plan'),fP),
       cmpCard('ДОЛЯ ЮИ',sv('tYTo'),rv('tYTo'),fP),
-      cmpCard('LFL СЕРЕБРО',sv('sLfl'),rv('sLfl'),fL),
+      cmpCard('ПЛАН %',sv('plan'),rv('plan'),fP),
+      subLoss,
       ig?cmpCard('LFL ЗОЛОТО',sv('zLfl'),rv('zLfl'),fL):'',
+      cmpCard('LFL СЕРЕБРО',sv('sLfl'),rv('sLfl'),fL),
       cmpCard('СР.ЧЕК',sv('srch'),rv('srch'),fRr),
-      cmpCard('КОНВЕРСИЯ',sv('konv'),rv('konv'),fP),
       cmpCard('РАССРОЧКА',sv('rass'),rv('rass'),fP),
       cmpCard('СПАСИБО',sv('spas'),rv('spas'),fP),
-      cmpCard('ВЫДАЧА %',sv('vPct'),rv('vPct'),fP),
-      subLoss,
+      cmpCard('КОНВЕРСИЯ',sv('konv'),rv('konv'),fP),
     ].filter(Boolean).join('');
   }else{
     // Нет фильтра — показываем ТОП/АНТИТОП магазинов
@@ -920,7 +917,6 @@ function renderPod(mode,view,podF){
       {key:'konv',label:'КОНВЕРСИЯ',fmt:fP,hib:true,ico:'🎯'},
       {key:'rass',label:'РАССРОЧКА',fmt:fP,hib:true,ico:'💰'},
       {key:'spas',label:'СПАСИБО',fmt:fP,hib:true,ico:'🎁'},
-      {key:'vPct',label:'ВЫДАЧА %',fmt:fP,hib:true,ico:'🎀'},
     ];
     function podCard(m){
       const rv=reg[m.key];if(rv===null||rv===undefined)return'';

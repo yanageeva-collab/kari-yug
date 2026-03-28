@@ -879,10 +879,10 @@ function re(t){
       const rows=[...losers,...winners].map(p=>{
         const pd=srcR[p]; const plan=pd.plan; const tY=pd.tY;
         if(plan>=100){
-          return`<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:3px 8px;font-size:10px;white-space:nowrap"><b style="color:#111">${p}</b> <span style="color:#16a34a;font-weight:700">👍</span></div>`;
+          return`<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:5px 10px;font-size:10px;display:flex;justify-content:space-between;align-items:center"><b style="color:#111">${p}</b> <span style="color:#16a34a;font-weight:700">👍</span></div>`;
         } else {
           const losses=Math.round(tY/(plan/100)-tY);
-          return`<div style="background:#ffe4e6;border:1px solid #fca5a5;border-radius:6px;padding:3px 8px;font-size:10px;white-space:nowrap"><b style="color:#111">${p}</b> <span style="color:#dc2626;font-weight:700">−${losses.toLocaleString('ru')}₽</span></div>`;
+          return`<div style="background:#ffe4e6;border:1px solid #fca5a5;border-radius:6px;padding:5px 10px;font-size:10px;display:flex;justify-content:space-between;align-items:center"><b style="color:#111">${p}</b> <span style="color:#dc2626;font-weight:700">−${losses.toLocaleString('ru')}₽</span></div>`;
         }
       }).join('');
       // Потери региона в целом
@@ -892,7 +892,7 @@ function re(t){
         regCaption=rp>=100?'Чемп. 👍':`−${Math.round(rt/(rp/100)-rt).toLocaleString('ru')}₽`;
       }
       // Потери — полная ширина (горизонтальный список подразделений в ряд)
-      return`<div style="background:#fff1f2;border:1px solid #fca5a5;border-radius:6px;padding:8px 10px;margin-bottom:10px"><div style="font-weight:700;color:#dc2626;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px">📉 ПОТЕРИ &nbsp;<span style="font-size:9px;font-weight:400;color:#6b7280">ЮГ: ${regCaption}</span></div><div style="display:flex;flex-wrap:wrap;gap:6px">${rows}</div></div>`;
+      return`<div style="background:#fff1f2;border:1px solid #fca5a5;border-radius:6px;padding:8px 10px;margin-bottom:10px"><div style="font-weight:700;color:#dc2626;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px">📉 ПОТЕРИ &nbsp;<span style="font-size:9px;font-weight:400;color:#6b7280">ЮГ: ${regCaption}</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">${rows}</div></div>`;
     }
     // Потери — сверху на всю ширину; 8 метрик — 2 колонки без пустот (4 ряда × 2)
     const lossHtml=lossCard();

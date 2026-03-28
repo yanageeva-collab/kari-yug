@@ -670,44 +670,56 @@ function re(t){
       // Таблица подразделений — строки из TOT_D/TOT_M, не из магазинов
       const h0=document.querySelector('#th-'+t+' th[data-c="0"]');
       if(h0)h0.textContent='Подразделение';
-      const podsT=Object.keys(totSrc).filter(k=>k!=='РЕГИОН').sort();
+      const regD=totSrc['РЕГИОН']||{};
+      // Сортировка по Доле ЮИ убыванию
+      const podsT=Object.keys(totSrc).filter(k=>k!=='РЕГИОН')
+        .sort((a,b)=>{const av=totSrc[a].tYTo??-Infinity,bv=totSrc[b].tYTo??-Infinity;return bv-av;});
       const podCnts={};allD.forEach(s=>{podCnts[s.pod]=(podCnts[s.pod]||0)+1;});
+      // Цвет по сравнению с регионом: зелёный ≥ регион, красный < регион
+      function cCmp(val,regVal,hib=true){
+        if(val===null||val===undefined)return'pN';
+        if(regVal===null||regVal===undefined)return'pN';
+        return(hib?val>=regVal:val<=regVal)?'pG':'pR';
+      }
       function mkPodRow(pName,pd,trStyle){
         const cnt=podCnts[pName];
         const cntTxt=cnt?cnt+' маг.':'';
+        const isReg=!cnt; // строка РЕГИОН — нет счётчика магазинов
         const nm=`<td style="font-size:11px;font-weight:700;color:#ad1472;text-align:left;padding:5px;white-space:nowrap">${pName}</td>`;
         const ct=`<td style="font-size:11px;color:#6b7280;text-align:left;padding:5px">${cntTxt}</td>`;
+        // Для строки РЕГИОН используем стандартные цвета, для подразделений — сравнение с регионом
+        const cc=(key,hib=true)=>isReg?'pN':cCmp(pd[key],regD[key],hib);
         return ig
           ?`<tr style="${trStyle}">${nm}${ct}
-              ${pi(cTG(pd.tYTo),fm(pd.tYTo))}
-              <td class="gh"><span class="p ${cZ(pd.dZol)}">${fm(pd.dZol)}</span></td>
+              ${pi(cc('tYTo'),fm(pd.tYTo))}
+              <td class="gh"><span class="p ${isReg?cZ(pd.dZol):cCmp(pd.dZol,regD.dZol)}">${fm(pd.dZol)}</span></td>
               <td class="gh"><span class="p pN">${fm(pd.dSer)}</span></td>
-              ${pi(cP(pd.plan),fm(pd.plan))}
+              ${pi(isReg?cP(pd.plan):cc('plan'),fm(pd.plan))}
               <td><span class="p pN">${fr(pd.tY)}₽</span></td>
               <td class="gh"><span class="p pN">—</span></td>
               <td class="gh"><span class="p pN">—</span></td>
-              <td class="gh"><span class="p ${cL(pd.zLfl)}">${fm(pd.zLfl)}</span></td>
-              ${pi(cL(pd.sLfl),fm(pd.sLfl))}
-              ${pi(cSrch(pd.srch,avg),fr(pd.srch))}
-              ${pi(cR(pd.rass),fm(pd.rass))}
-              ${pi(cS(pd.spas),fm(pd.spas))}
-              ${pi(cV(pd.vPct),fm(pd.vPct))}<td><span class="p pN">—</span></td>
-              ${pi(cK(pd.konv),fm(pd.konv))}<td><span class="p pN">—</span></td></tr>`
+              <td class="gh"><span class="p ${cc('zLfl')}">${fm(pd.zLfl)}</span></td>
+              ${pi(cc('sLfl'),fm(pd.sLfl))}
+              ${pi(isReg?cSrch(pd.srch,avg):cc('srch'),fr(pd.srch))}
+              ${pi(cc('rass'),fm(pd.rass))}
+              ${pi(cc('spas'),fm(pd.spas))}
+              ${pi(cc('vPct'),fm(pd.vPct))}<td><span class="p pN">—</span></td>
+              ${pi(cc('konv'),fm(pd.konv))}<td><span class="p pN">—</span></td></tr>`
           :`<tr style="${trStyle}">${nm}${ct}
-              ${pi(cTN(pd.tYTo),fm(pd.tYTo))}
+              ${pi(cc('tYTo'),fm(pd.tYTo))}
               <td><span class="p pN">${fm(pd.dSer)}</span></td>
-              ${pi(cP(pd.plan),fm(pd.plan))}
+              ${pi(isReg?cP(pd.plan):cc('plan'),fm(pd.plan))}
               <td><span class="p pN">${fr(pd.tY)}₽</span></td>
               <td><span class="p pN">—</span></td>
-              ${pi(cL(pd.sLfl),fm(pd.sLfl))}
-              ${pi(cSrch(pd.srch,avg),fr(pd.srch))}
-              ${pi(cR(pd.rass),fm(pd.rass))}
-              ${pi(cS(pd.spas),fm(pd.spas))}
-              ${pi(cV(pd.vPct),fm(pd.vPct))}
+              ${pi(cc('sLfl'),fm(pd.sLfl))}
+              ${pi(isReg?cSrch(pd.srch,avg):cc('srch'),fr(pd.srch))}
+              ${pi(cc('rass'),fm(pd.rass))}
+              ${pi(cc('spas'),fm(pd.spas))}
+              ${pi(cc('vPct'),fm(pd.vPct))}
               <td><span class="p pN">—</span></td>
-              ${pi(cK(pd.konv),fm(pd.konv))}<td><span class="p pN">—</span></td></tr>`;
+              ${pi(cc('konv'),fm(pd.konv))}<td><span class="p pN">—</span></td></tr>`;
       }
-      const regRowHtml=mkPodRow('РЕГИОН ЮГ',totSrc['РЕГИОН']||{},'background:#fce7f3;font-weight:700;border-bottom:2px solid #ad1472');
+      const regRowHtml=mkPodRow('РЕГИОН ЮГ',regD,'background:#fce7f3;font-weight:700;border-bottom:2px solid #ad1472');
       const podRowsHtml=podsT.map(p=>mkPodRow(p,totSrc[p]||{},'')).join('');
       document.getElementById('t'+t).innerHTML=regRowHtml+podRowsHtml;
     } else {

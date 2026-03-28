@@ -670,6 +670,10 @@ function re(t){
       // Таблица подразделений — строки из TOT_D/TOT_M, не из магазинов
       const h0=document.querySelector('#th-'+t+' th[data-c="0"]');
       if(h0)h0.textContent='Подразделение';
+      // Скрываем колонку ТО ЮИ (data-c 6 для золота, 5 для не-золота)
+      const toYuiIdx=ig?6:5;
+      const toYuiTh=document.querySelector('#th-'+t+' th[data-c="'+toYuiIdx+'"]');
+      if(toYuiTh)toYuiTh.style.display='none';
       const regD=totSrc['РЕГИОН']||{};
       // Сортировка по Доле ЮИ убыванию
       const podsT=Object.keys(totSrc).filter(k=>k!=='РЕГИОН')
@@ -695,7 +699,6 @@ function re(t){
               <td class="gh"><span class="p ${isReg?cZ(pd.dZol):cCmp(pd.dZol,regD.dZol)}">${fm(pd.dZol)}</span></td>
               <td class="gh"><span class="p pN">${fm(pd.dSer)}</span></td>
               ${pi(isReg?cP(pd.plan):cc('plan'),fm(pd.plan))}
-              <td><span class="p pN">${fr(pd.tY)}₽</span></td>
               <td class="gh"><span class="p pN">—</span></td>
               <td class="gh"><span class="p pN">—</span></td>
               <td class="gh"><span class="p ${cc('zLfl')}">${fm(pd.zLfl)}</span></td>
@@ -709,7 +712,6 @@ function re(t){
               ${pi(cc('tYTo'),fm(pd.tYTo))}
               <td><span class="p pN">${fm(pd.dSer)}</span></td>
               ${pi(isReg?cP(pd.plan):cc('plan'),fm(pd.plan))}
-              <td><span class="p pN">${fr(pd.tY)}₽</span></td>
               <td><span class="p pN">—</span></td>
               ${pi(cc('sLfl'),fm(pd.sLfl))}
               ${pi(isReg?cSrch(pd.srch,avg):cc('srch'),fr(pd.srch))}
@@ -723,6 +725,10 @@ function re(t){
       const podRowsHtml=podsT.map(p=>mkPodRow(p,totSrc[p]||{},'')).join('');
       document.getElementById('t'+t).innerHTML=regRowHtml+podRowsHtml;
     } else {
+    // Восстанавливаем колонку ТО ЮИ если она была скрыта
+    const toYuiIdxR=ig?6:5;
+    const toYuiThR=document.querySelector('#th-'+t+' th[data-c="'+toYuiIdxR+'"]');
+    if(toYuiThR)toYuiThR.style.display='';
     // При фильтре подразделения — показываем название магазина в первой колонке
     const h0=document.querySelector('#th-'+t+' th[data-c="0"]');
     if(h0)h0.textContent=(pp&&pp!=='РЕГИОН')?'Магазин':'Подразд.';

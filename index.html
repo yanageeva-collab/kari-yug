@@ -141,7 +141,7 @@ tr:hover td:nth-child(1),tr:hover td:nth-child(2){background:#dbeafe !important}
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841.89 595.28" height="36" style="display:block"><path fill="#ad1472" d="M195.64,199.26h0c-53.83,0-97.54,43.24-98.34,96.87,8.51-17.2,19.92-28.24,30.64-36.91,16.04-12.97,35.35-19.24,53.23-20.35,19.6-1.22,34.95,2.91,47.51,12.86,4.54,3.59,8.17,7.84,11.04,12.41,5.32,8.46,7.79,18.34,6.89,29.29-1.93,23.58-21.31,42.55-44.93,44.01-27.99,1.74-51.24-20.45-51.24-48.06,0-12.61,4.85-24.09,12.79-32.67-8.97,2.77-17.93,7.27-26.1,13.88-8.12,6.56-17.16,15.61-24.59,27.58-8.12,13.06-11.48,28.19-11.57,43.57v54.25h94.67c54.34,0,98.38-44.04,98.38-98.36h0c0-54.33-44.05-98.36-98.38-98.36Z"/><polygon fill="#ad1472" points="477.65 266.13 431.94 266.13 382.75 312.48 382.75 229.56 349.65 229.56 349.65 394.13 382.75 394.13 382.75 347.78 431.95 394.13 481.07 394.13 409.73 330.13 477.65 266.13"/><rect fill="#ad1472" x="708" y="282.25" width="33.1" height="111.88"/><path fill="#ad1472" d="M569.51,273.26c-9.84-5.72-21.3-9.02-33.53-9.02-36.68,0-66.42,29.5-66.42,65.88s29.74,65.88,66.42,65.88c12.23,0,23.69-3.29,33.53-9.02v7.14h33.1v-128h-33.1v7.14ZM535.98,363.35c-18.5,0-33.49-14.87-33.49-33.22s15-33.22,33.49-33.22,33.49,14.87,33.49,33.22-15,33.22-33.49,33.22Z"/><path fill="#ad1472" d="M724.55,271.05c11.07,0,20.04-8.97,20.04-20.05,0-4.89-1.76-9.37-4.67-12.85-1.93-2.53-4.52-4.6-7.69-6.08-9.98-4.65-24.02-2.81-37.55,4.92-13.68,7.81-24.64,22.43-31.16,40.26v-11.13h-33.1v128h33.1v-89.96c2.9-27.11,16.12-51.64,34.15-61.93,4.25-2.43,8.51-4.19,12.61-5.3-3.57,3.62-5.78,8.59-5.78,14.08,0,11.07,8.97,20.05,20.04,20.05Z"/></svg>
   <div style="text-align:right">
     <div style="font-size:12px;font-weight:600;color:#ad1472">ЮИ ЮГ</div>
-    <div style="font-size:10px;color:#9ca3af" id="update-date">Данные обновлены: 28.03.2026 10:18&nbsp; (отчёт за 27.03.2026)</div>
+    <div style="font-size:10px;color:#9ca3af" id="update-date">Данные обновлены: 28.03.2026 10:28&nbsp; (отчёт за 27.03.2026)</div>
   </div>
 </div>
 <div class="tabs">
@@ -723,42 +723,41 @@ function re(t){
   const mEl=document.getElementById('m'+t);
   const mTitle=document.querySelector('#p'+t+' .mets-title');
   if(pp&&d.length>0){
-    // Режим сравнения подразделения с ЮГ (sv, totSrc определены выше)
-    // Средние по всему региону (взвешенные по обороту или простые для ср.чек)
-    function wavg(arr,key){const items=arr.map(s=>({v:s[key],w:s.tY||0})).filter(i=>i.v!==null&&i.w>0);const tw=items.reduce((a,b)=>a+b.w,0);return tw>0?items.reduce((a,b)=>a+b.v*b.w,0)/tw:null;}
-    function regAvg(key){return['srch','vN','sPod'].includes(key)?allD.map(s=>s[key]).filter(v=>v!==null).reduce((a,b,_,arr)=>a+b/arr.length,0)||null:wavg(allD,key);}
-    function cmpCard(label,sval,rv,fmt,hib=true){
-      if(sval===null||rv===null)return'';
-      const delta=sval-rv;const good=hib?delta>=0:delta<=0;
+    // Режим сравнения подразделения с ЮГ
+    // Данные ЮГ — ИТОГО РЕГИОН из файла (не среднее из магазинов)
+    function rv(key){const reg=totSrc['РЕГИОН']||{};const v=reg[key];return(v===undefined||v===null)?null:v;}
+    function cmpCard(label,sval,rval,fmt,hib=true){
+      if(sval===null||rval===null)return'';
+      const delta=sval-rval;const good=hib?delta>=0:delta<=0;
       const clr=good?'#16a34a':'#dc2626';const bg=good?'#f0fdf4':'#fef2f2';const brd=good?'#86efac':'#fca5a5';
       const ico=good?'✅':'⚠️';const arr=delta>=0?'▲':'▼';const absd=fmt(Math.abs(delta));
       return`<div class="mc" style="background:${bg};border-color:${brd};border-width:1.5px">
         <div class="mc-l" style="color:#6b7280">${label} ${ico}</div>
         <div style="font-size:17px;font-weight:700;color:${clr};margin:2px 0">${fmt(sval)}</div>
-        <div style="font-size:9px;color:#6b7280">ЮГ: ${fmt(rv)}&nbsp;<b style="color:${clr}">${arr}${absd}</b></div>
+        <div style="font-size:9px;color:#6b7280">ЮГ: ${fmt(rval)}&nbsp;<b style="color:${clr}">${arr}${absd}</b></div>
       </div>`;
     }
     const fP=v=>v===null||v===undefined?'—':Math.round(v)+'%';const fR=v=>v===null||v===undefined?'—':Math.round(v).toLocaleString('ru')+'₽';const fL=v=>v===null||v===undefined?'—':(v>=0?'+':'')+v+'%';
     const cards=ig?[
-      cmpCard('Доля ЮИ',sv('tYTo'),regAvg('tYTo'),fP),
-      cmpCard('Доля золота',sv('dZol'),regAvg('dZol'),fP),
-      cmpCard('План %',sv('plan'),regAvg('plan'),fP),
-      cmpCard('Ср.чек',sv('srch'),regAvg('srch'),fR),
-      cmpCard('Рассрочка',sv('rass'),regAvg('rass'),fP),
-      cmpCard('Конверсия',sv('konv'),regAvg('konv'),fP),
-      cmpCard('Спасибо',sv('spas'),regAvg('spas'),fP),
-      cmpCard('Выдача %',sv('vPct'),regAvg('vPct'),fP),
-      cmpCard('LFL серебра',sv('sLfl'),regAvg('sLfl'),fP),
-      cmpCard('LFL золото',sv('zLfl'),regAvg('zLfl'),fP),
+      cmpCard('Доля ЮИ',sv('tYTo'),rv('tYTo'),fP),
+      cmpCard('Доля золота',sv('dZol'),rv('dZol'),fP),
+      cmpCard('План %',sv('plan'),rv('plan'),fP),
+      cmpCard('Ср.чек',sv('srch'),rv('srch'),fR),
+      cmpCard('Рассрочка',sv('rass'),rv('rass'),fP),
+      cmpCard('Конверсия',sv('konv'),rv('konv'),fP),
+      cmpCard('Спасибо',sv('spas'),rv('spas'),fP),
+      cmpCard('Выдача %',sv('vPct'),rv('vPct'),fP),
+      cmpCard('LFL серебра',sv('sLfl'),rv('sLfl'),fL),
+      cmpCard('LFL золото',sv('zLfl'),rv('zLfl'),fL),
     ]:[
-      cmpCard('Доля ЮИ',sv('tYTo'),regAvg('tYTo'),fP),
-      cmpCard('План %',sv('plan'),regAvg('plan'),fP),
-      cmpCard('Ср.чек',sv('srch'),regAvg('srch'),fR),
-      cmpCard('Рассрочка',sv('rass'),regAvg('rass'),fP),
-      cmpCard('Конверсия',sv('konv'),regAvg('konv'),fP),
-      cmpCard('Спасибо',sv('spas'),regAvg('spas'),fP),
-      cmpCard('Выдача %',sv('vPct'),regAvg('vPct'),fP),
-      cmpCard('LFL серебра',sv('sLfl'),regAvg('sLfl'),fP),
+      cmpCard('Доля ЮИ',sv('tYTo'),rv('tYTo'),fP),
+      cmpCard('План %',sv('plan'),rv('plan'),fP),
+      cmpCard('Ср.чек',sv('srch'),rv('srch'),fR),
+      cmpCard('Рассрочка',sv('rass'),rv('rass'),fP),
+      cmpCard('Конверсия',sv('konv'),rv('konv'),fP),
+      cmpCard('Спасибо',sv('spas'),rv('spas'),fP),
+      cmpCard('Выдача %',sv('vPct'),rv('vPct'),fP),
+      cmpCard('LFL серебра',sv('sLfl'),rv('sLfl'),fL),
     ];
     mEl.classList.remove('m2');
     mEl.style.gridTemplateColumns='repeat(auto-fill,minmax(115px,1fr))';
@@ -767,7 +766,6 @@ function re(t){
   } else {
     mEl.style.gridTemplateColumns='';mEl.style.display='block';mEl.classList.remove('m2');
     if(mTitle)mTitle.textContent='Рейтинг подразделений vs ЮГ';
-    const totSrc=isMonth?TOT_M:TOT_D;
     const reg=totSrc['РЕГИОН']||{};
     // Агрегируем метрики каждого подразделения из данных магазинов
     const podMap={};

@@ -81,7 +81,7 @@ tr:hover td:nth-child(1),tr:hover td:nth-child(2){background:#dbeafe !important}
 tr.row-sum td:nth-child(1),tr.row-sum td:nth-child(2){background:#fce7f3 !important}
 tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !important}
 .crds{display:none;flex-direction:column;gap:8px}
-.crd{background:#fff;border:1px solid #d1d5db;border-radius:8px;padding:10px 12px}
+.crd{background:#fff;border:2px solid #e8a0d0;border-radius:10px;padding:10px 12px;box-shadow:0 2px 6px rgba(173,20,114,0.08)}
 .ch{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
 .cn{font-size:13px;font-weight:600;color:#111827}
 .cs{font-size:11px;color:#6b7280;margin-top:1px}
@@ -601,6 +601,8 @@ function cV(v){if(v===null)return'pN';if(v===0)return'pDR';if(v<50)return'pR';if
 function pi(c,t,x=''){return`<td><span class="p ${c} ${x}">${t}</span></td>`;}
 function fm(v,s='%'){return v===null?'-':Math.round(v)+s;}
 function fr(v){return v===null?'-':Math.round(v).toLocaleString('ru');}
+// Полное число без сокращений (явный форматтер через пробел)
+function frFull(v){if(v===null)return'—';return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0');}
 function pl(t,tt=''){return`<td title="${tt}" style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;text-align:left">${t}</td>`;}
 let ss={g:{c:2,d:-1},n:{c:2,d:-1},gm:{c:2,d:-1},nm:{c:2,d:-1}};
 let vw={g:'table',n:'table',gm:'table',nm:'table'};
@@ -812,11 +814,11 @@ function re(t){
         ?`<div style="border-top:1px solid #f3e8f5;margin-top:8px;padding-top:8px;${g2}">
             ${ci2('Доля золота',cZ(s.dZol),fm(s.dZol))}
             ${ci2('Д.Серебра','pN',fm(s.dSer))}
-            ${ci2('Оборот Золото','pN',fr(s.tZol)+'₽')}
-            ${ci2('Оборот Серебро','pN',fr(s.tSer)+'₽')}
+            ${ci2('ТО Золото','pN',frFull(s.tZol)+'₽')}
+            ${ci2('ТО Серебро','pN',frFull(s.tSer)+'₽')}
           </div>`
         :`<div style="border-top:1px solid #f3e8f5;margin-top:8px;padding-top:8px">
-            ${ci2('Оборот Серебро','pN',fr(s.tSer)+'₽')}
+            ${ci2('ТО Серебро','pN',fr(s.tSer)+'₽')}
           </div>`;
       return`<div class="crd">
         <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.pod} · ${s.mag}</div></div>

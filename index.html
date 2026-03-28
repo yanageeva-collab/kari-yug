@@ -163,7 +163,8 @@ tr:hover td:nth-child(1),tr:hover td:nth-child(2){background:#dbeafe !important}
   <div class="vtog">
     <button class="vb on" onclick="sv('g','table',this)">Таблица</button>
     <button class="vb" onclick="sv('g','cards',this)">Магазин</button>
-    <select id="pdg" onchange="re('g')" ><option value="">Подразделение</option></select>
+    <select id="pdg" onchange="podCh('g')"><option value="">Подразделение</option></select>
+    <select id="mag-g" onchange="re('g')" style="flex:1;min-width:80px"><option value="">Магазин</option></select>
   </div>
   <div class="tw" id="tw-g"><table>
     <thead id="th-g"><tr>
@@ -204,7 +205,8 @@ tr:hover td:nth-child(1),tr:hover td:nth-child(2){background:#dbeafe !important}
   <div class="vtog">
     <button class="vb on" onclick="sv('n','table',this)">Таблица</button>
     <button class="vb" onclick="sv('n','cards',this)">Магазин</button>
-    <select id="pdn" onchange="re('n')" ><option value="">Подразделение</option></select>
+    <select id="pdn" onchange="podCh('n')"><option value="">Подразделение</option></select>
+    <select id="mag-n" onchange="re('n')" style="flex:1;min-width:80px"><option value="">Магазин</option></select>
   </div>
   <div class="tw" id="tw-n"><table>
     <thead id="th-n"><tr>
@@ -242,7 +244,8 @@ tr:hover td:nth-child(1),tr:hover td:nth-child(2){background:#dbeafe !important}
   <div class="vtog">
     <button class="vb on" onclick="sv('gm','table',this)">Таблица</button>
     <button class="vb" onclick="sv('gm','cards',this)">Магазин</button>
-    <select id="pdgm" onchange="re('gm')" ><option value="">Подразделение</option></select>
+    <select id="pdgm" onchange="podCh('gm')"><option value="">Подразделение</option></select>
+    <select id="mag-gm" onchange="re('gm')" style="flex:1;min-width:80px"><option value="">Магазин</option></select>
   </div>
   <div class="tw" id="tw-gm"><table>
     <thead id="th-gm"><tr>
@@ -283,7 +286,8 @@ tr:hover td:nth-child(1),tr:hover td:nth-child(2){background:#dbeafe !important}
   <div class="vtog">
     <button class="vb on" onclick="sv('nm','table',this)">Таблица</button>
     <button class="vb" onclick="sv('nm','cards',this)">Магазин</button>
-    <select id="pdnm" onchange="re('nm')" ><option value="">Подразделение</option></select>
+    <select id="pdnm" onchange="podCh('nm')"><option value="">Подразделение</option></select>
+    <select id="mag-nm" onchange="re('nm')" style="flex:1;min-width:80px"><option value="">Магазин</option></select>
   </div>
   <div class="tw" id="tw-nm"><table>
     <thead id="th-nm"><tr>
@@ -607,7 +611,9 @@ function sv(t,v,btn){vw[t]=v;btn.closest('.vtog').querySelectorAll('.vb').forEac
 function so(t,c){ss[t].c===c?ss[t].d*=-1:(ss[t].c=c,ss[t].d=-1);uth(t);re(t);}
 const gK=['pod','mag','tYTo','dZol','dSer','plan','tY','tZol','tSer','zLfl','sLfl','srch','rass','spas','vPct','vN','konv','sPod'];
 const nK=['pod','mag','tYTo','dSer','plan','tY','tSer','sLfl','srch','rass','spas','vPct','vN','konv','sPod'];
-function flt(t){const d=t==='g'?gD:t==='n'?nD:t==='gm'?gDm:nDm;const q=(document.getElementById('s'+t).value||'').toLowerCase();const pp=document.getElementById('pd'+t).value;return d.filter(s=>{if(q&&!s.tc.toLowerCase().includes(q)&&!s.mag.includes(q)&&!s.pod.toLowerCase().includes(q))return false;if(pp&&s.pod!==pp)return false;return true;});}
+function flt(t){const d=t==='g'?gD:t==='n'?nD:t==='gm'?gDm:nDm;const si=document.getElementById('s'+t);const q=(si?si.value||'':'').toLowerCase();const pp=document.getElementById('pd'+t).value;const ms=document.getElementById('mag-'+t);const mg=ms?ms.value||'':'';return d.filter(s=>{if(q&&!s.tc.toLowerCase().includes(q)&&!s.mag.includes(q)&&!s.pod.toLowerCase().includes(q))return false;if(pp&&s.pod!==pp)return false;if(mg&&s.mag!==mg)return false;return true;});}
+// При смене подразделения — обновляем список магазинов
+function podCh(t){const pp=document.getElementById('pd'+t).value;const d=t==='g'?gD:t==='n'?nD:t==='gm'?gDm:nDm;const ms=document.getElementById('mag-'+t);if(ms){const stores=(pp?d.filter(s=>s.pod===pp):d).slice().sort((a,b)=>a.tc.localeCompare(b.tc));ms.innerHTML='<option value="">Магазин</option>'+stores.map(s=>`<option value="${s.mag}">${s.tc}</option>`).join('');}re(t);}
 function ranks(d){const sr=[...d].filter(s=>s.tY>0).sort((a,b)=>b.tY-a.tY);return{best:new Set(sr.slice(0,10).map(s=>s.mag)),worst:new Set(sr.slice(-10).map(s=>s.mag))};}
 function re(t){
   let d=flt(t);const st=ss[t],keys=(t==='g'||t==='gm')?gK:nK;
@@ -787,42 +793,90 @@ function re(t){
         <div class="mc"><div class="mc-l">АНТИТОП-5 доля ЮИ</div>${lst(bot5sh,s=>fm(s.tYTo))}</div>`;
   }
 }
-function renderPod(mode){
+function renderPod(mode,view,podF){
+  view=view||'cards'; podF=podF||'';
   const src=mode==='month'?TOT_M:TOT_D;
   const pods=Object.keys(src).filter(k=>k!=='РЕГИОН').sort();
   const reg=src['РЕГИОН']||{};
   const fP=v=>v===null||v===undefined?'—':Math.round(v)+'%';
   const fR=v=>v===null||v===undefined?'—':Math.round(v).toLocaleString('ru')+'₽';
   const fL=v=>v===null||v===undefined?'—':(v>=0?'+':'')+v+'%';
-  const metrics=[
-    {key:'plan',label:'ПЛАН %',fmt:fP,hib:true,ico:'🗓'},
-    {key:'tYTo',label:'ДОЛЯ ЮИ',fmt:fP,hib:true,ico:'📊'},
-    {key:'sLfl',label:'LFL СЕРЕБРО',fmt:fL,hib:true,ico:'📉'},
-    {key:'zLfl',label:'LFL ЗОЛОТО',fmt:fL,hib:true,ico:'🥇'},
-    {key:'srch',label:'СР.ЧЕК',fmt:fR,hib:true,ico:'🏧'},
-    {key:'konv',label:'КОНВЕРСИЯ',fmt:fP,hib:true,ico:'🎯'},
-    {key:'rass',label:'РАССРОЧКА',fmt:fP,hib:true,ico:'💰'},
-    {key:'spas',label:'СПАСИБО',fmt:fP,hib:true,ico:'🎁'},
-    {key:'vPct',label:'ВЫДАЧА %',fmt:fP,hib:true,ico:'🎀'},
-  ];
-  function podCard(m){
-    const rv=reg[m.key];
-    if(rv===null||rv===undefined)return'';
-    const sorted=[...pods].filter(p=>src[p]&&src[p][m.key]!==null&&src[p][m.key]!==undefined)
-      .sort((a,b)=>m.hib?(src[b][m.key]-src[a][m.key]):(src[a][m.key]-src[b][m.key]));
-    const rows=sorted.map((p,i)=>{
-      const v=src[p][m.key];const good=m.hib?v>=rv:v<=rv;
-      const clr=good?'#16a34a':'#dc2626';const arr=good?'▲':'▼';
-      return`<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;line-height:1.9;border-bottom:1px solid #f3e8f5;padding:1px 0"><span style="color:#9ca3af;min-width:16px">${i+1}.</span><b style="flex:1;color:#111">${p}</b><span style="color:${clr};font-weight:600">${m.fmt(v)}&nbsp;${arr}</span></div>`;
+  const bs=(a)=>`padding:5px 14px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid ${a?'#ad1472':'#d1d5db'};background:${a?'#ad1472':'#fff'};color:${a?'#fff':'#6b7280'};font-weight:${a?'600':'400'}`;
+  const periodBar=`<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
+    <span style="font-size:12px;color:#6b7280;margin-right:2px">Период:</span>
+    <button onclick="renderPod('day','${view}','${podF}')" style="${bs(mode==='day')}">День</button>
+    <button onclick="renderPod('month','${view}','${podF}')" style="${bs(mode==='month')}">Месяц</button>
+    <span style="margin-left:8px;border-left:1px solid #e5e7eb;padding-left:8px;display:flex;gap:6px">
+      <button onclick="renderPod('${mode}','cards','${podF}')" style="${bs(view==='cards')}">Карточки</button>
+      <button onclick="renderPod('${mode}','table','')" style="${bs(view==='table')}">Таблица</button>
+    </span>
+  </div>`;
+  if(view==='table'){
+    // Таблица магазинов по подразделению
+    const data=mode==='month'?gDm:gD;
+    const filtData=podF?data.filter(s=>s.pod===podF):data;
+    const podOpts=pods.map(p=>`<option value="${p}"${p===podF?' selected':''}>${p}</option>`).join('');
+    const podSel=`<select onchange="renderPod('${mode}','table',this.value)" style="font-size:12px;padding:5px 10px;border:1.5px solid #f0abdb;border-radius:8px;background:#fff;color:#111827;margin-bottom:10px;width:100%"><option value="">Все подразделения</option>${podOpts}</select>`;
+    const rows=filtData.map(s=>{
+      const pc=s.plan===null?'pN':s.plan>=100?'pG':s.plan>=80?'pY':'pR';
+      const lc=s.sLfl===null?'pN':s.sLfl>=-10?'pG':'pR';
+      const loss=s.plan!==null&&s.tY!==null&&s.plan>0&&s.plan<100?`<span style="font-size:9px;color:#dc2626">−${Math.round(s.tY/(s.plan/100)-s.tY).toLocaleString('ru')}₽</span>`:(s.plan>=100?'<span style="font-size:9px;color:#16a34a">👍</span>':'');
+      return`<tr onclick="this.style.background='#fdf2f8'" style="cursor:default">
+        <td style="font-size:10px;text-align:left;padding:5px 6px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>${s.tc}</b><br><span style="color:#9ca3af;font-size:9px">${s.pod} · ${s.mag}</span></td>
+        <td style="padding:4px 5px;text-align:center"><span class="p ${pc}" style="font-size:10px">${s.plan!==null?Math.round(s.plan)+'%':'-'}</span></td>
+        <td style="padding:4px 5px;text-align:center;font-size:10px">${loss}</td>
+        <td style="padding:4px 5px;text-align:center;font-size:10px;color:#374151">${s.tYTo!==null?Math.round(s.tYTo)+'%':'-'}</td>
+        <td style="padding:4px 5px;text-align:center"><span class="p ${lc}" style="font-size:10px">${s.sLfl!==null?(s.sLfl>=0?'+':'')+Math.round(s.sLfl)+'%':'-'}</span></td>
+        <td style="padding:4px 5px;text-align:center;font-size:10px;color:#374151">${s.srch!==null?Math.round(s.srch).toLocaleString('ru'):'—'}</td>
+        <td style="padding:4px 5px;text-align:center;font-size:10px;color:#374151">${s.tY!==null?Math.round(s.tY).toLocaleString('ru')+'₽':'—'}</td>
+      </tr>`;
     }).join('');
-    return`<div class="mc" style="min-width:160px"><div class="mc-l" style="font-weight:700;color:#ad1472;font-size:11px">${m.ico} ${m.label}</div><div style="font-size:9px;color:#6b7280;margin-bottom:4px">ЮГ: <b>${m.fmt(rv)}</b></div>${rows}</div>`;
+    document.getElementById('pod-content').innerHTML=`${periodBar}${podSel}
+      <div style="overflow:auto;max-height:62vh;border:1px solid #e5e7eb;border-radius:6px">
+        <table style="width:100%;border-collapse:collapse">
+          <thead><tr style="background:#f0f0f0;position:sticky;top:0;z-index:2">
+            <th style="padding:6px;text-align:left;font-size:10px;border-bottom:2px solid #a3a3a3;min-width:120px">Магазин</th>
+            <th style="padding:6px;font-size:10px;border-bottom:2px solid #a3a3a3;white-space:nowrap">План %</th>
+            <th style="padding:6px;font-size:10px;border-bottom:2px solid #a3a3a3;white-space:nowrap">Потери</th>
+            <th style="padding:6px;font-size:10px;border-bottom:2px solid #a3a3a3;white-space:nowrap">Доля ЮИ</th>
+            <th style="padding:6px;font-size:10px;border-bottom:2px solid #a3a3a3;white-space:nowrap">Сер.LFL</th>
+            <th style="padding:6px;font-size:10px;border-bottom:2px solid #a3a3a3;white-space:nowrap">Ср.чек</th>
+            <th style="padding:6px;font-size:10px;border-bottom:2px solid #a3a3a3;white-space:nowrap">ТО ЮИ</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <div style="font-size:10px;color:#9ca3af;margin-top:6px">Показано: ${filtData.length} магазинов</div>`;
+  } else {
+    // Карточки сравнения подразделений (текущий вид)
+    const metrics=[
+      {key:'plan',label:'ПЛАН %',fmt:fP,hib:true,ico:'🗓'},
+      {key:'tYTo',label:'ДОЛЯ ЮИ',fmt:fP,hib:true,ico:'📊'},
+      {key:'sLfl',label:'LFL СЕРЕБРО',fmt:fL,hib:true,ico:'📉'},
+      {key:'zLfl',label:'LFL ЗОЛОТО',fmt:fL,hib:true,ico:'🥇'},
+      {key:'srch',label:'СР.ЧЕК',fmt:fR,hib:true,ico:'🏧'},
+      {key:'konv',label:'КОНВЕРСИЯ',fmt:fP,hib:true,ico:'🎯'},
+      {key:'rass',label:'РАССРОЧКА',fmt:fP,hib:true,ico:'💰'},
+      {key:'spas',label:'СПАСИБО',fmt:fP,hib:true,ico:'🎁'},
+      {key:'vPct',label:'ВЫДАЧА %',fmt:fP,hib:true,ico:'🎀'},
+    ];
+    function podCard(m){
+      const rv=reg[m.key];if(rv===null||rv===undefined)return'';
+      const sorted=[...pods].filter(p=>src[p]&&src[p][m.key]!==null&&src[p][m.key]!==undefined)
+        .sort((a,b)=>m.hib?(src[b][m.key]-src[a][m.key]):(src[a][m.key]-src[b][m.key]));
+      const rows=sorted.map((p,i)=>{const v=src[p][m.key];const good=m.hib?v>=rv:v<=rv;const clr=good?'#16a34a':'#dc2626';const arr=good?'▲':'▼';
+        return`<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;line-height:1.9;border-bottom:1px solid #f3e8f5;padding:1px 0"><span style="color:#9ca3af;min-width:16px">${i+1}.</span><b style="flex:1;color:#111">${p}</b><span style="color:${clr};font-weight:600">${m.fmt(v)}&nbsp;${arr}</span></div>`;
+      }).join('');
+      return`<div class="mc" style="min-width:160px"><div class="mc-l" style="font-weight:700;color:#ad1472;font-size:11px">${m.ico} ${m.label}</div><div style="font-size:9px;color:#6b7280;margin-bottom:4px">ЮГ: <b>${m.fmt(rv)}</b></div>${rows}</div>`;
+    }
+    document.getElementById('pod-content').innerHTML=`${periodBar}<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px">${metrics.map(m=>podCard(m)).filter(Boolean).join('')}</div>`;
   }
-  const btnStyle=(active)=>`padding:5px 16px;border-radius:4px;font-size:12px;cursor:pointer;border:1px solid ${active?'#ad1472':'#d1d5db'};background:${active?'#ad1472':'#fff'};color:${active?'#fff':'#6b7280'};font-weight:${active?'600':'400'}`;
-  document.getElementById('pod-content').innerHTML=
-    `<div style="display:flex;gap:8px;margin-bottom:14px;align-items:center"><span style="font-size:12px;color:#6b7280;margin-right:4px">Период:</span><button onclick="renderPod('day')" style="${btnStyle(mode==='day')}">День</button><button onclick="renderPod('month')" style="${btnStyle(mode==='month')}">Месяц</button></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px">${metrics.map(m=>podCard(m)).filter(Boolean).join('')}</div>`;
 }
 function sw(t){const tabs=['g','n','gm','nm','pod'];document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('on',i===tabs.indexOf(t)));document.querySelectorAll('.panel').forEach(el=>el.classList.remove('on'));document.getElementById('p'+t).classList.add('on');if(t==='pod')renderPod('day');}
-['g','n','gm','nm'].forEach(t=>{const d=t==='g'?gD:t==='n'?nD:t==='gm'?gDm:nDm;const pods=[...new Set(d.map(s=>s.pod))].sort();const sel=document.getElementById('pd'+t);pods.forEach(pp=>{const o=document.createElement('option');o.value=pp;o.textContent=pp;sel.appendChild(o);});uth(t);});
+['g','n','gm','nm'].forEach(t=>{const d=t==='g'?gD:t==='n'?nD:t==='gm'?gDm:nDm;const pods=[...new Set(d.map(s=>s.pod))].sort();const sel=document.getElementById('pd'+t);pods.forEach(pp=>{const o=document.createElement('option');o.value=pp;o.textContent=pp;sel.appendChild(o);});
+  // Заполняем список магазинов (по алфавиту по названию)
+  const ms=document.getElementById('mag-'+t);if(ms){[...d].sort((a,b)=>a.tc.localeCompare(b.tc)).forEach(s=>{const o=document.createElement('option');o.value=s.mag;o.textContent=s.tc;ms.appendChild(o);});}
+  uth(t);});
 re('g');re('n');re('gm');re('nm');
 </script>
 </body>

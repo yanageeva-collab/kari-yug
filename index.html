@@ -744,62 +744,72 @@ function re(t){
   // Функция чтения данных региона ЮГ из файла
   function rv(key){const reg=totSrc['РЕГИОН']||{};const v=reg[key];return(v===undefined||v===null)?null:v;}
   if(pp==='РЕГИОН'){
-    // Вид РЕГИОН ЮГ — все подразделения по ключевым показателям + потери региона
-    mEl.style.display='block';
-    mEl.style.gridTemplateColumns='';
+    // Вид РЕГИОН ЮГ — карточки по каждому показателю с рейтингом подразделений
+    mEl.style.display='grid';
+    mEl.style.gridTemplateColumns='repeat(auto-fill,minmax(175px,1fr))';
     mEl.classList.remove('m2');
-    if(mTitle)mTitle.textContent='Регион ЮГ — все подразделения';
-    const src=isMonth?TOT_M:TOT_D;
-    const pods=Object.keys(src).filter(k=>k!=='РЕГИОН').sort();
-    const reg=src['РЕГИОН']||{};
-    const fP=v=>v===null||v===undefined?'—':Math.round(v)+'%';
+    if(mTitle)mTitle.textContent='Регион ЮГ';
+    const srcR=isMonth?TOT_M:TOT_D;
+    const podsR=Object.keys(srcR).filter(k=>k!=='РЕГИОН').sort();
+    const regR=srcR['РЕГИОН']||{};
+    const fPr=v=>v===null||v===undefined?'—':Math.round(v)+'%';
     const fRr=v=>v===null||v===undefined?'—':Math.round(v).toLocaleString('ru')+'₽';
-    const fL=v=>v===null||v===undefined?'—':(v>=0?'+':'')+v+'%';
-    function podCard(podName){
-      const pd=src[podName]||{};
-      const g=(k)=>{const v=pd[k];return(v===undefined||v===null)?null:v;};
-      const r=(k)=>{const v=reg[k];return(v===undefined||v===null)?null:v;};
-      function mini(label,sval,rval,fmt,hib=true){
-        const ok=sval===null||rval===null?null:(hib?sval>=rval:sval<=rval);
-        const clr=ok===null?'#6b7280':ok?'#16a34a':'#dc2626';
-        const arr=ok===null?'':ok?'▲':'▼';
-        return`<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid #f3f4f6"><span style="font-size:10px;color:#6b7280">${label}</span><span style="font-size:11px;font-weight:700;color:${clr}">${fmt(sval)}&nbsp;${arr}<span style="font-weight:400;font-size:9px;color:#9ca3af"> / ${fmt(rval)}</span></span></div>`;
-      }
-      const plan=g('plan');const tY=g('tY');
-      let lossHtml='';
-      if(plan!==null&&tY!==null&&plan>0){
+    const fLr=v=>v===null||v===undefined?'—':(v>=0?'+':'')+v+'%';
+    // Строка рейтинга одного подразделения внутри карточки показателя
+    function podRow(name,val,regVal,fmt,hib){
+      const good=regVal===null||val===null?null:(hib?val>=regVal:val<=regVal);
+      const clr=good===null?'#6b7280':good?'#16a34a':'#dc2626';
+      const arr=good===null?'':good?'▲':'▼';
+      return`<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;line-height:1.9;border-bottom:1px solid #f3e8f5;padding:1px 0"><b style="flex:1;color:#111">${name}</b><span style="color:${clr};font-weight:600">${fmt(val)}&nbsp;${arr}</span></div>`;
+    }
+    // Карточка одного показателя
+    function metCard(ico,label,key,fmt,hib){
+      const rv=regR[key];
+      const withVal=podsR.filter(p=>srcR[p]&&srcR[p][key]!==null&&srcR[p][key]!==undefined);
+      if(!withVal.length)return'';
+      const sorted=[...withVal].sort((a,b)=>hib?(srcR[b][key]-srcR[a][key]):(srcR[a][key]-srcR[b][key]));
+      const rows=sorted.map(p=>podRow(p,srcR[p][key],rv,fmt,hib)).join('');
+      return`<div class="mc" style="min-width:160px"><div class="mc-l" style="font-weight:700;color:#ad1472;font-size:11px">${ico} ${label}</div><div style="font-size:9px;color:#6b7280;margin-bottom:4px">ЮГ: <b>${fmt(rv)}</b></div>${rows}</div>`;
+    }
+    // Карточка потерь (особая — считаем из plan и tY каждого подразделения)
+    function lossCard(){
+      const withData=podsR.filter(p=>{const d=srcR[p];return d&&d.plan!==null&&d.plan!==undefined&&d.tY!==null&&d.tY!==undefined&&d.plan>0;});
+      if(!withData.length)return'';
+      // Сортируем: у кого план < 100 — выводим потери по убыванию; у кого >= 100 — в конце
+      const losers=withData.filter(p=>srcR[p].plan<100).sort((a,b)=>{
+        const lA=srcR[a].tY/(srcR[a].plan/100)-srcR[a].tY;
+        const lB=srcR[b].tY/(srcR[b].plan/100)-srcR[b].tY;
+        return lB-lA;
+      });
+      const winners=withData.filter(p=>srcR[p].plan>=100);
+      const rows=[...losers,...winners].map(p=>{
+        const pd=srcR[p]; const plan=pd.plan; const tY=pd.tY;
         if(plan>=100){
-          lossHtml=`<div style="margin-top:6px;background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:5px;text-align:center;font-size:11px;font-weight:700;color:#16a34a">Чемпионы 👍</div>`;
+          return`<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;line-height:1.9;border-bottom:1px solid #f3e8f5;padding:1px 0"><b style="flex:1;color:#111">${p}</b><span style="color:#16a34a;font-weight:600">Чемп. 👍</span></div>`;
         } else {
           const losses=Math.round(tY/(plan/100)-tY);
-          lossHtml=`<div style="margin-top:6px;background:#fff1f2;border:1px solid #fca5a5;border-radius:6px;padding:5px;text-align:center;font-size:10px;font-weight:700;color:#dc2626">📉 потерял ${losses.toLocaleString('ru')} ₽</div>`;
+          return`<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;line-height:1.9;border-bottom:1px solid #f3e8f5;padding:1px 0"><b style="flex:1;color:#111">${p}</b><span style="color:#dc2626;font-weight:600">−${losses.toLocaleString('ru')}₽</span></div>`;
         }
+      }).join('');
+      // Потери региона в целом
+      const rp=regR['plan'],rt=regR['tY'];
+      let regCaption='';
+      if(rp!==null&&rp!==undefined&&rt!==null&&rp>0){
+        regCaption=rp>=100?'Чемп. 👍':`−${Math.round(rt/(rp/100)-rt).toLocaleString('ru')}₽`;
       }
-      return`<div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:10px;margin-bottom:10px">
-        <div style="font-size:12px;font-weight:700;color:#111827;margin-bottom:6px;padding-bottom:4px;border-bottom:2px solid #f0abdb">${podName}</div>
-        ${mini('ДОЛЯ ЮИ',g('tYTo'),r('tYTo'),fP)}
-        ${mini('ПЛАН %',plan,r('plan'),fP)}
-        ${ig?mini('LFL ЗОЛОТО',g('zLfl'),r('zLfl'),fL):''}
-        ${mini('LFL СЕРЕБРО',g('sLfl'),r('sLfl'),fL)}
-        ${mini('СР.ЧЕК',g('srch'),r('srch'),fRr)}
-        ${mini('РАССРОЧКА',g('rass'),r('rass'),fP)}
-        ${mini('СПАСИБО',g('spas'),r('spas'),fP)}
-        ${mini('КОНВЕРСИЯ',g('konv'),r('konv'),fP)}
-        ${lossHtml}
-      </div>`;
+      return`<div class="mc" style="min-width:160px"><div class="mc-l" style="font-weight:700;color:#ad1472;font-size:11px">📉 ПОТЕРИ</div><div style="font-size:9px;color:#6b7280;margin-bottom:4px">ЮГ: <b>${regCaption}</b></div>${rows}</div>`;
     }
-    // Блок потерь региона
-    const regPlan=reg['plan']??null; const regTY=reg['tY']??null;
-    let regLoss='';
-    if(regPlan!==null&&regTY!==null&&regPlan>0){
-      if(regPlan>=100){
-        regLoss=`<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:13px;text-align:center;font-size:16px;font-weight:700;color:#16a34a;margin-bottom:10px">Регион ЮГ — Чемпионы 👍</div>`;
-      } else {
-        const losses=Math.round(regTY/(regPlan/100)-regTY);
-        regLoss=`<div style="background:#fff1f2;border:1px solid #fca5a5;border-radius:10px;padding:13px;text-align:center;margin-bottom:10px"><div style="font-size:14px;font-weight:700;color:#dc2626">📉 Регион ЮГ потерял ${losses.toLocaleString('ru')} ₽ оборота</div><div style="font-size:11px;color:#6b7280;margin-top:3px">план ${fP(regPlan)} от ЮГ</div></div>`;
-      }
-    }
-    mEl.innerHTML=regLoss+pods.map(podCard).join('');
+    mEl.innerHTML=[
+      metCard('📊','ДОЛЯ ЮИ','tYTo',fPr,true),
+      metCard('🗓','ПЛАН %','plan',fPr,true),
+      lossCard(),
+      ig?metCard('🥇','LFL ЗОЛОТО','zLfl',fLr,true):'',
+      metCard('📈','LFL СЕРЕБРО','sLfl',fLr,true),
+      metCard('🏧','СР.ЧЕК','srch',fRr,true),
+      metCard('💰','РАССРОЧКА','rass',fPr,true),
+      metCard('🎁','СПАСИБО','spas',fPr,true),
+      metCard('🎯','КОНВЕРСИЯ','konv',fPr,true),
+    ].filter(Boolean).join('');
   } else if(pp&&d.length>0){
     // Фильтр подразделения активен — карточки сравнения подразделения с ЮГ
     mEl.style.display='grid';
@@ -815,15 +825,15 @@ function re(t){
     const fP=v=>v===null||v===undefined?'—':Math.round(v)+'%';
     const fRr=v=>v===null||v===undefined?'—':Math.round(v).toLocaleString('ru')+'₽';
     const fL=v=>v===null||v===undefined?'—':(v>=0?'+':'')+v+'%';
-    // Блок потерь / похвалы — данные из строки подразделения в отчёте (не среднее)
+    // Карточка потерь — такой же размер как другие карточки
     const subPlan=sv('plan'); const subTY=sv('tY');
     let subLoss='';
     if(subPlan!==null&&subTY!==null&&subPlan>0){
       if(subPlan>=100){
-        subLoss=`<div style="grid-column:1/-1;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:13px;text-align:center;font-size:16px;font-weight:700;color:#16a34a">Чемпионы 👍</div>`;
+        subLoss=`<div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 10px;text-align:center"><div style="font-size:9px;color:#9ca3af;margin-bottom:4px">📉 ПОТЕРИ</div><div style="font-size:14px;font-weight:700;color:#16a34a">Чемп. 👍</div><div style="font-size:9px;color:#6b7280;margin-top:3px">план: ${Math.round(subPlan)}%</div></div>`;
       } else {
         const losses=Math.round(subTY/(subPlan/100)-subTY);
-        subLoss=`<div style="grid-column:1/-1;background:#fff1f2;border:1px solid #fca5a5;border-radius:10px;padding:13px;text-align:center"><div style="font-size:14px;font-weight:700;color:#dc2626">📉 ты потерял ${losses.toLocaleString('ru')} ₽ оборота</div></div>`;
+        subLoss=`<div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 10px;text-align:center"><div style="font-size:9px;color:#9ca3af;margin-bottom:4px">📉 ПОТЕРИ</div><div style="font-size:13px;font-weight:700;color:#dc2626">−${losses.toLocaleString('ru')}₽</div><div style="font-size:9px;color:#6b7280;margin-top:3px">план: ${Math.round(subPlan)}%</div></div>`;
       }
     }
     mEl.innerHTML=[

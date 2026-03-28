@@ -614,7 +614,10 @@ const gK=['pod','mag','tYTo','dZol','dSer','plan','tY','tZol','tSer','zLfl','sLf
 const nK=['pod','mag','tYTo','dSer','plan','tY','tSer','sLfl','srch','rass','spas','vPct','vN','konv','sPod'];
 function flt(t){const d=t==='g'?gD:t==='n'?nD:t==='gm'?gDm:nDm;const si=document.getElementById('s'+t);const q=(si?si.value||'':'').toLowerCase();const pp=document.getElementById('pd'+t).value;const ms=document.getElementById('mag-'+t);const mg=ms?ms.value||'':'';return d.filter(s=>{if(q&&!s.tc.toLowerCase().includes(q)&&!s.mag.includes(q)&&!s.pod.toLowerCase().includes(q))return false;if(pp&&pp!=='РЕГИОН'&&s.pod!==pp)return false;if(mg&&s.mag!==mg)return false;return true;});}
 // При смене подразделения — обновляем список магазинов
-function podCh(t){const pp=document.getElementById('pd'+t).value;const d=t==='g'?gD:t==='n'?nD:t==='gm'?gDm:nDm;const ms=document.getElementById('mag-'+t);if(ms){const stores=(pp&&pp!=='РЕГИОН'?d.filter(s=>s.pod===pp):d).slice().sort((a,b)=>a.tc.localeCompare(b.tc));ms.innerHTML='<option value="">Магазин</option>'+stores.map(s=>`<option value="${s.mag}">${s.tc}</option>`).join('');}re(t);}
+function podCh(t){const pp=document.getElementById('pd'+t).value;const d=t==='g'?gD:t==='n'?nD:t==='gm'?gDm:nDm;const ms=document.getElementById('mag-'+t);if(ms){const stores=(pp&&pp!=='РЕГИОН'?d.filter(s=>s.pod===pp):d).slice().sort((a,b)=>a.tc.localeCompare(b.tc));ms.innerHTML='<option value="">Магазин</option>'+stores.map(s=>`<option value="${s.mag}">${s.tc}</option>`).join('');}
+// При выборе РЕГИОН — принудительно переключаем на таблицу
+if(pp==='РЕГИОН'&&vw[t]==='cards'){vw[t]='table';const vbs=document.querySelectorAll('#p'+t+' .vtog .vb');vbs.forEach(b=>{b.classList.remove('on');if(b.textContent==='Таблица')b.classList.add('on');});document.getElementById('tw-'+t).style.display='block';document.getElementById('crds-'+t).style.display='none';const swEl=document.getElementById('sw-'+t);if(swEl)swEl.style.display='none';}
+re(t);}
 function ranks(d){const sr=[...d].filter(s=>s.tY>0).sort((a,b)=>b.tY-a.tY);return{best:new Set(sr.slice(0,10).map(s=>s.mag)),worst:new Set(sr.slice(-10).map(s=>s.mag))};}
 function re(t){
   let d=flt(t);const st=ss[t],keys=(t==='g'||t==='gm')?gK:nK;
@@ -835,9 +838,9 @@ function re(t){
   // Функция чтения данных региона ЮГ из файла
   function rv(key){const reg=totSrc['РЕГИОН']||{};const v=reg[key];return(v===undefined||v===null)?null:v;}
   if(pp==='РЕГИОН'){
-    // Вид РЕГИОН ЮГ — карточки по каждому показателю с рейтингом подразделений
-    mEl.style.display='grid';
-    mEl.style.gridTemplateColumns='repeat(auto-fill,minmax(175px,1fr))';
+    // Вид РЕГИОН ЮГ — потери сверху, 8 метрик в 2 колонки
+    mEl.style.display='block';
+    mEl.style.gridTemplateColumns='';
     mEl.classList.remove('m2');
     if(mTitle)mTitle.textContent='Регион ЮГ';
     const srcR=isMonth?TOT_M:TOT_D;
@@ -876,10 +879,10 @@ function re(t){
       const rows=[...losers,...winners].map(p=>{
         const pd=srcR[p]; const plan=pd.plan; const tY=pd.tY;
         if(plan>=100){
-          return`<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;line-height:1.9;border-bottom:1px solid #f3e8f5;padding:1px 0"><b style="flex:1;color:#111">${p}</b><span style="color:#16a34a;font-weight:600">Чемп. 👍</span></div>`;
+          return`<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:3px 8px;font-size:10px;white-space:nowrap"><b style="color:#111">${p}</b> <span style="color:#16a34a;font-weight:700">👍</span></div>`;
         } else {
           const losses=Math.round(tY/(plan/100)-tY);
-          return`<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;line-height:1.9;border-bottom:1px solid #f3e8f5;padding:1px 0"><b style="flex:1;color:#111">${p}</b><span style="color:#dc2626;font-weight:600">−${losses.toLocaleString('ru')}₽</span></div>`;
+          return`<div style="background:#ffe4e6;border:1px solid #fca5a5;border-radius:6px;padding:3px 8px;font-size:10px;white-space:nowrap"><b style="color:#111">${p}</b> <span style="color:#dc2626;font-weight:700">−${losses.toLocaleString('ru')}₽</span></div>`;
         }
       }).join('');
       // Потери региона в целом
@@ -888,19 +891,22 @@ function re(t){
       if(rp!==null&&rp!==undefined&&rt!==null&&rp>0){
         regCaption=rp>=100?'Чемп. 👍':`−${Math.round(rt/(rp/100)-rt).toLocaleString('ru')}₽`;
       }
-      return`<div class="mc" style="min-width:160px;background:#fff1f2;border:1px solid #fca5a5"><div class="mc-l" style="font-weight:700;color:#dc2626;font-size:11px">📉 ПОТЕРИ</div><div style="font-size:9px;color:#6b7280;margin-bottom:4px">ЮГ: <b>${regCaption}</b></div>${rows}</div>`;
+      // Потери — полная ширина (горизонтальный список подразделений в ряд)
+      return`<div style="background:#fff1f2;border:1px solid #fca5a5;border-radius:6px;padding:8px 10px;margin-bottom:10px"><div style="font-weight:700;color:#dc2626;font-size:11px;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px">📉 ПОТЕРИ &nbsp;<span style="font-size:9px;font-weight:400;color:#6b7280">ЮГ: ${regCaption}</span></div><div style="display:flex;flex-wrap:wrap;gap:6px">${rows}</div></div>`;
     }
-    mEl.innerHTML=[
+    // Потери — сверху на всю ширину; 8 метрик — 2 колонки без пустот (4 ряда × 2)
+    const lossHtml=lossCard();
+    const cards8=[
       metCard('📊','ДОЛЯ ЮИ','tYTo',fPr,true),
       metCard('🗓','ПЛАН %','plan',fPr,true),
-      lossCard(),
-      ig?metCard('🥇','LFL ЗОЛОТО','zLfl',fLr,true):'',
+      metCard('🥇','LFL ЗОЛОТО','zLfl',fLr,true),
       metCard('📈','LFL СЕРЕБРО','sLfl',fLr,true),
       metCard('🏧','СР.ЧЕК','srch',fRr,true),
       metCard('💰','РАССРОЧКА','rass',fPr,true),
       metCard('🎁','СПАСИБО','spas',fPr,true),
       metCard('🎯','КОНВЕРСИЯ','konv',fPr,true),
     ].filter(Boolean).join('');
+    mEl.innerHTML=lossHtml+`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${cards8}</div>`;
   } else if(pp&&d.length>0){
     // Фильтр подразделения активен — карточки сравнения подразделения с ЮГ
     mEl.style.display='grid';

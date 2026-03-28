@@ -759,6 +759,17 @@ function re(t){
     const fP=v=>v===null||v===undefined?'—':Math.round(v)+'%';
     const fRr=v=>v===null||v===undefined?'—':Math.round(v).toLocaleString('ru')+'₽';
     const fL=v=>v===null||v===undefined?'—':(v>=0?'+':'')+v+'%';
+    // Блок потерь / похвалы для подразделения
+    const subPlan=sv('plan'); const subTY=sumF('tY');
+    let subLoss='';
+    if(subPlan!==null&&subTY!==null&&subPlan>0){
+      if(subPlan>=100){
+        subLoss=`<div style="grid-column:1/-1;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:13px;text-align:center;font-size:16px;font-weight:700;color:#16a34a">Чемпионы 👍</div>`;
+      } else {
+        const losses=Math.round(subTY/(subPlan/100)-subTY);
+        subLoss=`<div style="grid-column:1/-1;background:#fff1f2;border:1px solid #fca5a5;border-radius:10px;padding:13px;text-align:center"><div style="font-size:14px;font-weight:700;color:#dc2626">📉 ты потерял ${losses.toLocaleString('ru')} ₽ оборота</div></div>`;
+      }
+    }
     mEl.innerHTML=[
       cmpCard('ПЛАН %',sv('plan'),rv('plan'),fP),
       cmpCard('ДОЛЯ ЮИ',sv('tYTo'),rv('tYTo'),fP),
@@ -769,6 +780,7 @@ function re(t){
       cmpCard('РАССРОЧКА',sv('rass'),rv('rass'),fP),
       cmpCard('СПАСИБО',sv('spas'),rv('spas'),fP),
       cmpCard('ВЫДАЧА %',sv('vPct'),rv('vPct'),fP),
+      subLoss,
     ].filter(Boolean).join('');
   }else{
     // Нет фильтра — показываем ТОП/АНТИТОП магазинов

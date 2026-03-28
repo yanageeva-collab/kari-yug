@@ -665,8 +665,13 @@ function re(t){
         ${pi(cK(sv('konv')),fm(sv('konv')))}<td><span class="p pN">${fr(avgF('sPod'))}₽</span></td></tr>`)
     :'';
   if(vw[t]==='table'){
-    document.getElementById('t'+t).innerHTML=sumRow+d.map(s=>{const tc=best.has(s.mag)?'pTB':worst.has(s.mag)?'pTW':'';return ig
-        ?`<tr>${pl(s.pod)}${pl(s.mag)}
+    // При фильтре подразделения — показываем название магазина в первой колонке
+    const h0=document.querySelector('#th-'+t+' th[data-c="0"]');
+    if(h0)h0.textContent=pp?'Магазин':'Подразд.';
+    document.getElementById('t'+t).innerHTML=sumRow+d.map(s=>{const tc=best.has(s.mag)?'pTB':worst.has(s.mag)?'pTW':'';
+    const col1=pp?`<td title="${s.pod}" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;text-align:left;color:#111827">${s.tc}</td>`:pl(s.pod);
+    return ig
+        ?`<tr>${col1}${pl(s.mag)}
           ${pi(cTG(s.tYTo),fm(s.tYTo))}
           <td class="gh"><span class="p ${cZ(s.dZol)}">${fm(s.dZol)}</span></td>
           <td class="gh"><span class="p pN">${fm(s.dSer)}</span></td>
@@ -681,7 +686,7 @@ function re(t){
           ${pi(cS(s.spas),fm(s.spas))}
           ${pi(cV(s.vPct),fm(s.vPct))}<td><span class="p pN">${fm(s.vN,'')}</span></td>
           ${pi(cK(s.konv),fm(s.konv))}<td><span class="p pN">${fr(s.sPod)}₽</span></td></tr>`
-        :`<tr>${pl(s.pod)}${pl(s.mag)}
+        :`<tr>${col1}${pl(s.mag)}
           ${pi(cTN(s.tYTo),fm(s.tYTo))}
           <td><span class="p pN">${fm(s.dSer)}</span></td>
           ${pi(cP(s.plan),fm(s.plan))}

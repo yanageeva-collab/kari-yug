@@ -612,6 +612,9 @@ function re(t){
   if(st.c>=0){d=[...d].sort((a,b)=>{const av=a[keys[st.c]],bv=b[keys[st.c]];if(av===null&&bv===null)return 0;if(av===null)return 1;if(bv===null)return-1;if(typeof av==='string')return av.localeCompare(bv)*st.d;return(av-bv)*st.d;});}
   const allD=t==='g'?gD:t==='n'?nD:t==='gm'?gDm:nDm;
   const pp=document.getElementById('pd'+t).value;
+  // Кнопка "Магазин" — неактивна при выборе "Регион ЮГ"
+  const magBtns=document.querySelectorAll('#p'+t+' .vtog .vb');
+  magBtns.forEach(b=>{if(b.textContent==='Магазин'){b.style.opacity=pp==='РЕГИОН'?'0.35':'';b.style.pointerEvents=pp==='РЕГИОН'?'none':'';}});
   const{best,worst}=ranks(allD);const avg=t==='g'?AG:t==='n'?AN:t==='gm'?AGM:ANM,ig=(t==='g'||t==='gm');
   function lst(arr,fn){return arr.length?arr.map((s,i)=>`<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;line-height:1.75;border-bottom:1px solid #f3e8f5;padding:1px 0"><span style="color:#9ca3af;min-width:16px">${i+1}.</span><span style="color:#ad1472;font-size:9px;margin:0 4px;white-space:nowrap">${s.pod}</span><b style="flex:1">${s.mag}</b><span style="color:#374151;font-weight:500">${fn(s)}</span></div>`).join(''):'<div style="font-size:10px;color:#9ca3af;padding:4px 0">нет данных</div>';}
   const isMonth=(t==='gm'||t==='nm');
@@ -663,6 +666,51 @@ function re(t){
         ${pi(cK(sv('konv')),fm(sv('konv')))}<td><span class="p pN">${fr(avgF('sPod'))}₽</span></td></tr>`)
     :'';
   if(vw[t]==='table'){
+    if(pp==='РЕГИОН'){
+      // Таблица подразделений — строки из TOT_D/TOT_M, не из магазинов
+      const h0=document.querySelector('#th-'+t+' th[data-c="0"]');
+      if(h0)h0.textContent='Подразделение';
+      const podsT=Object.keys(totSrc).filter(k=>k!=='РЕГИОН').sort();
+      const podCnts={};allD.forEach(s=>{podCnts[s.pod]=(podCnts[s.pod]||0)+1;});
+      function mkPodRow(pName,pd,trStyle){
+        const cnt=podCnts[pName];
+        const cntTxt=cnt?cnt+' маг.':'';
+        const nm=`<td style="font-size:11px;font-weight:700;color:#ad1472;text-align:left;padding:5px;white-space:nowrap">${pName}</td>`;
+        const ct=`<td style="font-size:11px;color:#6b7280;text-align:left;padding:5px">${cntTxt}</td>`;
+        return ig
+          ?`<tr style="${trStyle}">${nm}${ct}
+              ${pi(cTG(pd.tYTo),fm(pd.tYTo))}
+              <td class="gh"><span class="p ${cZ(pd.dZol)}">${fm(pd.dZol)}</span></td>
+              <td class="gh"><span class="p pN">${fm(pd.dSer)}</span></td>
+              ${pi(cP(pd.plan),fm(pd.plan))}
+              <td><span class="p pN">${fr(pd.tY)}₽</span></td>
+              <td class="gh"><span class="p pN">—</span></td>
+              <td class="gh"><span class="p pN">—</span></td>
+              <td class="gh"><span class="p ${cL(pd.zLfl)}">${fm(pd.zLfl)}</span></td>
+              ${pi(cL(pd.sLfl),fm(pd.sLfl))}
+              ${pi(cSrch(pd.srch,avg),fr(pd.srch))}
+              ${pi(cR(pd.rass),fm(pd.rass))}
+              ${pi(cS(pd.spas),fm(pd.spas))}
+              ${pi(cV(pd.vPct),fm(pd.vPct))}<td><span class="p pN">—</span></td>
+              ${pi(cK(pd.konv),fm(pd.konv))}<td><span class="p pN">—</span></td></tr>`
+          :`<tr style="${trStyle}">${nm}${ct}
+              ${pi(cTN(pd.tYTo),fm(pd.tYTo))}
+              <td><span class="p pN">${fm(pd.dSer)}</span></td>
+              ${pi(cP(pd.plan),fm(pd.plan))}
+              <td><span class="p pN">${fr(pd.tY)}₽</span></td>
+              <td><span class="p pN">—</span></td>
+              ${pi(cL(pd.sLfl),fm(pd.sLfl))}
+              ${pi(cSrch(pd.srch,avg),fr(pd.srch))}
+              ${pi(cR(pd.rass),fm(pd.rass))}
+              ${pi(cS(pd.spas),fm(pd.spas))}
+              ${pi(cV(pd.vPct),fm(pd.vPct))}
+              <td><span class="p pN">—</span></td>
+              ${pi(cK(pd.konv),fm(pd.konv))}<td><span class="p pN">—</span></td></tr>`;
+      }
+      const regRowHtml=mkPodRow('РЕГИОН ЮГ',totSrc['РЕГИОН']||{},'background:#fce7f3;font-weight:700;border-bottom:2px solid #ad1472');
+      const podRowsHtml=podsT.map(p=>mkPodRow(p,totSrc[p]||{},'')).join('');
+      document.getElementById('t'+t).innerHTML=regRowHtml+podRowsHtml;
+    } else {
     // При фильтре подразделения — показываем название магазина в первой колонке
     const h0=document.querySelector('#th-'+t+' th[data-c="0"]');
     if(h0)h0.textContent=(pp&&pp!=='РЕГИОН')?'Магазин':'Подразд.';
@@ -698,6 +746,7 @@ function re(t){
           <td><span class="p pN">${fm(s.vN,'')}</span></td>
           ${pi(cK(s.konv),fm(s.konv))}<td><span class="p pN">${fr(s.sPod)}₽</span></td></tr>`;
     }).join('');
+    } // конец else (не РЕГИОН)
   } else {
     document.getElementById('crds-'+t).innerHTML=d.map(s=>{
       const tc=best.has(s.mag)?'pTB':worst.has(s.mag)?'pTW':'';

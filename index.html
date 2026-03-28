@@ -786,28 +786,43 @@ function re(t){
           lossBlock=`<div style="margin-top:10px;background:#fff1f2;border:1px solid #fca5a5;border-radius:10px;padding:13px;text-align:center"><div style="font-size:15px;font-weight:700;color:#dc2626">📉 ты потерял ${losses.toLocaleString('ru')} ₽ оборота</div></div>`;
         }
       }
+      // Вспомогательная функция: ячейка пары
+      function ci2(label,cls,val){return`<div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.3px">${label}</span><span class="p ${cls}" style="width:100%;text-align:center;box-sizing:border-box">${val}</span></div>`;}
+      const g2=`display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px`;
+      // Основные метрики (золото и не-золото)
+      const mainMetrics=ig
+        ?[ci2('Доля ЮИ',cTG(s.tYTo),fm(s.tYTo)),
+          ci2('ТО ЮИ','pN '+tc,fr(s.tY)+'₽'),
+          ci2('LFL Серебро',cL(s.sLfl),fm(s.sLfl)),
+          ci2('LFL Золото',cL(s.zLfl),fm(s.zLfl)),
+          ci2('Ср.чек',cSrch(s.srch,avg),fr(s.srch)),
+          ci2('Рассрочка',cR(s.rass),fm(s.rass)),
+          ci2('Спасибо',cS(s.spas),fm(s.spas)),
+          ci2('Конверсия',cK(s.konv),fm(s.konv))]
+        :[ci2('Доля ЮИ',cTN(s.tYTo),fm(s.tYTo)),
+          ci2('ТО ЮИ','pN '+tc,fr(s.tY)+'₽'),
+          ci2('LFL Серебро',cL(s.sLfl),fm(s.sLfl)),
+          ci2('Ср.чек',cSrch(s.srch,avg),fr(s.srch)),
+          ci2('Рассрочка',cR(s.rass),fm(s.rass)),
+          ci2('Спасибо',cS(s.spas),fm(s.spas)),
+          ci2('Конверсия',cK(s.konv),fm(s.konv)),
+          ci2('Д.Серебра','pN',fm(s.dSer))];
+      // Блок золото/серебро внизу
+      const goldBlock=ig
+        ?`<div style="border-top:1px solid #f3e8f5;margin-top:8px;padding-top:8px;${g2}">
+            ${ci2('Доля золота',cZ(s.dZol),fm(s.dZol))}
+            ${ci2('Д.Серебра','pN',fm(s.dSer))}
+            ${ci2('Оборот Золото','pN',fr(s.tZol)+'₽')}
+            ${ci2('Оборот Серебро','pN',fr(s.tSer)+'₽')}
+          </div>`
+        :`<div style="border-top:1px solid #f3e8f5;margin-top:8px;padding-top:8px">
+            ${ci2('Оборот Серебро','pN',fr(s.tSer)+'₽')}
+          </div>`;
       return`<div class="crd">
         <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.pod} · ${s.mag}</div></div>
           <span class="p ${cP(s.plan)}" style="font-size:12px;padding:3px 8px">${fm(s.plan)}</span></div>
-        <div class="cg">
-          <div class="ci"><span class="cl">Доля ЮИ</span><span class="p ${ig?cTG(s.tYTo):cTN(s.tYTo)}">${fm(s.tYTo)}</span></div>
-          <div class="ci"><span class="cl">Рассрочка</span><span class="p ${cR(s.rass)}">${fm(s.rass)}</span></div>
-          <div class="ci"><span class="cl">ТО ЮИ</span><span class="p pN ${tc}">${fr(s.tY)}₽</span></div>
-          <div class="ci"><span class="cl">Сер.LFL</span><span class="p ${cL(s.sLfl)}">${fm(s.sLfl)}</span></div>
-          ${ig?`<div class="ci"><span class="cl">Зол.LFL</span><span class="p ${cL(s.zLfl)}">${fm(s.zLfl)}</span></div>`:''}
-          <div class="ci"><span class="cl">Ср.чек</span><span class="p ${cSrch(s.srch,avg)}">${fr(s.srch)}</span></div>
-          <div class="ci"><span class="cl">Спасибо</span><span class="p ${cS(s.spas)}">${fm(s.spas)}</span></div>
-          <div class="ci"><span class="cl">Конверсия</span><span class="p ${cK(s.konv)}">${fm(s.konv)}</span></div>
-        </div>
-        ${ig?`<div class="cgr">
-          <div><span class="gb">Золото</span><div style="display:flex;gap:6px;flex-wrap:wrap">
-            <div class="ci"><span class="cl">Доля золота</span><span class="p ${cZ(s.dZol)}">${fm(s.dZol)}</span></div>
-            <div class="ci"><span class="cl">Д.Серебра</span><span class="p pN">${fm(s.dSer)}</span></div>
-          </div></div>
-          <div><span class="gb">ТО руб.</span><div style="display:flex;gap:6px;flex-wrap:wrap">
-            <div class="ci"><span class="cl">Золото</span><span class="p pN">${fr(s.tZol)}₽</span></div>
-            <div class="ci"><span class="cl">Серебро</span><span class="p pN">${fr(s.tSer)}₽</span></div>
-          </div></div></div>`:''}
+        <div style="${g2}">${mainMetrics.join('')}</div>
+        ${goldBlock}
         ${lossBlock}
       </div>`;
     }).join('');

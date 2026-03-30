@@ -119,11 +119,11 @@ tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !import
 @media(max-width:768px){
   /* Отступы по бокам */
   .w{padding:0.75rem 0.75rem}
-  /* Вкладки — 2×2 сетка на мобиле */
-  .tabs{grid-template-columns:repeat(2,1fr);gap:6px}
-  .tab{padding:10px 6px}
-  .tab-period{font-size:13px}
-  .tab-type{font-size:11px}
+  /* Вкладки — 4 в ряд на мобиле */
+  .tabs{grid-template-columns:repeat(4,1fr);gap:4px}
+  .tab{padding:7px 4px}
+  .tab-period{font-size:11px}
+  .tab-type{font-size:10px}
   /* Фильтры — в столбик, полная ширина */
   .ctr{flex-direction:column;gap:8px}
   .ctr input,.ctr select{width:100%;font-size:15px;padding:9px 12px;min-width:unset}
@@ -893,7 +893,7 @@ function re(t){
     document.getElementById('t'+t).innerHTML=sumRow+d.map(s=>{const tc=best.has(s.mag)?'pTB':worst.has(s.mag)?'pTW':'';
     const col1=(pp&&pp!=='РЕГИОН')?`<td title="${s.pod}" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;text-align:left;color:#111827">${s.tc}</td>`:pl(s.pod);
     return ig
-        ?`<tr>${col1}${pl('№'+s.mag)}
+        ?`<tr>${col1}${pl(s.mag)}
           ${pi(cTG(s.tYTo),fm(s.tYTo))}
           <td class="gh"><span class="p ${cZ(s.dZol)}">${fm(s.dZol)}</span></td>
           <td class="gh"><span class="p pN">${fm(s.dSer)}</span></td>
@@ -908,7 +908,7 @@ function re(t){
           ${pi(cS(s.spas),fm(s.spas))}
           ${pi(cV(s.vPct),fm(s.vPct))}<td><span class="p pN">${fm(s.vN,'')}</span></td>
           ${pi(cK(s.konv),fm(s.konv))}<td><span class="p pN">${fr(s.sPod)}₽</span></td></tr>`
-        :`<tr>${col1}${pl('№'+s.mag)}
+        :`<tr>${col1}${pl(s.mag)}
           ${pi(cTN(s.tYTo),fm(s.tYTo))}
           <td><span class="p pN">${fm(s.dSer)}</span></td>
           ${pi(cP(s.plan),fm(s.plan))}
@@ -971,7 +971,7 @@ function re(t){
         ${ci2('ТО ЮИ','pN '+tc,fr(s.tY)+'₽')}
       </div>`;
       return`<div class="crd">
-        <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</div></div>
+        <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.mag} · ${s.pod}</div></div>
           <span class="p ${cP(s.plan)}" style="font-size:12px;padding:3px 8px">${fm(s.plan)}</span></div>
         ${topBlock}
         <div style="${g2};margin-top:8px">${midMetrics.join('')}</div>
@@ -1136,7 +1136,7 @@ function renderPod(mode,view,podF){
       const lc=s.sLfl===null?'pN':s.sLfl>=-10?'pG':'pR';
       const loss=s.plan!==null&&s.tY!==null&&s.plan>0&&s.plan<100?`<span style="font-size:9px;color:#dc2626">−${Math.round(s.tY/(s.plan/100)-s.tY).toLocaleString('ru')}₽</span>`:(s.plan>=100?'<span style="font-size:9px;color:#16a34a">👍</span>':'');
       return`<tr onclick="this.style.background='#fdf2f8'" style="cursor:default">
-        <td style="font-size:10px;text-align:left;padding:5px 6px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>${s.tc}</b><br><span style="color:#9ca3af;font-size:9px">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</span></td>
+        <td style="font-size:10px;text-align:left;padding:5px 6px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>${s.tc}</b><br><span style="color:#9ca3af;font-size:9px">${s.mag} · ${s.pod}</span></td>
         <td style="padding:4px 5px;text-align:center"><span class="p ${pc}" style="font-size:10px">${s.plan!==null?Math.round(s.plan)+'%':'-'}</span></td>
         <td style="padding:4px 5px;text-align:center;font-size:10px">${loss}</td>
         <td style="padding:4px 5px;text-align:center;font-size:10px;color:#374151">${s.tYTo!==null?Math.round(s.tYTo)+'%':'-'}</td>
@@ -1333,11 +1333,12 @@ function renderSvod(pod,period){
     const arrow=up===null?'':up
       ?`<span style="color:#16a34a;font-size:14px;margin-left:3px">▲</span>`
       :`<span style="color:#dc2626;font-size:14px;margin-left:3px">▼</span>`;
-    const refStr=(ref!==null&&ref!==undefined)?`<div style="font-size:10px;color:#9ca3af;margin-top:4px">ЮГ: <b>${Math.round(ref)}${unit}</b></div>`:'';
+    const fmt=v=>unit==='₽'?Math.round(v).toLocaleString('ru'):Math.round(v);
+    const refStr=(ref!==null&&ref!==undefined)?`<div style="font-size:10px;color:#9ca3af;margin-top:4px">ЮГ: <b>${fmt(ref)}${unit}</b></div>`:'';
     const border=up===null?'#e5e7eb':up?'#bbf7d0':'#fecaca';
     return`<div style="background:#fff;border:1.5px solid ${border};border-radius:10px;padding:10px 12px;text-align:center">
       <div style="font-size:9px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px">${label}</div>
-      <div style="font-size:20px;font-weight:800;color:${valColor};line-height:1">${Math.round(val)}${unit}${arrow}</div>
+      <div style="font-size:20px;font-weight:800;color:${valColor};line-height:1">${fmt(val)}${unit}${arrow}</div>
       ${refStr}
     </div>`;
   }
@@ -1362,16 +1363,18 @@ function renderSvod(pod,period){
   document.getElementById('svod-header').innerHTML=
     `<div style="font-size:12px;font-weight:700;color:#ad1472;margin-bottom:8px">${pLabel} — ${pod} (${cnt} маг.) <span style="font-size:10px;color:#9ca3af;font-weight:400">vs Регион ЮГ</span></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:14px">
-      ${svCard('Доля ЮИ',podTot.tYTo,regTot.tYTo,'%')}
+      ${svCard('ТО ЮИ',podTot.tY,regTot.tY,'₽')}
       ${svCard('План %',podTot.plan,regTot.plan,'%')}
       ${lossCardHtml}
+      ${svCard('Доля ЮИ',podTot.tYTo,regTot.tYTo,'%')}
       ${svCard('Доля золота',podTot.dZol,regTot.dZol,'%')}
+      ${svCard('Доля серебра',podTot.dSer,regTot.dSer,'%')}
       ${svCard('LFL золото',podTot.zLfl,regTot.zLfl,'%')}
       ${svCard('LFL серебро',podTot.sLfl,regTot.sLfl,'%')}
+      ${svCard('Ср.чек',podTot.srch,regTot.srch,'₽')}
       ${svCard('Рассрочка',podTot.rass,regTot.rass,'%')}
       ${svCard('Спасибо',podTot.spas,regTot.spas,'%')}
       ${svCard('Конверсия',podTot.konv,regTot.konv,'%')}
-      ${svCard('Ср.чек',podTot.srch,regTot.srch,'₽')}
     </div>`;
 
   /* ── Сохраняем данные по каждому фильтру для динамического ТОП/АНТИТОП ── */
@@ -1465,7 +1468,7 @@ function svTable(rows, showGoldDot, avg, isDay){
       }
     }
     return`<tr style="cursor:pointer" onclick="svOpenCard('${s.mag}','${s.hg?'g':'n'}','${isDay?'d':'m'}')" title="Нажмите для карточки магазина">
-      <td class="sv-store-cell">${dot}<span class="sv-mag">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</span><span class="sv-name" title="${s.tc}">${s.tc}</span></td>
+      <td class="sv-store-cell">${dot}<span class="sv-mag">${s.mag} · ${s.pod}</span><span class="sv-name" title="${s.tc}">${s.tc}</span></td>
       <td><span class="p ${cDol}">${fm(s.tYTo)}</span></td>
       <td><span class="p ${cP(s.plan)}">${fm(s.plan)}</span></td>
       <td><span class="p pN">${fr(s.tY)}₽</span></td>
@@ -1540,11 +1543,11 @@ function svOpenCard(mag,goldKey,dayKey){
     </div>
   </div>`;
   const body=`
-    <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</div></div>
+    <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.mag} · ${s.pod}</div></div>
     <span class="p ${cP(s.plan)}">${fm(s.plan)}</span></div>
+    ${yuiBlockM}
     ${topBlockM}
     ${midBlockM}
-    ${yuiBlockM}
     ${lossBlock}`;
   document.getElementById('sv-modal-body').innerHTML=body;
   document.getElementById('sv-modal').style.display='flex';

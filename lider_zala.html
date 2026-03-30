@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Штат — Регион ЮГ</title>
+<script>
+  (function(){
+    var key='kari_auth_yui';
+    if(sessionStorage.getItem(key)==='ok')return;
+    var pwd=prompt('Введите пароль для входа:');
+    if(pwd===null||pwd.trim().toUpperCase()!=='ЮИ'){
+      document.documentElement.innerHTML='<body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;background:#fdf2f8"><div style="text-align:center;color:#ad1472"><h2>Доступ закрыт</h2><p style="margin-top:8px">Неверный пароль</p></div></body>';
+      return;
+    }
+    sessionStorage.setItem(key,'ok');
+  })();
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,sans-serif;background:#f5f5f7;color:#1a1a1a;}

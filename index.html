@@ -49,6 +49,11 @@ body{font-family:var(--font-sans);background:#fff}
 .mc{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:8px 10px}
 .mc-l{font-size:10px;font-weight:600;color:#ad1472;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px}
 .mc-row{font-size:10px;line-height:1.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* АНТИТОП — красный предупреждающий блок */
+.mc-anti{background:#fff5f5;border:2px solid #fca5a5 !important;border-radius:8px}
+.mc-anti .mc-l{color:#dc2626;font-size:11px}
+.mc-anti-hdr{display:flex;align-items:center;gap:5px;margin-bottom:4px}
+.mc-anti-icon{font-size:13px;line-height:1}
 .ctr{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
 .ctr input{flex:1;min-width:120px;font-size:12px;padding:4px 8px;border:1px solid #d1d5db;border-radius:4px;background:#fff}
 .ctr select{font-size:12px;padding:4px 7px;border:1px solid #d1d5db;border-radius:4px;background:#fff;color:#111827}
@@ -114,8 +119,11 @@ tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !import
 @media(max-width:768px){
   /* Отступы по бокам */
   .w{padding:0.75rem 0.75rem}
-  /* Вкладки — крупнее */
-  .tab{font-size:14px;padding:10px 16px}
+  /* Вкладки — 2×2 сетка на мобиле */
+  .tabs{grid-template-columns:repeat(2,1fr);gap:6px}
+  .tab{padding:10px 6px}
+  .tab-period{font-size:13px}
+  .tab-type{font-size:11px}
   /* Фильтры — в столбик, полная ширина */
   .ctr{flex-direction:column;gap:8px}
   .ctr input,.ctr select{width:100%;font-size:15px;padding:9px 12px;min-width:unset}
@@ -140,10 +148,83 @@ tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !import
   .mc-l{font-size:11px}
   .mc-v{font-size:17px}
 }
-/* Узкий телефон — карточки в 1 колонку */
+/* Узкий телефон 480px — метрики в 1 колонку */
 @media(max-width:480px){
   .cg{grid-template-columns:1fr}
   .tab{font-size:13px;padding:9px 12px}
+}
+/* ═══ ВЫБОР ПОДРАЗДЕЛЕНИЯ — 6 КАРТОЧЕК ═══ */
+.pods-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:4px}
+.pod-card{background:#fff;border:2px solid #e8a0d0;border-radius:14px;overflow:hidden;cursor:pointer;transition:all 0.15s;box-shadow:0 2px 8px rgba(173,20,114,0.07)}
+.pod-card:hover{border-color:#ad1472;box-shadow:0 6px 18px rgba(173,20,114,0.2);transform:translateY(-3px)}
+.pod-card-top{padding:14px 16px 12px;color:#fff;display:flex;justify-content:space-between;align-items:flex-start}
+.pod-top-green{background:linear-gradient(135deg,#16a34a 0%,#4ade80 100%)}
+.pod-top-yellow{background:linear-gradient(135deg,#ca8a04 0%,#fbbf24 100%)}
+.pod-top-red{background:linear-gradient(135deg,#b91c1c 0%,#f87171 100%)}
+.pod-card-name{font-size:16px;font-weight:800;letter-spacing:0.3px}
+.pod-card-count{font-size:11px;opacity:0.85;margin-top:3px}
+.pod-card-arrow{font-size:20px;opacity:0.7;margin-top:2px}
+.pod-card-metrics{padding:10px 12px;display:flex;flex-direction:column;gap:5px}
+.pod-metric-row{display:flex;justify-content:space-between;align-items:center;font-size:10px;border-bottom:1px solid #f3e8f5;padding-bottom:3px}
+.pod-metric-row:last-child{border-bottom:none;padding-bottom:0}
+.pod-metric-label{color:#6b7280}
+.pod-card-footer{text-align:center;padding:7px;font-size:10px;color:#ad1472;font-weight:700;border-top:1px solid #f0abdb;background:#fdf2f8;letter-spacing:0.3px}
+@media(max-width:768px){.pods-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.pods-grid{grid-template-columns:1fr}}
+/* ═══ СВОДНЫЙ ВИД ПОДРАЗДЕЛЕНИЯ ═══ */
+.svod-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap;background:#fdf2f8;border:1px solid #f0abdb;border-radius:10px;padding:8px 12px}
+.svod-nav-title{font-size:13px;font-weight:700;color:#ad1472;flex:1;text-align:center}
+.svod-hdr-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.svod-hdr-col{background:#fdf2f8;border-radius:8px;padding:10px 12px}
+.svod-hdr-region{background:#f0f9ff !important;border:1px solid #bae6fd}
+.svod-hdr-title{font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px}
+.svod-hdr-row{display:flex;justify-content:space-between;align-items:center;font-size:10px;padding:3px 0;border-bottom:1px solid rgba(0,0,0,0.05)}
+.svod-hdr-row:last-child{border-bottom:none}
+.svod-hdr-row span:last-child{font-weight:600;display:flex;align-items:center;gap:4px}
+.sv-delta{font-size:9px;padding:1px 4px;border-radius:3px;font-weight:700}
+.sv-delta-up{background:#dcfce7;color:#16a34a}
+.sv-delta-down{background:#fee2e2;color:#dc2626}
+.svod-tw{overflow:auto;max-height:70vh;border:1px solid #c6c6c6;border-radius:6px;background:#fff;margin-top:8px}
+.sv-table{width:100%;border-collapse:separate;border-spacing:0;font-size:11px;background:#fff}
+.sv-store-head{background:#fdf2f8;color:#ad1472;font-size:10px;font-weight:700;padding:6px 8px;text-align:left;border-bottom:2px solid #a3a3a3;border-right:2px solid #d8b4d8 !important;position:sticky;top:0;left:0;z-index:5;min-width:160px}
+.sv-th-gold{background:#fffbeb;color:#92400e;font-size:10px;font-weight:700;text-align:center;padding:6px 4px;border-bottom:1px solid #a3a3a3;border-right:2px solid #d8b4d8;position:sticky;top:0;z-index:3}
+.sv-th-nogold{background:#f0f9ff;color:#1e40af;font-size:10px;font-weight:700;text-align:center;padding:6px 4px;border-bottom:1px solid #a3a3a3;position:sticky;top:0;z-index:3}
+.sv-th-gold-sub{background:#fffbeb;color:#92400e;font-size:9px;font-weight:600;text-align:center;padding:4px 3px;border-bottom:2px solid #a3a3a3;border-right:1px solid #e5e7eb;white-space:nowrap;position:sticky;top:28px;z-index:3}
+.sv-th-nogold-sub{background:#f0f9ff;color:#1e40af;font-size:9px;font-weight:600;text-align:center;padding:4px 3px;border-bottom:2px solid #a3a3a3;border-right:1px solid #e5e7eb;white-space:nowrap;position:sticky;top:28px;z-index:3}
+.sv-th-sep{border-left:2px solid #d8b4d8 !important}
+.sv-table td{padding:4px 5px;border-bottom:1px solid #e9e9e9;border-right:1px solid #e9e9e9;text-align:center;background:#fff;white-space:nowrap}
+.sv-store-cell{text-align:left !important;padding-left:8px !important;position:sticky;left:0;z-index:2;background:#fff;min-width:160px;max-width:220px;border-right:2px solid #d8b4d8 !important}
+.sv-name{font-size:10px;font-weight:600;color:#111827;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.sv-mag{font-size:9px;color:#6b7280;font-weight:600;display:block;margin-bottom:1px}
+.sv-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:middle;flex-shrink:0}
+.sv-gold-dot{background:#f59e0b}
+.sv-nogold-dot{background:#60a5fa}
+.sv-table tr:nth-child(even) td{background:#fafafa}
+.sv-table tr:nth-child(even) .sv-store-cell{background:#fafafa}
+.sv-table tr:hover td{background:#fce7f3 !important}
+.sv-table tr.row-sum td{background:#fce7f3 !important;font-weight:700;border-top:2px solid #ad1472}
+.sv-table tr.row-sum .sv-store-cell{color:#ad1472;background:#fce7f3 !important}
+.sv-td-sep{border-left:2px solid #d8b4d8 !important}
+/* Самый узкий телефон 375px — полная ширина, компактно */
+@media(max-width:375px){
+  .w{padding:0.5rem 0.5rem}
+  .tabs{gap:4px}
+  .tab{padding:8px 4px;border-radius:8px}
+  .tab-period{font-size:12px}
+  .tab-type{font-size:10px}
+  .bdg{font-size:10px;padding:1px 4px}
+  .vtog{padding:6px 8px;gap:5px}
+  .vb{font-size:12px;padding:6px 10px}
+  /* Карточки магазинов — 100% ширина */
+  .crds{display:flex !important;flex-direction:column;gap:6px;width:100%}
+  .crd{width:100%;box-sizing:border-box;padding:8px 10px}
+  .cn{font-size:13px}
+  .cs{font-size:11px}
+  /* Метрики внутри карточки — 1 колонка */
+  .cg{grid-template-columns:1fr}
+  .cgr{grid-template-columns:1fr}
+  /* Фильтры — тоньше */
+  .ctr input,.ctr select{font-size:14px;padding:8px 10px}
 }
 </style>
 </head>
@@ -154,7 +235,7 @@ tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !import
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841.89 595.28" height="36" style="display:block"><path fill="#ad1472" d="M195.64,199.26h0c-53.83,0-97.54,43.24-98.34,96.87,8.51-17.2,19.92-28.24,30.64-36.91,16.04-12.97,35.35-19.24,53.23-20.35,19.6-1.22,34.95,2.91,47.51,12.86,4.54,3.59,8.17,7.84,11.04,12.41,5.32,8.46,7.79,18.34,6.89,29.29-1.93,23.58-21.31,42.55-44.93,44.01-27.99,1.74-51.24-20.45-51.24-48.06,0-12.61,4.85-24.09,12.79-32.67-8.97,2.77-17.93,7.27-26.1,13.88-8.12,6.56-17.16,15.61-24.59,27.58-8.12,13.06-11.48,28.19-11.57,43.57v54.25h94.67c54.34,0,98.38-44.04,98.38-98.36h0c0-54.33-44.05-98.36-98.38-98.36Z"/><polygon fill="#ad1472" points="477.65 266.13 431.94 266.13 382.75 312.48 382.75 229.56 349.65 229.56 349.65 394.13 382.75 394.13 382.75 347.78 431.95 394.13 481.07 394.13 409.73 330.13 477.65 266.13"/><rect fill="#ad1472" x="708" y="282.25" width="33.1" height="111.88"/><path fill="#ad1472" d="M569.51,273.26c-9.84-5.72-21.3-9.02-33.53-9.02-36.68,0-66.42,29.5-66.42,65.88s29.74,65.88,66.42,65.88c12.23,0,23.69-3.29,33.53-9.02v7.14h33.1v-128h-33.1v7.14ZM535.98,363.35c-18.5,0-33.49-14.87-33.49-33.22s15-33.22,33.49-33.22,33.49,14.87,33.49,33.22-15,33.22-33.49,33.22Z"/><path fill="#ad1472" d="M724.55,271.05c11.07,0,20.04-8.97,20.04-20.05,0-4.89-1.76-9.37-4.67-12.85-1.93-2.53-4.52-4.6-7.69-6.08-9.98-4.65-24.02-2.81-37.55,4.92-13.68,7.81-24.64,22.43-31.16,40.26v-11.13h-33.1v128h33.1v-89.96c2.9-27.11,16.12-51.64,34.15-61.93,4.25-2.43,8.51-4.19,12.61-5.3-3.57,3.62-5.78,8.59-5.78,14.08,0,11.07,8.97,20.05,20.04,20.05Z"/></svg>
   <div style="text-align:right">
     <div style="font-size:12px;font-weight:600;color:#ad1472">ЮИ ЮГ</div>
-    <div style="font-size:10px;color:#9ca3af" id="update-date">Данные обновлены: 30.03.2026 09:05&nbsp; (отчёт за 29.03.2026)</div>
+    <div style="font-size:10px;color:#9ca3af" id="update-date">Данные обновлены: 30.03.2026 11:38&nbsp; (отчёт за 29.03.2026)</div>
   </div>
 </div>
 <div class="tabs">
@@ -180,6 +261,34 @@ tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !import
   </div>
 </div>
 
+<!-- ═══ ВЫБОР ПОДРАЗДЕЛЕНИЯ — 6 КАРТОЧЕК ═══ -->
+<div id="pods-panel" style="display:none">
+  <div class="svod-nav">
+    <button class="vb" onclick="hidePods()">← Назад</button>
+    <span class="svod-nav-title">📍 Выберите подразделение</span>
+    <div style="display:flex;gap:6px">
+      <button class="vb on" id="pods-day-btn" onclick="switchPodsView('day')">☀️ День</button>
+      <button class="vb" id="pods-month-btn" onclick="switchPodsView('month')">📅 Месяц</button>
+    </div>
+  </div>
+  <div class="pods-grid" id="pods-grid"></div>
+</div>
+
+<!-- ═══ СВОДНЫЙ ВИД ПОДРАЗДЕЛЕНИЯ ═══ -->
+<div id="svodny-panel" style="display:none">
+  <div class="svod-nav">
+    <button class="vb" onclick="hideSvod()">← Назад</button>
+    <span class="svod-nav-title" id="svod-title">📊 Сводный вид</span>
+    <div style="display:flex;gap:6px">
+      <button class="vb on" id="svod-day-btn" onclick="switchSvPeriod('day')">☀️ День</button>
+      <button class="vb" id="svod-month-btn" onclick="switchSvPeriod('month')">📅 Месяц</button>
+    </div>
+  </div>
+  <div id="svod-header"></div>
+  <div id="sv-rating-wrap"></div>
+  <div id="svod-table-wrap"></div>
+</div>
+
 <div class="panel on" id="pg">
   <div class="mets-wrap">
     <div class="mets-hdr" onclick="toggleMets('g')">
@@ -191,7 +300,8 @@ tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !import
   <div class="vtog">
     <button class="vb on" onclick="sv('g','table',this)">Таблица</button>
     <button class="vb" onclick="sv('g','cards',this)">Магазин</button>
-    <select id="pdg" onchange="podCh('g')"><option value="">Подразделение</option></select>
+    <button class="vb" onclick="showPods('g')">📍 Подразделения</button>
+    <select id="pdg" onchange="podCh('g')" style="display:none"><option value="">Подразделение</option></select>
   </div>
   <div class="tw" id="tw-g"><table>
     <thead id="th-g"><tr>
@@ -232,7 +342,8 @@ tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !import
   <div class="vtog">
     <button class="vb on" onclick="sv('n','table',this)">Таблица</button>
     <button class="vb" onclick="sv('n','cards',this)">Магазин</button>
-    <select id="pdn" onchange="podCh('n')"><option value="">Подразделение</option></select>
+    <button class="vb" onclick="showPods('n')">📍 Подразделения</button>
+    <select id="pdn" onchange="podCh('n')" style="display:none"><option value="">Подразделение</option></select>
   </div>
   <div class="tw" id="tw-n"><table>
     <thead id="th-n"><tr>
@@ -270,7 +381,8 @@ tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !import
   <div class="vtog">
     <button class="vb on" onclick="sv('gm','table',this)">Таблица</button>
     <button class="vb" onclick="sv('gm','cards',this)">Магазин</button>
-    <select id="pdgm" onchange="podCh('gm')"><option value="">Подразделение</option></select>
+    <button class="vb" onclick="showPods('gm')">📍 Подразделения</button>
+    <select id="pdgm" onchange="podCh('gm')" style="display:none"><option value="">Подразделение</option></select>
   </div>
   <div class="tw" id="tw-gm"><table>
     <thead id="th-gm"><tr>
@@ -311,7 +423,8 @@ tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !import
   <div class="vtog">
     <button class="vb on" onclick="sv('nm','table',this)">Таблица</button>
     <button class="vb" onclick="sv('nm','cards',this)">Магазин</button>
-    <select id="pdnm" onchange="podCh('nm')"><option value="">Подразделение</option></select>
+    <button class="vb" onclick="showPods('nm')">📍 Подразделения</button>
+    <select id="pdnm" onchange="podCh('nm')" style="display:none"><option value="">Подразделение</option></select>
   </div>
   <div class="tw" id="tw-nm"><table>
     <thead id="th-nm"><tr>
@@ -338,6 +451,17 @@ tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !import
   <div class="cnt" id="cnm"></div>
 </div>
 
+</div>
+
+<!-- ═══ МОДАЛЬНОЕ ОКНО: КАРТОЧКА МАГАЗИНА ═══ -->
+<div id="sv-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#fff;border-radius:14px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;border-bottom:2px solid #f0abdb;padding-bottom:8px">
+      <span style="font-size:13px;font-weight:700;color:#ad1472">📊 Карточка магазина</span>
+      <button onclick="document.getElementById('sv-modal').style.display='none'" style="border:none;background:none;font-size:22px;cursor:pointer;color:#9ca3af;line-height:1">✕</button>
+    </div>
+    <div id="sv-modal-body"></div>
+  </div>
 </div>
 
 <script>
@@ -769,7 +893,7 @@ function re(t){
     document.getElementById('t'+t).innerHTML=sumRow+d.map(s=>{const tc=best.has(s.mag)?'pTB':worst.has(s.mag)?'pTW':'';
     const col1=(pp&&pp!=='РЕГИОН')?`<td title="${s.pod}" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;text-align:left;color:#111827">${s.tc}</td>`:pl(s.pod);
     return ig
-        ?`<tr>${col1}${pl(s.mag)}
+        ?`<tr>${col1}${pl('№'+s.mag)}
           ${pi(cTG(s.tYTo),fm(s.tYTo))}
           <td class="gh"><span class="p ${cZ(s.dZol)}">${fm(s.dZol)}</span></td>
           <td class="gh"><span class="p pN">${fm(s.dSer)}</span></td>
@@ -784,7 +908,7 @@ function re(t){
           ${pi(cS(s.spas),fm(s.spas))}
           ${pi(cV(s.vPct),fm(s.vPct))}<td><span class="p pN">${fm(s.vN,'')}</span></td>
           ${pi(cK(s.konv),fm(s.konv))}<td><span class="p pN">${fr(s.sPod)}₽</span></td></tr>`
-        :`<tr>${col1}${pl(s.mag)}
+        :`<tr>${col1}${pl('№'+s.mag)}
           ${pi(cTN(s.tYTo),fm(s.tYTo))}
           <td><span class="p pN">${fm(s.dSer)}</span></td>
           ${pi(cP(s.plan),fm(s.plan))}
@@ -816,40 +940,42 @@ function re(t){
       // Вспомогательная функция: ячейка пары
       function ci2(label,cls,val){return`<div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.3px">${label}</span><span class="p ${cls}" style="width:100%;text-align:center;box-sizing:border-box">${val}</span></div>`;}
       const g2=`display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px`;
-      // Основные метрики (золото и не-золото)
-      const mainMetrics=ig
-        ?[ci2('Доля ЮИ',cTG(s.tYTo),fm(s.tYTo)),
-          ci2('ТО ЮИ','pN '+tc,fr(s.tY)+'₽'),
-          ci2('LFL Серебро',cL(s.sLfl),fm(s.sLfl)),
-          ci2('LFL Золото',cL(s.zLfl),fm(s.zLfl)),
-          ci2('Ср.чек',cSrch(s.srch,avg),fr(s.srch)),
-          ci2('Рассрочка',cR(s.rass),fm(s.rass)),
-          ci2('Спасибо',cS(s.spas),fm(s.spas)),
-          ci2('Конверсия',cK(s.konv),fm(s.konv))]
-        :[ci2('Доля ЮИ',cTN(s.tYTo),fm(s.tYTo)),
-          ci2('ТО ЮИ','pN '+tc,fr(s.tY)+'₽'),
-          ci2('LFL Серебро',cL(s.sLfl),fm(s.sLfl)),
-          ci2('Ср.чек',cSrch(s.srch,avg),fr(s.srch)),
-          ci2('Рассрочка',cR(s.rass),fm(s.rass)),
-          ci2('Спасибо',cS(s.spas),fm(s.spas)),
-          ci2('Конверсия',cK(s.konv),fm(s.konv)),
-          ci2('Д.Серебра','pN',fm(s.dSer))];
-      // Блок золото/серебро внизу
-      const goldBlock=ig
-        ?`<div style="border-top:1px solid #f3e8f5;margin-top:8px;padding-top:8px;${g2}">
+      // ── БЛОК СВЕРХУ: Золото / Серебро ──
+      const topBlock=ig
+        ?`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px;${g2};margin-top:8px">
             ${ci2('Доля золота',cZ(s.dZol),fm(s.dZol))}
             ${ci2('Д.Серебра','pN',fm(s.dSer))}
             ${ci2('ТО Золото','pN',frFull(s.tZol)+'₽')}
             ${ci2('ТО Серебро','pN',frFull(s.tSer)+'₽')}
           </div>`
-        :`<div style="border-top:1px solid #f3e8f5;margin-top:8px;padding-top:8px">
+        :`<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:8px;${g2};margin-top:8px">
+            ${ci2('Д.Серебра','pN',fm(s.dSer))}
             ${ci2('ТО Серебро','pN',fr(s.tSer)+'₽')}
           </div>`;
+      // ── БЛОК СЕРЕДИНА: LFL, Ср.чек, сервисы ──
+      const midMetrics=ig
+        ?[ci2('LFL Серебро',cL(s.sLfl),fm(s.sLfl)),
+          ci2('LFL Золото',cL(s.zLfl),fm(s.zLfl)),
+          ci2('Ср.чек',cSrch(s.srch,avg),fr(s.srch)),
+          ci2('Рассрочка',cR(s.rass),fm(s.rass)),
+          ci2('Спасибо',cS(s.spas),fm(s.spas)),
+          ci2('Конверсия',cK(s.konv),fm(s.konv))]
+        :[ci2('LFL Серебро',cL(s.sLfl),fm(s.sLfl)),
+          ci2('Ср.чек',cSrch(s.srch,avg),fr(s.srch)),
+          ci2('Рассрочка',cR(s.rass),fm(s.rass)),
+          ci2('Спасибо',cS(s.spas),fm(s.spas)),
+          ci2('Конверсия',cK(s.konv),fm(s.konv))];
+      // ── БЛОК СНИЗУ: Доля ЮИ + ТО ЮИ — выделенный ──
+      const yuiBlock=`<div style="margin-top:10px;background:#fdf2f8;border:2px solid #f0abdb;border-radius:10px;padding:10px;${g2}">
+        ${ci2('Доля ЮИ',ig?cTG(s.tYTo):cTN(s.tYTo),fm(s.tYTo))}
+        ${ci2('ТО ЮИ','pN '+tc,fr(s.tY)+'₽')}
+      </div>`;
       return`<div class="crd">
-        <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.pod} · ${s.mag}</div></div>
+        <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</div></div>
           <span class="p ${cP(s.plan)}" style="font-size:12px;padding:3px 8px">${fm(s.plan)}</span></div>
-        <div style="${g2}">${mainMetrics.join('')}</div>
-        ${goldBlock}
+        ${topBlock}
+        <div style="${g2};margin-top:8px">${midMetrics.join('')}</div>
+        ${yuiBlock}
         ${lossBlock}
       </div>`;
     }).join('');
@@ -974,11 +1100,11 @@ function re(t){
     if(mTitle)mTitle.textContent='Рейтинг магазинов';
     mEl.innerHTML=isMonth
       ?`<div class="mc"><div class="mc-l">ТОП-10 оборот ЮИ</div>${lst(top5tY,s=>fr(s.tY)+'₽')}</div>
-         <div class="mc"><div class="mc-l">АНТИТОП-10 оборот ЮИ</div>${lst(bot5tY,s=>fr(s.tY)+'₽')}</div>`
+         <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-10 оборот ЮИ</span></div>${lst(bot5tY,s=>fr(s.tY)+'₽')}</div>`
       :`<div class="mc"><div class="mc-l">ТОП-5 оборот ЮИ</div>${lst(top5tY,s=>fr(s.tY)+'₽')}</div>
         <div class="mc"><div class="mc-l">ТОП-5 доля ЮИ</div>${lst(top5sh,s=>fm(s.tYTo))}</div>
-        <div class="mc"><div class="mc-l">АНТИТОП-5 оборот ЮИ</div>${lst(bot5tY,s=>fr(s.tY)+'₽')}</div>
-        <div class="mc"><div class="mc-l">АНТИТОП-5 доля ЮИ</div>${lst(bot5sh,s=>fm(s.tYTo))}</div>`;
+        <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-5 оборот ЮИ</span></div>${lst(bot5tY,s=>fr(s.tY)+'₽')}</div>
+        <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-5 доля ЮИ</span></div>${lst(bot5sh,s=>fm(s.tYTo))}</div>`;
   }
 }
 function renderPod(mode,view,podF){
@@ -1010,7 +1136,7 @@ function renderPod(mode,view,podF){
       const lc=s.sLfl===null?'pN':s.sLfl>=-10?'pG':'pR';
       const loss=s.plan!==null&&s.tY!==null&&s.plan>0&&s.plan<100?`<span style="font-size:9px;color:#dc2626">−${Math.round(s.tY/(s.plan/100)-s.tY).toLocaleString('ru')}₽</span>`:(s.plan>=100?'<span style="font-size:9px;color:#16a34a">👍</span>':'');
       return`<tr onclick="this.style.background='#fdf2f8'" style="cursor:default">
-        <td style="font-size:10px;text-align:left;padding:5px 6px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>${s.tc}</b><br><span style="color:#9ca3af;font-size:9px">${s.pod} · ${s.mag}</span></td>
+        <td style="font-size:10px;text-align:left;padding:5px 6px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>${s.tc}</b><br><span style="color:#9ca3af;font-size:9px">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</span></td>
         <td style="padding:4px 5px;text-align:center"><span class="p ${pc}" style="font-size:10px">${s.plan!==null?Math.round(s.plan)+'%':'-'}</span></td>
         <td style="padding:4px 5px;text-align:center;font-size:10px">${loss}</td>
         <td style="padding:4px 5px;text-align:center;font-size:10px;color:#374151">${s.tYTo!==null?Math.round(s.tYTo)+'%':'-'}</td>
@@ -1059,13 +1185,370 @@ function renderPod(mode,view,podF){
     document.getElementById('pod-content').innerHTML=`${periodBar}<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px">${metrics.map(m=>podCard(m)).filter(Boolean).join('')}</div>`;
   }
 }
-function sw(t){const tabs=['g','n','gm','nm'];document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('on',i===tabs.indexOf(t)));document.querySelectorAll('.panel').forEach(el=>el.classList.remove('on'));document.getElementById('p'+t).classList.add('on');}
+function sw(t){const tabs=['g','n','gm','nm'];document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('on',i===tabs.indexOf(t)));document.querySelectorAll('.panel').forEach(el=>el.classList.remove('on'));document.getElementById('p'+t).classList.add('on');document.getElementById('svodny-panel').style.display='none';document.getElementById('pods-panel').style.display='none';}
 ['g','n','gm','nm'].forEach(t=>{const d=t==='g'?gD:t==='n'?nD:t==='gm'?gDm:nDm;const pods=[...new Set(d.map(s=>s.pod))].sort();const sel=document.getElementById('pd'+t);// Добавляем опцию "Регион ЮГ" первой
 const oReg=document.createElement('option');oReg.value='РЕГИОН';oReg.textContent='🌍 Регион ЮГ';sel.appendChild(oReg);pods.forEach(pp=>{const o=document.createElement('option');o.value=pp;o.textContent=pp;sel.appendChild(o);});
   // Заполняем список магазинов (по алфавиту по названию)
   const ms=document.getElementById('mag-'+t);if(ms){[...d].sort((a,b)=>a.tc.localeCompare(b.tc)).forEach(s=>{const o=document.createElement('option');o.value=s.mag;o.textContent=s.tc;ms.appendChild(o);});}
   uth(t);});
 re('g');re('n');re('gm');re('nm');
+
+/* ═══ ПОДРАЗДЕЛЕНИЯ — функции ═══ */
+let _podsTab='g', _podsView='day';
+let _svodTab='g', _svodPod='', _svodPeriod='day', _svodFrom='';
+
+/* — Показать страницу 6 подразделений — */
+function showPods(t){
+  _podsTab=t; _podsView='day';
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('svodny-panel').style.display='none';
+  document.getElementById('pods-panel').style.display='block';
+  document.querySelector('.tabs').style.display='none';
+  document.getElementById('pods-day-btn').classList.add('on');
+  document.getElementById('pods-month-btn').classList.remove('on');
+  renderPodsGrid('day');
+}
+function hidePods(){
+  document.getElementById('pods-panel').style.display='none';
+  // Возвращаемся на стартовую страницу — восстанавливаем вкладки и нужный панель
+  const tabs=['g','n','gm','nm'];
+  document.querySelector('.tabs').style.display='';
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('on',tabs[i]===_podsTab));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('p'+_podsTab).classList.add('on');
+}
+function switchPodsView(v){
+  _podsView=v;
+  document.getElementById('pods-day-btn').classList.toggle('on',v==='day');
+  document.getElementById('pods-month-btn').classList.toggle('on',v==='month');
+  renderPodsGrid(v);
+}
+function renderPodsGrid(view){
+  const src=view==='day'?TOT_D:TOT_M;
+  const reg=src['РЕГИОН']||{};
+  // Сортируем подразделения от лучшей Доли ЮИ к худшей
+  const pods=['Краснодар','Ростов','Черноморское','Кавказ','Крым','Сочи']
+    .sort((a,b)=>((src[b]||{}).tYTo||0)-((src[a]||{}).tYTo||0));
+  const gArr=view==='day'?gD:gDm, nArr=view==='day'?nD:nDm;
+  const html=pods.map(pod=>{
+    const d=src[pod]||{};
+    const cnt=new Set([...gArr,...nArr].filter(s=>s.pod===pod).map(s=>s.mag)).size;
+    const rv=reg.tYTo||0, pv2=d.tYTo||0;
+    const cls=pv2>=rv?'pod-top-green':pv2>=rv*0.9?'pod-top-yellow':'pod-top-red';
+    // Универсальная строка метрики (% или ₽)
+    const mr=(lbl,val,ref,isRub)=>{
+      if(val===null||val===undefined)return'';
+      const vStr=isRub?(Math.round(val).toLocaleString('ru')+'₽'):(Math.round(val)+'%');
+      const bc=(ref!==null&&ref!==undefined)?val>=ref?'pLG':val>=ref*0.9?'pY':'pR':'pN';
+      return`<div class="pod-metric-row"><span class="pod-metric-label">${lbl}</span><span class="p ${bc}">${vStr}</span></div>`;
+    };
+    return`<div class="pod-card" onclick="openPodFromCard('${pod}')">
+      <div class="pod-card-top ${cls}">
+        <div><div class="pod-card-name">${pod}</div><div class="pod-card-count">${cnt} магазинов</div></div>
+        <div class="pod-card-arrow">›</div>
+      </div>
+      <div class="pod-card-metrics">
+        ${mr('Доля ЮИ',d.tYTo,reg.tYTo)}
+        ${mr('План %',d.plan,reg.plan)}
+        ${mr('LFL золото',d.zLfl,reg.zLfl)}
+        ${mr('LFL серебро',d.sLfl,reg.sLfl)}
+        ${mr('Ср.чек',d.srch,reg.srch,true)}
+        ${mr('Рассрочка',d.rass,reg.rass)}
+        ${mr('Спасибо',d.spas,reg.spas)}
+        ${mr('Конверсия',d.konv,reg.konv)}
+      </div>
+      <div class="pod-card-footer">Открыть детальный анализ →</div>
+    </div>`;
+  }).join('');
+  document.getElementById('pods-grid').innerHTML=html;
+}
+function openPodFromCard(pod){
+  _svodFrom='pods'; _svodTab=_podsTab; _svodPod=pod;
+  ['g','n','gm','nm'].forEach(t=>{const s=document.getElementById('pd'+t);if(s){s.value=pod;podCh(t);}});
+  document.getElementById('pods-panel').style.display='none';
+  document.querySelector('.tabs').style.display='none';
+  _openSvodPanel(pod,_podsView);
+}
+
+/* — Показать сводный вид — */
+function showSvod(t){
+  _svodTab=t; _svodFrom='tab';
+  _svodPod=document.getElementById('pd'+t).value;
+  if(!_svodPod||_svodPod==='РЕГИОН')return;
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  _openSvodPanel(_svodPod,'day');
+}
+function _openSvodPanel(pod,period){
+  _svodPod=pod; _svodPeriod=period;
+  document.getElementById('svodny-panel').style.display='block';
+  document.getElementById('svod-title').textContent='📊 '+pod;
+  document.getElementById('svod-day-btn').classList.toggle('on',period==='day');
+  document.getElementById('svod-month-btn').classList.toggle('on',period==='month');
+  renderSvod(pod,period);
+}
+function hideSvod(){
+  document.getElementById('svodny-panel').style.display='none';
+  if(_svodFrom==='pods'){
+    document.getElementById('pods-panel').style.display='block';
+    // вкладки остаются скрытыми — мы всё ещё в режиме подразделений
+  } else {
+    document.querySelector('.tabs').style.display='';
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+    document.getElementById('p'+_svodTab).classList.add('on');
+  }
+}
+
+function switchSvPeriod(period){
+  _svodPeriod=period;
+  document.getElementById('svod-day-btn').classList.toggle('on',period==='day');
+  document.getElementById('svod-month-btn').classList.toggle('on',period==='month');
+  renderSvod(_svodPod,period);
+}
+
+function svDelta(label,val,ref){
+  const vStr=val===null||val===undefined?'—':Math.round(val)+'%';
+  if(val===null||val===undefined||ref===null||ref===undefined)
+    return`<div class="svod-hdr-row"><span>${label}</span><span>${vStr}</span></div>`;
+  const diff=val-ref;const sign=diff>=0?'+':'';
+  const cls=diff>=0?'sv-delta-up':'sv-delta-down';
+  return`<div class="svod-hdr-row"><span>${label}</span><span>${vStr} <span class="sv-delta ${cls}">${sign}${Math.round(diff)}%</span></span></div>`;
+}
+
+function renderSvod(pod,period){
+  const isDay=(period==='day');
+  const gArr=isDay?gD:gDm, nArr=isDay?nD:nDm;
+  const totSrc=isDay?TOT_D:TOT_M;
+  const podTot=totSrc[pod]||{}, regTot=totSrc['РЕГИОН']||{};
+  const gPod=gArr.filter(s=>s.pod===pod), nPod=nArr.filter(s=>s.pod===pod);
+  const allPod=[...gPod,...nPod];
+  const cnt=new Set(allPod.map(s=>s.mag)).size;
+  const pLabel=isDay?'☀️ День':'📅 Месяц';
+  const avg=isDay?AG:AGM;
+
+  /* ── Шапка: карточки в стиле "vs Регион" ── */
+  function svCard(label,val,ref,unit){
+    if(val===null||val===undefined)return'';
+    const up=(ref!==null&&ref!==undefined)?val>=ref:null;
+    const valColor=up===null?'#374151':up?'#16a34a':'#dc2626';
+    const arrow=up===null?'':up
+      ?`<span style="color:#16a34a;font-size:14px;margin-left:3px">▲</span>`
+      :`<span style="color:#dc2626;font-size:14px;margin-left:3px">▼</span>`;
+    const refStr=(ref!==null&&ref!==undefined)?`<div style="font-size:10px;color:#9ca3af;margin-top:4px">ЮГ: <b>${Math.round(ref)}${unit}</b></div>`:'';
+    const border=up===null?'#e5e7eb':up?'#bbf7d0':'#fecaca';
+    return`<div style="background:#fff;border:1.5px solid ${border};border-radius:10px;padding:10px 12px;text-align:center">
+      <div style="font-size:9px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px">${label}</div>
+      <div style="font-size:20px;font-weight:800;color:${valColor};line-height:1">${Math.round(val)}${unit}${arrow}</div>
+      ${refStr}
+    </div>`;
+  }
+  // Карточка Потери — особый вид (не сравниваем с регионом, просто показываем сумму)
+  let lossCardHtml='';
+  if(podTot.plan!==null&&podTot.plan!==undefined&&podTot.tY!==null&&podTot.tY!==undefined&&podTot.plan>0){
+    if(podTot.plan>=100){
+      lossCardHtml=`<div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:10px 12px;text-align:center">
+        <div style="font-size:9px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px">📉 Потери</div>
+        <div style="font-size:16px;font-weight:800;color:#16a34a;line-height:1">✅ План выполнен</div>
+        <div style="font-size:10px;color:#9ca3af;margin-top:4px">план: ${Math.round(podTot.plan)}%</div>
+      </div>`;
+    } else {
+      const loss=Math.round(podTot.tY/(podTot.plan/100)-podTot.tY);
+      lossCardHtml=`<div style="background:#fff1f2;border:1.5px solid #fca5a5;border-radius:10px;padding:10px 12px;text-align:center">
+        <div style="font-size:9px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px">📉 Потери</div>
+        <div style="font-size:18px;font-weight:800;color:#dc2626;line-height:1">-${loss.toLocaleString('ru')}₽</div>
+        <div style="font-size:10px;color:#9ca3af;margin-top:4px">план: ${Math.round(podTot.plan)}%</div>
+      </div>`;
+    }
+  }
+  document.getElementById('svod-header').innerHTML=
+    `<div style="font-size:12px;font-weight:700;color:#ad1472;margin-bottom:8px">${pLabel} — ${pod} (${cnt} маг.) <span style="font-size:10px;color:#9ca3af;font-weight:400">vs Регион ЮГ</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:14px">
+      ${svCard('Доля ЮИ',podTot.tYTo,regTot.tYTo,'%')}
+      ${svCard('План %',podTot.plan,regTot.plan,'%')}
+      ${lossCardHtml}
+      ${svCard('Доля золота',podTot.dZol,regTot.dZol,'%')}
+      ${svCard('LFL золото',podTot.zLfl,regTot.zLfl,'%')}
+      ${svCard('LFL серебро',podTot.sLfl,regTot.sLfl,'%')}
+      ${svCard('Рассрочка',podTot.rass,regTot.rass,'%')}
+      ${svCard('Спасибо',podTot.spas,regTot.spas,'%')}
+      ${svCard('Конверсия',podTot.konv,regTot.konv,'%')}
+      ${svCard('Ср.чек',podTot.srch,regTot.srch,'₽')}
+    </div>`;
+
+  /* ── Сохраняем данные по каждому фильтру для динамического ТОП/АНТИТОП ── */
+  window._svRows={all:allPod, gold:gPod, nogold:nPod};
+
+  /* ── Рейтинг: ТОП-3 и АНТИТОП-3 (рендерим отдельно) ── */
+  svRenderRating(allPod);
+
+  /* ── Таблицы с кнопками переключения ── */
+  document.getElementById('svod-table-wrap').innerHTML=
+  `<!-- Кнопки переключения таблиц -->
+  <div style="display:flex;gap:8px;margin:10px 0 8px;align-items:center">
+    <button class="vb on" id="sv-t-all"  onclick="svSwitchTable('all')">Все магазины (${allPod.length})</button>
+    <button class="vb"    id="sv-t-gold" onclick="svSwitchTable('gold')">✨ С золотом (${gPod.length})</button>
+    <button class="vb"    id="sv-t-nogold" onclick="svSwitchTable('nogold')">💎 Без золота (${nPod.length})</button>
+  </div>
+  <!-- Три таблицы, показывается одна -->
+  <div class="svod-tw" id="sv-tbl-all">${svTable(allPod.slice().sort((a,b)=>(b.tYTo||0)-(a.tYTo||0)),true,avg,isDay)}</div>
+  <div class="svod-tw" id="sv-tbl-gold"   style="display:none">${svTable(gPod.slice().sort((a,b)=>(b.tYTo||0)-(a.tYTo||0)),false,avg,isDay)}</div>
+  <div class="svod-tw" id="sv-tbl-nogold" style="display:none">${svTable(nPod.slice().sort((a,b)=>(b.tYTo||0)-(a.tYTo||0)),false,avg,isDay)}</div>`;
+}
+
+function svSwitchTable(mode){
+  ['all','gold','nogold'].forEach(m=>{
+    const btn=document.getElementById('sv-t-'+m);
+    const tbl=document.getElementById('sv-tbl-'+m);
+    if(btn) btn.classList.toggle('on', m===mode);
+    if(tbl) tbl.style.display = m===mode ? '' : 'none';
+  });
+  // Обновляем ТОП/АНТИТОП по данным активной таблицы
+  if(window._svRows) svRenderRating(window._svRows[mode]);
+}
+
+/* ── Рейтинг ТОП/АНТИТОП по переданным строкам ── */
+function svRenderRating(rows){
+  const byTY=[...rows].filter(s=>s.tY>0).sort((a,b)=>b.tY-a.tY);
+  const byShare=[...rows].filter(s=>s.tYTo!==null).sort((a,b)=>b.tYTo-a.tYTo);
+  const rlist=(arr,fn,cls)=>arr.slice(0,3).map((s,i)=>
+    `<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;padding:2px 0;border-bottom:1px solid #f3e8f5">
+      <span style="color:#9ca3af;min-width:14px">${i+1}.</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 4px;font-size:9px">${s.tc}</span>
+      <span class="p ${cls}" style="font-size:10px;min-width:48px;text-align:center">${fn(s)}</span>
+    </div>`).join('');
+  const w=document.getElementById('sv-rating-wrap');
+  if(!w)return;
+  w.innerHTML=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+    <div class="mc"><div class="mc-l">🏆 ТОП-3 ТО ЮИ</div>${rlist(byTY,s=>fr(s.tY)+'₽','pLG')}</div>
+    <div class="mc"><div class="mc-l">🏆 ТОП-3 Доля ЮИ</div>${rlist(byShare,s=>fm(s.tYTo),'pLG')}</div>
+    <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-3 ТО ЮИ</span></div>${rlist([...byTY].reverse(),s=>fr(s.tY)+'₽','pR')}</div>
+    <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-3 Доля ЮИ</span></div>${rlist([...byShare].reverse(),s=>fm(s.tYTo),'pR')}</div>
+  </div>`;
+}
+
+/* Вспомогательная функция — шапка таблицы */
+function svTh(label,gold){
+  const bg=gold?'#fffbeb':'#f0f0f0';
+  const clr=gold?'#92400e':'#374151';
+  return`<th style="background:${bg};color:${clr};font-size:10px;font-weight:600;padding:5px 4px;border-bottom:2px solid #a3a3a3;border-right:1px solid #e5e7eb;text-align:center;white-space:nowrap;position:sticky;top:0;z-index:3">${label}</th>`;
+}
+
+/* Универсальная таблица магазинов — все колонки */
+function svTable(rows, showGoldDot, avg, isDay){
+  const head=`<thead><tr>
+    <th class="sv-store-head">Магазин</th>
+    ${svTh('Доля ЮИ')}
+    ${svTh('План %')}
+    ${svTh('ТО ЮИ')}
+    ${svTh('ТО Золото',true)}
+    ${svTh('ТО Серебро')}
+    ${svTh('📉 Потери')}
+    ${svTh('LFL зол.',true)}
+    ${svTh('LFL сер.')}
+    ${svTh('Ср.чек')}
+    ${svTh('Рассрочка')}
+    ${svTh('Спасибо')}
+    ${svTh('Выдача%')}
+    ${svTh('Конв.')}
+  </tr></thead>`;
+
+  const body=rows.map(s=>{
+    const dot=showGoldDot?`<span class="sv-dot ${s.hg?'sv-gold-dot':'sv-nogold-dot'}"></span>`:'';
+    const cDol=s.hg?cTG(s.tYTo):cTN(s.tYTo);
+    // Считаем потери: план не выполнен → разница между планом и фактом
+    let lossHtml='<td><span class="p pN">—</span></td>';
+    if(s.plan!==null&&s.tY!==null&&s.plan>0){
+      if(s.plan>=100){
+        lossHtml=`<td><span class="p pG">✓</span></td>`;
+      } else {
+        const loss=Math.round(s.tY/(s.plan/100)-s.tY);
+        lossHtml=`<td style="background:#fff5f5"><span class="p pDR" style="font-size:9px">-${fr(loss)}₽</span></td>`;
+      }
+    }
+    return`<tr style="cursor:pointer" onclick="svOpenCard('${s.mag}','${s.hg?'g':'n'}','${isDay?'d':'m'}')" title="Нажмите для карточки магазина">
+      <td class="sv-store-cell">${dot}<span class="sv-mag">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</span><span class="sv-name" title="${s.tc}">${s.tc}</span></td>
+      <td><span class="p ${cDol}">${fm(s.tYTo)}</span></td>
+      <td><span class="p ${cP(s.plan)}">${fm(s.plan)}</span></td>
+      <td><span class="p pN">${fr(s.tY)}₽</span></td>
+      <td style="background:#fffbeb"><span class="p pN">${s.tZol?fr(s.tZol)+'₽':'—'}</span></td>
+      <td><span class="p pN">${s.tSer?fr(s.tSer)+'₽':'—'}</span></td>
+      ${lossHtml}
+      <td style="background:#fffbeb"><span class="p ${cL(s.zLfl)}">${fm(s.zLfl)}</span></td>
+      <td><span class="p ${cL(s.sLfl)}">${fm(s.sLfl)}</span></td>
+      <td><span class="p ${cSrch(s.srch,avg)}">${fr(s.srch)}</span></td>
+      <td><span class="p ${cR(s.rass)}">${fm(s.rass)}</span></td>
+      <td><span class="p ${cS(s.spas)}">${fm(s.spas)}</span></td>
+      <td><span class="p ${cV(s.vPct)}">${fm(s.vPct)}</span></td>
+      <td><span class="p ${cK(s.konv)}">${fm(s.konv)}</span></td>
+    </tr>`;}).join('');
+  return`<table class="sv-table">${head}<tbody>${body}</tbody></table>`;
+}
+
+/* Открыть карточку магазина из таблицы */
+function svOpenCard(mag,goldKey,dayKey){
+  const t=(dayKey==='d'?goldKey:goldKey+'m');
+  const arr=t==='g'?gD:t==='n'?nD:t==='gm'?gDm:nDm;
+  const s=arr.find(x=>x.mag===mag);
+  if(!s)return;
+  const avg=t==='g'?AG:t==='n'?AN:t==='gm'?AGM:ANM;
+  const ig=(t==='g'||t==='gm');
+  // Потери
+  let lossBlock='';
+  if(s.plan!==null&&s.tY!==null&&s.plan>0){
+    if(s.plan>=100){
+      lossBlock=`<div style="margin-top:10px;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:13px;text-align:center;font-size:16px;font-weight:700;color:#16a34a">✅ План выполнен!</div>`;
+    } else {
+      const loss=Math.round(s.tY/(s.plan/100)-s.tY);
+      lossBlock=`<div style="margin-top:10px;background:#fff1f2;border:1px solid #fca5a5;border-radius:10px;padding:13px;text-align:center"><div style="font-size:14px;font-weight:700;color:#dc2626">📉 Потери: ${loss.toLocaleString('ru')} ₽</div><div style="font-size:11px;color:#6b7280;margin-top:4px">план выполнен на ${Math.round(s.plan)}%</div></div>`;
+    }
+  }
+  const kpi=(lbl,val,cls)=>`<div class="ci"><div class="cl">${lbl}</div><div><span class="p ${cls}">${val}</span></div></div>`;
+  const g2m=`display:grid;grid-template-columns:1fr 1fr;gap:6px`;
+  // ── БЛОК СВЕРХУ: Золото / Серебро ──
+  const topBlockM=ig
+    ?`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px;margin-bottom:10px">
+        <div style="font-size:9px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px">Золото / Серебро</div>
+        <div style="${g2m}">
+          ${kpi('Доля золота',fm(s.dZol),cZ(s.dZol))}
+          ${kpi('Д.Серебра',fm(s.dSer),'pN')}
+          ${kpi('ТО Золото',fr(s.tZol)+'₽','pN')}
+          ${kpi('ТО Серебро',fr(s.tSer)+'₽','pN')}
+        </div>
+      </div>`
+    :`<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:10px;margin-bottom:10px">
+        <div style="font-size:9px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px">Серебро</div>
+        <div style="${g2m}">
+          ${kpi('Д.Серебра',fm(s.dSer),'pN')}
+          ${kpi('ТО Серебро',fr(s.tSer)+'₽','pN')}
+        </div>
+      </div>`;
+  // ── БЛОК СЕРЕДИНА ──
+  const midBlockM=`<div style="${g2m}">
+    ${kpi('LFL сер.',fm(s.sLfl),cL(s.sLfl))}
+    ${ig?kpi('LFL зол.',fm(s.zLfl),cL(s.zLfl)):''}
+    ${kpi('Ср.чек',fr(s.srch),cSrch(s.srch,avg))}
+    ${kpi('Рассрочка',fm(s.rass),cR(s.rass))}
+    ${kpi('Спасибо',fm(s.spas),cS(s.spas))}
+    ${kpi('Выдача%',fm(s.vPct),cV(s.vPct))}
+    ${kpi('Конв.',fm(s.konv),cK(s.konv))}
+  </div>`;
+  // ── БЛОК СНИЗУ: Доля ЮИ + ТО ЮИ — выделен ──
+  const yuiBlockM=`<div style="margin-top:10px;background:#fdf2f8;border:2px solid #f0abdb;border-radius:10px;padding:10px">
+    <div style="font-size:9px;font-weight:700;color:#ad1472;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px">Юнит-Экономика</div>
+    <div style="${g2m}">
+      ${kpi('Доля ЮИ',fm(s.tYTo),ig?cTG(s.tYTo):cTN(s.tYTo))}
+      ${kpi('ТО ЮИ',fr(s.tY)+'₽','pN')}
+    </div>
+  </div>`;
+  const body=`
+    <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</div></div>
+    <span class="p ${cP(s.plan)}">${fm(s.plan)}</span></div>
+    ${topBlockM}
+    ${midBlockM}
+    ${yuiBlockM}
+    ${lossBlock}`;
+  document.getElementById('sv-modal-body').innerHTML=body;
+  document.getElementById('sv-modal').style.display='flex';
+}
 </script>
 </body>
 </html>

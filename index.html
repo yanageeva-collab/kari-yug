@@ -976,11 +976,11 @@ function re(t){
         ${ci2('ТО ЮИ','pN '+tc,fr(s.tY)+'₽')}
       </div>`;
       return`<div class="crd">
-        <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.mag} · ${s.pod}</div></div>
+        <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</div></div>
           <span class="p ${cP(s.plan)}" style="font-size:12px;padding:3px 8px">${fm(s.plan)}</span></div>
+        ${yuiBlock}
         ${topBlock}
         <div style="${g2};margin-top:8px">${midMetrics.join('')}</div>
-        ${yuiBlock}
         ${lossBlock}
       </div>`;
     }).join('');

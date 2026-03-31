@@ -1210,12 +1210,14 @@ function showPods(t){
 }
 function hidePods(){
   document.getElementById('pods-panel').style.display='none';
-  // Возвращаемся на стартовую страницу — восстанавливаем вкладки и нужный панель
+  document.getElementById('svodny-panel').style.display='none';
+  // Восстанавливаем главный экран — вкладки + нужная панель
   const tabs=['g','n','gm','nm'];
   document.querySelector('.tabs').style.display='';
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('on',tabs[i]===_podsTab));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.getElementById('p'+_podsTab).classList.add('on');
+  re(_podsTab);
 }
 function switchPodsView(v){
   _podsView=v;

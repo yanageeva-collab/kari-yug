@@ -198,6 +198,11 @@ tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !import
 .sv-mag{font-size:9px;color:#6b7280;font-weight:600;display:block;margin-bottom:1px}
 .sv-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:middle;flex-shrink:0}
 .sv-gold-dot{background:#f59e0b}
+/* Рейтинг ТОП/АНТИТОП — 4 колонки, на мобиле 2 */
+.sv-rating-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+@media(max-width:600px){.sv-rating-grid{grid-template-columns:repeat(2,1fr)}}
+/* Кнопки переключения таблиц — перенос на мобиле */
+.sv-toggle-btns{display:flex;gap:8px;margin:10px 0 8px;align-items:center;flex-wrap:wrap}
 .sv-nogold-dot{background:#60a5fa}
 .sv-table tr:nth-child(even) td{background:#fafafa}
 .sv-table tr:nth-child(even) .sv-store-cell{background:#fafafa}
@@ -1388,7 +1393,7 @@ function renderSvod(pod,period){
   /* ── Таблицы с кнопками переключения ── */
   document.getElementById('svod-table-wrap').innerHTML=
   `<!-- Кнопки переключения таблиц -->
-  <div style="display:flex;gap:8px;margin:10px 0 8px;align-items:center">
+  <div class="sv-toggle-btns">
     <button class="vb on" id="sv-t-all"  onclick="svSwitchTable('all')">Все магазины (${allPod.length})</button>
     <button class="vb"    id="sv-t-gold" onclick="svSwitchTable('gold')">✨ С золотом (${gPod.length})</button>
     <button class="vb"    id="sv-t-nogold" onclick="svSwitchTable('nogold')">💎 Без золота (${nPod.length})</button>
@@ -1422,7 +1427,7 @@ function svRenderRating(rows){
     </div>`).join('');
   const w=document.getElementById('sv-rating-wrap');
   if(!w)return;
-  w.innerHTML=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+  w.innerHTML=`<div class="sv-rating-grid">
     <div class="mc"><div class="mc-l">🏆 ТОП-3 ТО ЮИ</div>${rlist(byTY,s=>fr(s.tY)+'₽','pLG')}</div>
     <div class="mc"><div class="mc-l">🏆 ТОП-3 Доля ЮИ</div>${rlist(byShare,s=>fm(s.tYTo),'pLG')}</div>
     <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-3 ТО ЮИ</span></div>${rlist([...byTY].reverse(),s=>fr(s.tY)+'₽','pR')}</div>

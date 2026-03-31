@@ -896,7 +896,9 @@ function re(t){
     const h0=document.querySelector('#th-'+t+' th[data-c="0"]');
     if(h0)h0.textContent=(pp&&pp!=='РЕГИОН')?'Магазин':'Подразд.';
     document.getElementById('t'+t).innerHTML=sumRow+d.map(s=>{const tc=best.has(s.mag)?'pTB':worst.has(s.mag)?'pTW':'';
-    const col1=(pp&&pp!=='РЕГИОН')?`<td title="${s.pod}" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;text-align:left;color:#111827">${s.tc}</td>`:pl(s.pod);
+    const col1=(pp&&pp!=='РЕГИОН')
+      ?`<td style="text-align:left;padding:4px 6px;min-width:140px;max-width:180px"><span style="font-size:9px;color:#6b7280;font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</span><span style="font-size:10px;font-weight:600;color:#111827;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.tc}</span></td>`
+      :pl(s.pod);
     return ig
         ?`<tr>${col1}${pl(s.mag)}
           ${pi(cTG(s.tYTo),fm(s.tYTo))}
@@ -1550,7 +1552,7 @@ function svOpenCard(mag,goldKey,dayKey){
     </div>
   </div>`;
   const body=`
-    <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.mag} · ${s.pod}</div></div>
+    <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</div></div>
     <span class="p ${cP(s.plan)}">${fm(s.plan)}</span></div>
     ${yuiBlockM}
     ${topBlockM}

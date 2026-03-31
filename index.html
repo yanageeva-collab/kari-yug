@@ -1365,7 +1365,7 @@ function renderSvod(pod,period){
   document.getElementById('svod-header').innerHTML=
     `<div style="font-size:12px;font-weight:700;color:#ad1472;margin-bottom:8px">${pLabel} — ${pod} (${cnt} маг.) <span style="font-size:10px;color:#9ca3af;font-weight:400">vs Регион ЮГ</span></div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:14px">
-      ${svCard('ТО ЮИ',podTot.tY,regTot.tY,'₽')}
+      ${svCard('ТО ЮИ',podTot.tY,null,'₽')}
       ${svCard('План %',podTot.plan,regTot.plan,'%')}
       ${lossCardHtml}
       ${svCard('Доля ЮИ',podTot.tYTo,regTot.tYTo,'%')}

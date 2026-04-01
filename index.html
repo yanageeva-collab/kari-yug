@@ -1301,8 +1301,14 @@ function _openSvodPanel(pod,period){
 }
 function hideSvod(){
   document.getElementById('svodny-panel').style.display='none';
-  // Всегда возвращаемся на стартовую страницу
-  hidePods();
+  if(_svodFrom==='pods'){
+    document.getElementById('pods-panel').style.display='block';
+  } else {
+    document.querySelector('.tabs').style.display='';
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+    document.getElementById('p'+_svodTab).classList.add('on');
+    re(_svodTab);
+  }
 }
 
 function switchSvPeriod(period){

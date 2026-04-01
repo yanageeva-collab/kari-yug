@@ -240,7 +240,7 @@ tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !import
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841.89 595.28" height="36" style="display:block"><path fill="#ad1472" d="M195.64,199.26h0c-53.83,0-97.54,43.24-98.34,96.87,8.51-17.2,19.92-28.24,30.64-36.91,16.04-12.97,35.35-19.24,53.23-20.35,19.6-1.22,34.95,2.91,47.51,12.86,4.54,3.59,8.17,7.84,11.04,12.41,5.32,8.46,7.79,18.34,6.89,29.29-1.93,23.58-21.31,42.55-44.93,44.01-27.99,1.74-51.24-20.45-51.24-48.06,0-12.61,4.85-24.09,12.79-32.67-8.97,2.77-17.93,7.27-26.1,13.88-8.12,6.56-17.16,15.61-24.59,27.58-8.12,13.06-11.48,28.19-11.57,43.57v54.25h94.67c54.34,0,98.38-44.04,98.38-98.36h0c0-54.33-44.05-98.36-98.38-98.36Z"/><polygon fill="#ad1472" points="477.65 266.13 431.94 266.13 382.75 312.48 382.75 229.56 349.65 229.56 349.65 394.13 382.75 394.13 382.75 347.78 431.95 394.13 481.07 394.13 409.73 330.13 477.65 266.13"/><rect fill="#ad1472" x="708" y="282.25" width="33.1" height="111.88"/><path fill="#ad1472" d="M569.51,273.26c-9.84-5.72-21.3-9.02-33.53-9.02-36.68,0-66.42,29.5-66.42,65.88s29.74,65.88,66.42,65.88c12.23,0,23.69-3.29,33.53-9.02v7.14h33.1v-128h-33.1v7.14ZM535.98,363.35c-18.5,0-33.49-14.87-33.49-33.22s15-33.22,33.49-33.22,33.49,14.87,33.49,33.22-15,33.22-33.49,33.22Z"/><path fill="#ad1472" d="M724.55,271.05c11.07,0,20.04-8.97,20.04-20.05,0-4.89-1.76-9.37-4.67-12.85-1.93-2.53-4.52-4.6-7.69-6.08-9.98-4.65-24.02-2.81-37.55,4.92-13.68,7.81-24.64,22.43-31.16,40.26v-11.13h-33.1v128h33.1v-89.96c2.9-27.11,16.12-51.64,34.15-61.93,4.25-2.43,8.51-4.19,12.61-5.3-3.57,3.62-5.78,8.59-5.78,14.08,0,11.07,8.97,20.05,20.04,20.05Z"/></svg>
   <div style="text-align:right">
     <div style="font-size:12px;font-weight:600;color:#ad1472">ЮИ ЮГ</div>
-    <div style="font-size:10px;color:#9ca3af" id="update-date">Данные обновлены: 01.04.2026 09:01&nbsp; (отчёт за 31.03.2026)</div>
+    <div style="font-size:10px;color:#9ca3af" id="update-date">Данные обновлены: 01.04.2026 20:54&nbsp; (отчёт за 31.03.2026)</div>
   </div>
 </div>
 <div class="tabs">
@@ -978,7 +978,7 @@ function re(t){
         ${ci2('ТО ЮИ','pN '+tc,fr(s.tY)+'₽')}
       </div>`;
       return`<div class="crd">
-        <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</div></div>
+        <div class="ch"><div><div class="cn">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</div><div class="cs">${s.tc.split(',').slice(1).join(',').trim()}</div></div>
           <span class="p ${cP(s.plan)}" style="font-size:12px;padding:3px 8px">${fm(s.plan)}</span></div>
         ${yuiBlock}
         ${topBlock}
@@ -1106,8 +1106,12 @@ function re(t){
     mEl.classList.toggle('m2',isMonth);
     if(mTitle)mTitle.textContent='Рейтинг магазинов';
     mEl.innerHTML=isMonth
-      ?`<div class="mc"><div class="mc-l">ТОП-10 оборот ЮИ</div>${lst(top5tY,s=>fr(s.tY)+'₽')}</div>
-         <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-10 оборот ЮИ</span></div>${lst(bot5tY,s=>fr(s.tY)+'₽')}</div>`
+      ?`<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><div style="display:grid;grid-template-columns:repeat(4,minmax(190px,1fr));gap:8px;min-width:760px">
+         <div class="mc"><div class="mc-l">ТОП-10 оборот ЮИ</div>${lst(top5tY,s=>fr(s.tY)+'₽')}</div>
+         <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-10 оборот ЮИ</span></div>${lst(bot5tY,s=>fr(s.tY)+'₽')}</div>
+         <div class="mc"><div class="mc-l">ТОП-10 доля ЮИ</div>${lst(top5sh,s=>fm(s.tYTo))}</div>
+         <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-10 доля ЮИ</span></div>${lst(bot5sh,s=>fm(s.tYTo))}</div>
+         </div></div>`
       :`<div class="mc"><div class="mc-l">ТОП-5 оборот ЮИ</div>${lst(top5tY,s=>fr(s.tY)+'₽')}</div>
         <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-5 оборот ЮИ</span></div>${lst(bot5tY,s=>fr(s.tY)+'₽')}</div>
         <div class="mc"><div class="mc-l">ТОП-5 доля ЮИ</div>${lst(top5sh,s=>fm(s.tYTo))}</div>
@@ -1297,14 +1301,8 @@ function _openSvodPanel(pod,period){
 }
 function hideSvod(){
   document.getElementById('svodny-panel').style.display='none';
-  if(_svodFrom==='pods'){
-    document.getElementById('pods-panel').style.display='block';
-    // вкладки остаются скрытыми — мы всё ещё в режиме подразделений
-  } else {
-    document.querySelector('.tabs').style.display='';
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
-    document.getElementById('p'+_svodTab).classList.add('on');
-  }
+  // Всегда возвращаемся на стартовую страницу
+  hidePods();
 }
 
 function switchSvPeriod(period){
@@ -1477,7 +1475,7 @@ function svTable(rows, showGoldDot, avg, isDay){
       }
     }
     return`<tr style="cursor:pointer" onclick="svOpenCard('${s.mag}','${s.hg?'g':'n'}','${isDay?'d':'m'}')" title="Нажмите для карточки магазина">
-      <td class="sv-store-cell">${dot}<span class="sv-mag">${s.mag} · ${s.pod}</span><span class="sv-name" title="${s.tc}">${s.tc}</span></td>
+      <td class="sv-store-cell" title="${s.tc}">${dot}<span class="sv-name">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</span><span class="sv-mag">${s.tc.split(',').slice(1).join(',').trim()}</span></td>
       <td><span class="p ${cDol}">${fm(s.tYTo)}</span></td>
       <td><span class="p ${cP(s.plan)}">${fm(s.plan)}</span></td>
       <td><span class="p pN">${fr(s.tY)}₽</span></td>
@@ -1513,50 +1511,48 @@ function svOpenCard(mag,goldKey,dayKey){
       lossBlock=`<div style="margin-top:10px;background:#fff1f2;border:1px solid #fca5a5;border-radius:10px;padding:13px;text-align:center"><div style="font-size:14px;font-weight:700;color:#dc2626">📉 Потери: ${loss.toLocaleString('ru')} ₽</div><div style="font-size:11px;color:#6b7280;margin-top:4px">план выполнен на ${Math.round(s.plan)}%</div></div>`;
     }
   }
-  const kpi=(lbl,val,cls)=>`<div class="ci"><div class="cl">${lbl}</div><div><span class="p ${cls}">${val}</span></div></div>`;
-  const g2m=`display:grid;grid-template-columns:1fr 1fr;gap:6px`;
-  // ── БЛОК СВЕРХУ: Золото / Серебро ──
+  // ci2 — одинаковый стиль ячейки как в основных карточках
+  const ci2=(label,cls,val)=>`<div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.3px">${label}</span><span class="p ${cls}" style="width:100%;text-align:center;box-sizing:border-box">${val}</span></div>`;
+  const g2=`display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px`;
+  // ── БЛОК СВЕРХУ: Доля ЮИ + ТО ЮИ (как в основной карточке) ──
+  const yuiBlockM=`<div style="margin-top:10px;background:#fdf2f8;border:2px solid #f0abdb;border-radius:10px;padding:10px;${g2}">
+    ${ci2('Доля ЮИ',ig?cTG(s.tYTo):cTN(s.tYTo),fm(s.tYTo))}
+    ${ci2('ТО ЮИ','pN',fr(s.tY)+'₽')}
+  </div>`;
+  // ── БЛОК ЗОЛОТО/СЕРЕБРО (как в основной карточке) ──
   const topBlockM=ig
-    ?`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px;margin-bottom:10px">
-        <div style="font-size:9px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px">Золото / Серебро</div>
-        <div style="${g2m}">
-          ${kpi('Доля золота',fm(s.dZol),cZ(s.dZol))}
-          ${kpi('Д.Серебра',fm(s.dSer),'pN')}
-          ${kpi('ТО Золото',fr(s.tZol)+'₽','pN')}
-          ${kpi('ТО Серебро',fr(s.tSer)+'₽','pN')}
-        </div>
+    ?`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px;${g2}">
+        ${ci2('Доля золота',cZ(s.dZol),fm(s.dZol))}
+        ${ci2('Д.Серебра','pN',fm(s.dSer))}
+        ${ci2('ТО Золото','pN',frFull(s.tZol)+'₽')}
+        ${ci2('ТО Серебро','pN',frFull(s.tSer)+'₽')}
       </div>`
-    :`<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:10px;margin-bottom:10px">
-        <div style="font-size:9px;font-weight:700;color:#1e40af;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px">Серебро</div>
-        <div style="${g2m}">
-          ${kpi('Д.Серебра',fm(s.dSer),'pN')}
-          ${kpi('ТО Серебро',fr(s.tSer)+'₽','pN')}
-        </div>
+    :`<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:8px;${g2}">
+        ${ci2('Д.Серебра','pN',fm(s.dSer))}
+        ${ci2('ТО Серебро','pN',fr(s.tSer)+'₽')}
       </div>`;
-  // ── БЛОК СЕРЕДИНА ──
-  const midBlockM=`<div style="${g2m}">
-    ${kpi('LFL сер.',fm(s.sLfl),cL(s.sLfl))}
-    ${ig?kpi('LFL зол.',fm(s.zLfl),cL(s.zLfl)):''}
-    ${kpi('Ср.чек',fr(s.srch),cSrch(s.srch,avg))}
-    ${kpi('Рассрочка',fm(s.rass),cR(s.rass))}
-    ${kpi('Спасибо',fm(s.spas),cS(s.spas))}
-    ${kpi('Выдача%',fm(s.vPct),cV(s.vPct))}
-    ${kpi('Конв.',fm(s.konv),cK(s.konv))}
-  </div>`;
-  // ── БЛОК СНИЗУ: Доля ЮИ + ТО ЮИ — выделен ──
-  const yuiBlockM=`<div style="margin-top:10px;background:#fdf2f8;border:2px solid #f0abdb;border-radius:10px;padding:10px">
-    <div style="font-size:9px;font-weight:700;color:#ad1472;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:6px">Юнит-Экономика</div>
-    <div style="${g2m}">
-      ${kpi('Доля ЮИ',fm(s.tYTo),ig?cTG(s.tYTo):cTN(s.tYTo))}
-      ${kpi('ТО ЮИ',fr(s.tY)+'₽','pN')}
-    </div>
-  </div>`;
+  // ── БЛОК СЕРЕДИНА (как в основной карточке) ──
+  const midMetricsM=ig
+    ?[ci2('LFL Серебро',cL(s.sLfl),fm(s.sLfl)),
+      ci2('LFL Золото',cL(s.zLfl),fm(s.zLfl)),
+      ci2('Ср.чек',cSrch(s.srch,avg),fr(s.srch)),
+      ci2('Рассрочка',cR(s.rass),fm(s.rass)),
+      ci2('Спасибо',cS(s.spas),fm(s.spas)),
+      ci2('Конверсия',cK(s.konv),fm(s.konv))]
+    :[ci2('LFL Серебро',cL(s.sLfl),fm(s.sLfl)),
+      ci2('Ср.чек',cSrch(s.srch,avg),fr(s.srch)),
+      ci2('Рассрочка',cR(s.rass),fm(s.rass)),
+      ci2('Спасибо',cS(s.spas),fm(s.spas)),
+      ci2('Конверсия',cK(s.konv),fm(s.konv))];
   const body=`
-    <div class="ch"><div><div class="cn">${s.tc}</div><div class="cs">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</div></div>
-    <span class="p ${cP(s.plan)}">${fm(s.plan)}</span></div>
+    <div class="ch"><div>
+      <div class="cn">${s.mag} · ${s.tc.split(',')[0]} · ${s.pod}</div>
+      <div class="cs">${s.tc.split(',').slice(1).join(',').trim()}</div>
+    </div>
+    <span class="p ${cP(s.plan)}" style="font-size:12px;padding:3px 8px">${fm(s.plan)}</span></div>
     ${yuiBlockM}
     ${topBlockM}
-    ${midBlockM}
+    <div style="${g2};margin-top:8px">${midMetricsM.join('')}</div>
     ${lossBlock}`;
   document.getElementById('sv-modal-body').innerHTML=body;
   document.getElementById('sv-modal').style.display='flex';

@@ -200,6 +200,7 @@ tr.row-reg td:nth-child(1),tr.row-reg td:nth-child(2){background:#fce7f3 !import
 .sv-gold-dot{background:#f59e0b}
 /* Рейтинг ТОП/АНТИТОП — 2 колонки, на мобиле 1 */
 .sv-rating-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.sv-rating-grid>*{min-width:0}
 @media(max-width:600px){.sv-rating-grid{grid-template-columns:repeat(2,1fr)}}
 /* Кнопки переключения таблиц — перенос на мобиле */
 .sv-toggle-btns{display:flex;gap:8px;margin:10px 0 8px;align-items:center;flex-wrap:wrap}
@@ -1428,7 +1429,7 @@ function svRenderRating(rows){
   const rlist=(arr,fn,cls)=>arr.slice(0,3).map((s,i)=>
     `<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;padding:2px 0;border-bottom:1px solid #f3e8f5">
       <span style="color:#9ca3af;min-width:14px">${i+1}.</span>
-      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 4px;font-size:9px">${s.tc}</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 4px;font-size:9px">${s.tc.split(',')[0]}</span>
       <span class="p ${cls}" style="font-size:10px;min-width:48px;text-align:center">${fn(s)}</span>
     </div>`).join('');
   const w=document.getElementById('sv-rating-wrap');

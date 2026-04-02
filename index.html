@@ -1107,15 +1107,22 @@ function re(t){
     // Нет фильтра — показываем ТОП/АНТИТОП магазинов
     mEl.style.display='';
     mEl.style.gridTemplateColumns='';
-    mEl.classList.toggle('m2',isMonth);
+    mEl.style.display = isMonth ? 'block' : '';
+    mEl.classList.remove('m2');
     if(mTitle)mTitle.textContent='Рейтинг магазинов';
     mEl.innerHTML=isMonth
-      ?`<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><div style="display:grid;grid-template-columns:repeat(4,minmax(190px,1fr));gap:8px;min-width:760px">
-         <div class="mc"><div class="mc-l">ТОП-10 оборот ЮИ</div>${lst(top5tY,s=>fr(s.tY)+'₽')}</div>
-         <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-10 оборот ЮИ</span></div>${lst(bot5tY,s=>fr(s.tY)+'₽')}</div>
-         <div class="mc"><div class="mc-l">ТОП-10 доля ЮИ</div>${lst(top5sh,s=>fm(s.tYTo))}</div>
-         <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-10 доля ЮИ</span></div>${lst(bot5sh,s=>fm(s.tYTo))}</div>
-         </div></div>`
+      ?`<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory">
+          <div style="display:flex;width:200%">
+            <div style="width:50%;flex-shrink:0;scroll-snap-align:start;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <div class="mc"><div class="mc-l">ТОП-10 оборот ЮИ</div>${lst(top5tY,s=>fr(s.tY)+'₽')}</div>
+              <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-10 оборот ЮИ</span></div>${lst(bot5tY,s=>fr(s.tY)+'₽')}</div>
+            </div>
+            <div style="width:50%;flex-shrink:0;scroll-snap-align:start;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <div class="mc"><div class="mc-l">ТОП-10 доля ЮИ</div>${lst(top5sh,s=>fm(s.tYTo))}</div>
+              <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-10 доля ЮИ</span></div>${lst(bot5sh,s=>fm(s.tYTo))}</div>
+            </div>
+          </div>
+        </div>`
       :`<div class="mc"><div class="mc-l">ТОП-5 оборот ЮИ</div>${lst(top5tY,s=>fr(s.tY)+'₽')}</div>
         <div class="mc mc-anti"><div class="mc-anti-hdr"><span class="mc-anti-icon">🔴</span><span class="mc-l">АНТИТОП-5 оборот ЮИ</span></div>${lst(bot5tY,s=>fr(s.tY)+'₽')}</div>
         <div class="mc"><div class="mc-l">ТОП-5 доля ЮИ</div>${lst(top5sh,s=>fm(s.tYTo))}</div>

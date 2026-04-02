@@ -376,10 +376,10 @@ function renderPod(podName){
   });
   html+=`</div></div>`;
   html+=`<div class="table-wrap"><table>
-    <tr><th>Магазин</th><th class="c">Кат</th><th class="c">Оборач.</th><th class="c">Наполн.</th><th class="r">Запас</th><th class="r">Прод.</th></tr>`;
+    <tr><th>Магазин</th><th class="c">Кат</th><th class="c">Оборач.</th><th class="c">Наполн.</th><th class="r">Физ. запас</th><th class="r">Продажи, шт</th></tr>`;
   allS.forEach(s=>{
     html+=`<tr onclick="openMag('${s.mag}')" style="cursor:pointer">
-      <td style="white-space:nowrap"><b>${s.mag}</b> ${s.tc.split(',')[0].trim()}</td>
+      <td title="${s.tc}" style="white-space:nowrap"><b>${s.mag}</b><br><span style="font-size:10px;color:#888">${s.tc.split(',')[0].trim().slice(0,9)}</span></td>
       <td class="c" style="font-weight:600">${s.catYU!=null?Math.round(s.catYU):'—'}</td>
       <td class="c">${turnTag(s.turn,false)}</td>
       <td class="c">${fillTag(s.fill)}</td>
@@ -430,10 +430,10 @@ function renderPod(podName){
       html+=`</div></div>`;
     }
     html+=`<div class="table-wrap"><table>
-      <tr><th>Магазин</th><th class="c gold">Кат</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.</th><th class="r gold">Запас</th><th class="r gold">Прод.</th></tr>`;
+      <tr><th>Магазин</th><th class="c gold">Кат</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.</th><th class="r gold">Физ. запас</th><th class="r gold">Продажи, шт</th></tr>`;
     allG.forEach(g=>{
       html+=`<tr onclick="openMag('${g.mag}')" style="cursor:pointer">
-        <td style="white-space:nowrap"><b>${g.mag}</b> ${g.tc.split(',')[0].trim()}</td>
+        <td title="${g.tc}" style="white-space:nowrap"><b>${g.mag}</b><br><span style="font-size:10px;color:#888">${g.tc.split(',')[0].trim().slice(0,9)}</span></td>
         <td class="c" style="font-weight:600">${g.catYU!=null?Math.round(g.catYU):'—'}</td>
         <td class="c">${turnTag(g.turn,true)}</td>
         <td class="c">${fillTag(g.fill)}</td>
@@ -494,11 +494,11 @@ function renderRegion(){
   
   html+=`<div class="section-title">Все магазины · Серебро</div>
   <div class="table-wrap"><table>
-    <tr><th>Магазин</th><th>Под.</th><th class="c">Кат</th><th class="c">Об.</th><th class="c">Наполн.</th><th class="r">Запас</th><th class="r">Прод.</th></tr>`;
+    <tr><th>Магазин</th><th>Под.</th><th class="c">Кат</th><th class="c">Об.</th><th class="c">Наполн.</th><th class="r">Физ. запас</th><th class="r">Продажи, шт</th></tr>`;
   [...SILVER].sort((a,b)=>(a.turn||999)-(b.turn||999)).forEach(s=>{
     html+=`<tr onclick="openMag('${s.mag}')" style="cursor:pointer">
-      <td style="white-space:nowrap"><b>${s.mag}</b> ${s.tc.split(',')[0].trim()}</td>
-      <td style="font-size:10px;color:#888">${s.pod}</td>
+      <td title="${s.tc}" style="white-space:nowrap"><b>${s.mag}</b><br><span style="font-size:10px;color:#888">${s.tc.split(',')[0].trim().slice(0,9)}</span></td>
+      <td style="font-size:11px;color:#666">${s.pod}</td>
       <td class="c" style="font-weight:600">${s.catYU!=null?Math.round(s.catYU):'—'}</td>
       <td class="c">${turnTag(s.turn,false)}</td>
       <td class="c">${fillTag(s.fill)}</td>
@@ -539,11 +539,11 @@ function renderRegion(){
 
   html+=`<div class="section-title">Все магазины · Золото</div>
   <div class="table-wrap"><table>
-    <tr><th>Магазин</th><th>Под.</th><th class="c gold">Кат</th><th class="c gold">Об.</th><th class="c gold">Наполн.</th><th class="r gold">Запас</th><th class="r gold">Прод.</th></tr>`;
+    <tr><th>Магазин</th><th>Под.</th><th class="c gold">Кат</th><th class="c gold">Об.</th><th class="c gold">Наполн.</th><th class="r gold">Физ. запас</th><th class="r gold">Продажи, шт</th></tr>`;
   [...GOLD].sort((a,b)=>(a.turn||999)-(b.turn||999)).forEach(g=>{
     html+=`<tr onclick="openMag('${g.mag}')" style="cursor:pointer">
-      <td style="white-space:nowrap"><b>${g.mag}</b> ${g.tc.split(',')[0].trim()}</td>
-      <td style="font-size:10px;color:#888">${g.pod}</td>
+      <td title="${g.tc}" style="white-space:nowrap"><b>${g.mag}</b><br><span style="font-size:10px;color:#888">${g.tc.split(',')[0].trim().slice(0,9)}</span></td>
+      <td style="font-size:11px;color:#666">${g.pod}</td>
       <td class="c" style="font-weight:600">${g.catYU!=null?Math.round(g.catYU):'—'}</td>
       <td class="c">${turnTag(g.turn,true)}</td>
       <td class="c">${fillTag(g.fill)}</td>

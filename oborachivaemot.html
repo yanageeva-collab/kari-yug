@@ -217,7 +217,7 @@ function buildStoreMetrics(s,g,isGold){
         <div style="font-size:13px;font-weight:600;margin-top:3px">Ваш магазин: <span class="${dCls}">${dSign}${diff} нед ${diff<0?'(лучше ✓)':diff===0?'(= среднему)':'(хуже)'}</span></div>
       </div>`;
     }
-    html+=buildCatTable(s,false);
+    html+=buildCatTable(s,false,REG_SER.turnover);
     return html;
   } else {
     // Gold section
@@ -253,12 +253,12 @@ function buildStoreMetrics(s,g,isGold){
         <div style="font-size:13px;font-weight:600;margin-top:3px">Ваш магазин: <span class="${dClsG}">${dSignG}${diffG} нед ${diffG<0?'(лучше ✓)':diffG===0?'(= среднему)':'(хуже)'}</span></div>
       </div>`;
     }
-    html+=buildCatTable(g,true);
+    html+=buildCatTable(g,true,REG_GOLD.turnover);
     return html;
   }
 }
 
-function buildCatTable(s,isGold){
+function buildCatTable(s,isGold,regTurn){
   if(!s.cat)return '';
   const thCls=isGold?'gold':'';
   let html=`<div class="section-title">${isGold?'⭐':'🥈'} Категории ЮИ</div>
@@ -268,11 +268,18 @@ function buildCatTable(s,isGold){
   cats.forEach(cat=>{
     const c=s.cat[cat];
     if(!c)return;
+    let cmpHtml='';
+    if(c.turn!=null&&regTurn!=null){
+      const diff=Math.round(c.turn)-Math.round(regTurn);
+      if(diff>0) cmpHtml=`<br><span style="font-size:10px;color:#e53935">+${diff} нед от ЮГ ↑</span>`;
+      else if(diff<0) cmpHtml=`<br><span style="font-size:10px;color:#43a047">${diff} нед от ЮГ ✓</span>`;
+      else cmpHtml=`<br><span style="font-size:10px;color:#888">= ЮГ</span>`;
+    }
     html+=`<tr>
       <td style="font-weight:600">${cat}</td>
       <td class="r">${num(c.fact)}</td>
       <td class="r">${num(c.stock)}</td>
-      <td class="c">${turnTag(c.turn,isGold)}</td>
+      <td class="c">${turnTag(c.turn,isGold)}${cmpHtml}</td>
     </tr>`;
   });
   html+=`</table></div>`;

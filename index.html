@@ -1505,7 +1505,7 @@ function svTable(rows, showGoldDot, avg, isDay){
       }
     }
     return`<tr style="cursor:pointer" onclick="svOpenCard('${s.mag}','${s.hg?'g':'n'}','${isDay?'d':'m'}')" title="Нажмите для карточки магазина">
-      <td class="sv-store-cell" title="${s.tc}">${dot}<span class="sv-name">${s.pod}</span><span class="sv-mag">${s.tc.split(',')[0]}</span></td>
+      <td class="sv-store-cell" title="${s.tc}">${dot}<span class="sv-name">${s.pod}</span></td>
       <td style="text-align:center;padding:4px 5px;white-space:nowrap;font-size:11px;font-weight:700;color:#111827">${s.mag}</td>
       <td><span class="p ${cDol}">${fm(s.tYTo)}</span></td>
       <td><span class="p ${cP(s.plan)}">${fm(s.plan)}</span></td>

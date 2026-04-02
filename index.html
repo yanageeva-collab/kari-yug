@@ -1226,6 +1226,8 @@ function showPods(t){
 function hidePods(){
   document.getElementById('pods-panel').style.display='none';
   document.getElementById('svodny-panel').style.display='none';
+  // Сбрасываем фильтр подразделения — возвращаем "Регион ЮГ"
+  ['g','n','gm','nm'].forEach(t=>{const s=document.getElementById('pd'+t);if(s)s.value='РЕГИОН';});
   // Восстанавливаем главный экран — вкладки + нужная панель
   const tabs=['g','n','gm','nm'];
   document.querySelector('.tabs').style.display='';

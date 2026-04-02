@@ -33,15 +33,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .metric-card.gold-card.highlight .lbl,.metric-card.gold-card.highlight .sub{color:var(--gold-text);opacity:.85}
 .section-title{font-size:13px;font-weight:700;color:var(--pink);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.5px}
 .table-wrap{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:12px;overflow-x:auto;overflow-y:auto;max-height:70vh}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th{background:var(--pink);color:#fff;padding:8px 6px;text-align:left;font-weight:600;font-size:11px;white-space:nowrap;position:sticky;top:0;z-index:2}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{background:var(--pink);color:#fff;padding:7px 4px;text-align:left;font-weight:600;font-size:11px;white-space:nowrap;position:sticky;top:0;z-index:2}
 th.gold{background:#d97706}
 th.r,td.r{text-align:right}
 th.c,td.c{text-align:center}
-td{padding:7px 6px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+td{padding:6px 4px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafafa}
-.store-name{font-weight:600;font-size:12px}
+.store-name{font-weight:600;font-size:11px}
 .store-tc{font-size:10px;color:#888;display:block}
 .tG {background:var(--g-bg);color:var(--g-text);border-radius:6px;padding:2px 6px;font-weight:700;display:inline-block}
 .tLG{background:#d1fae5;color:#065f46;border-radius:6px;padding:2px 6px;font-weight:600;display:inline-block}
@@ -376,7 +376,7 @@ function renderPod(podName){
   });
   html+=`</div></div>`;
   html+=`<div class="table-wrap"><table>
-    <tr><th>Магазин</th><th class="c">Кат</th><th class="c">Оборач.</th><th class="c">Наполн.</th><th class="r">Физ. запас</th><th class="r">Продажи, шт</th></tr>`;
+    <tr><th>Магазин</th><th class="c">Кат</th><th class="c">Об.</th><th class="c">Напол.</th><th class="r">Запас</th><th class="r">Прод.</th></tr>`;
   allS.forEach(s=>{
     html+=`<tr onclick="openMag('${s.mag}')" style="cursor:pointer">
       <td><span class="store-name">${s.mag}</span><span class="store-tc">${s.tc}</span></td>
@@ -430,7 +430,7 @@ function renderPod(podName){
       html+=`</div></div>`;
     }
     html+=`<div class="table-wrap"><table>
-      <tr><th>Магазин</th><th class="c gold">Кат</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.</th><th class="r gold">Физ. запас</th><th class="r gold">Продажи, шт</th></tr>`;
+      <tr><th>Магазин</th><th class="c gold">Кат</th><th class="c gold">Об.</th><th class="c gold">Напол.</th><th class="r gold">Запас</th><th class="r gold">Прод.</th></tr>`;
     allG.forEach(g=>{
       html+=`<tr onclick="openMag('${g.mag}')" style="cursor:pointer">
         <td><span class="store-name">${g.mag}</span><span class="store-tc">${g.tc}</span></td>
@@ -478,7 +478,7 @@ function renderRegion(){
   </div>`;
   html+=`<div class="section-title">Подразделения</div>
   <div class="table-wrap"><table>
-    <tr><th>Подразделение</th><th class="c">Оборач.</th><th class="c">Наполн.ср</th><th class="r">Магазинов</th></tr>`;
+    <tr><th>Подразделение</th><th class="c">Об.</th><th class="c">Напол.</th><th class="r">Магазинов</th></tr>`;
   const podsSorted=pods.filter(p=>POD_SER[p]).sort((a,b)=>(POD_SER[a].turnover||999)-(POD_SER[b].turnover||999));
   podsSorted.forEach(pod=>{
     const ps=POD_SER[pod];
@@ -494,7 +494,7 @@ function renderRegion(){
   
   html+=`<div class="section-title">Все магазины · Серебро</div>
   <div class="table-wrap"><table>
-    <tr><th>Магазин</th><th>Подразд.</th><th class="c">Кат</th><th class="c">Оборач.</th><th class="c">Наполн.</th><th class="r">Физ. запас</th><th class="r">Продажи, шт</th></tr>`;
+    <tr><th>Магазин</th><th>Подразд.</th><th class="c">Кат</th><th class="c">Об.</th><th class="c">Напол.</th><th class="r">Запас</th><th class="r">Прод.</th></tr>`;
   [...SILVER].sort((a,b)=>(a.turn||999)-(b.turn||999)).forEach(s=>{
     html+=`<tr onclick="openMag('${s.mag}')" style="cursor:pointer">
       <td><span class="store-name">${s.mag}</span><span class="store-tc">${s.tc}</span></td>
@@ -523,7 +523,7 @@ function renderRegion(){
   </div>`;
   html+=`<div class="section-title">Подразделения · Золото</div>
   <div class="table-wrap"><table>
-    <tr><th>Подразделение</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.ср</th><th class="r gold">Магазинов</th></tr>`;
+    <tr><th>Подразделение</th><th class="c gold">Об.</th><th class="c gold">Напол.</th><th class="r gold">Магазинов</th></tr>`;
   const podsGSorted=pods.filter(p=>POD_GOLD[p]).sort((a,b)=>(POD_GOLD[a].turnover||999)-(POD_GOLD[b].turnover||999));
   podsGSorted.forEach(pod=>{
     const pg=POD_GOLD[pod];
@@ -539,7 +539,7 @@ function renderRegion(){
 
   html+=`<div class="section-title">Все магазины · Золото</div>
   <div class="table-wrap"><table>
-    <tr><th>Магазин</th><th>Подразд.</th><th class="c gold">Кат</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.</th><th class="r gold">Физ. запас</th><th class="r gold">Продажи, шт</th></tr>`;
+    <tr><th>Магазин</th><th>Подразд.</th><th class="c gold">Кат</th><th class="c gold">Об.</th><th class="c gold">Напол.</th><th class="r gold">Запас</th><th class="r gold">Прод.</th></tr>`;
   [...GOLD].sort((a,b)=>(a.turn||999)-(b.turn||999)).forEach(g=>{
     html+=`<tr onclick="openMag('${g.mag}')" style="cursor:pointer">
       <td><span class="store-name">${g.mag}</span><span class="store-tc">${g.tc}</span></td>

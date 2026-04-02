@@ -98,21 +98,28 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 <script>
-  (function(){
-    // Проверяем сохранённый пароль
-    if(localStorage.getItem('yuiAuth')==='ok'){
-      document.getElementById('pwScreen').style.display='none';
-    }
-  })();
+  // Ждём загрузки DOM
+  document.addEventListener('DOMContentLoaded', function(){
+    // Если уже вводили пароль раньше — сразу скрываем экран
+    try {
+      if(localStorage.getItem('yuiAuth')==='ok'){
+        document.getElementById('pwScreen').style.display='none';
+      }
+    } catch(e){}
+    // Фокус на поле ввода
+    document.getElementById('pwInput').focus();
+  });
+
   function checkPw(){
-    const v=document.getElementById('pwInput').value.trim().toLowerCase();
-    // Принимаем: юи / ЮИ / Юи / yui / ui / кари
-    const ok=['юи','yui','ui','кари','kari'];
-    if(ok.includes(v)){
-      localStorage.setItem('yuiAuth','ok');
+    var raw = document.getElementById('pwInput').value;
+    var v = raw.trim();
+    // Сравниваем без учёта регистра — вручную список вариантов
+    var variants = ['юи','ЮИ','Юи','юИ','yui','YUI','Yui','ui','UI','кари','КАРИ','Кари','kari','KARI'];
+    if(variants.indexOf(v) !== -1){
+      try { localStorage.setItem('yuiAuth','ok'); } catch(e){}
       document.getElementById('pwScreen').style.display='none';
     } else {
-      document.getElementById('pwErr').textContent='Неверный пароль';
+      document.getElementById('pwErr').textContent='Неверный пароль. Введите: ЮИ';
       document.getElementById('pwInput').value='';
       document.getElementById('pwInput').focus();
     }

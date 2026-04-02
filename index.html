@@ -1241,10 +1241,9 @@ function hidePods(){
     // Подсвечиваем кнопку "Таблица"
     const vtog=document.querySelector('#p'+t+' .vtog');
     if(vtog){vtog.querySelectorAll('.vb').forEach((b,i)=>b.classList.toggle('on',i===0));}
-    // Синхронизируем стрелку рейтинга с его видимостью
-    const mEl=document.getElementById('m'+t);
+    // re() покажет рейтинг для РЕГИОН — стрелку ставим ▼
     const mArr=document.getElementById('ma-'+t);
-    if(mEl&&mArr){mArr.textContent=mEl.style.display==='none'?'▶':'▼';}
+    if(mArr)mArr.textContent='▼';
   });
   // Восстанавливаем главный экран — вкладки + нужная панель
   const tabs=['g','n','gm','nm'];

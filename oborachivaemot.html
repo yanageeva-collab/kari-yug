@@ -435,15 +435,6 @@ function renderRegion(){
       <div class="val">${SILVER.length}</div>
       <div class="lbl">Магазинов серебро</div>
     </div>
-    <div class="metric-card gold-card">
-      <div class="val">${REG_GOLD.turnover}</div>
-      <div class="lbl">Оборачиваемость золото</div>
-      <div class="sub">Место #${REG_GOLD.turnRank} в КАРИ</div>
-    </div>
-    <div class="metric-card">
-      <div class="val">${GOLD.length}</div>
-      <div class="lbl">Магазинов золото</div>
-    </div>
   </div>`;
   html+=`<div class="section-title">Подразделения</div>
   <div class="table-wrap"><table>
@@ -477,8 +468,19 @@ function renderRegion(){
   });
   html+=`</table></div></div>`;
 
-  // Вкладка Золото (идентична серебро по структуре)
+  // Вкладка Золото
   html+=`<div class="tab-pane" id="reg-tab-gold">`;
+  html+=`<div class="metrics">
+    <div class="metric-card gold-card highlight">
+      <div class="val">${REG_GOLD.turnover}</div>
+      <div class="lbl">Оборачиваемость золото</div>
+      <div class="sub">Место #${REG_GOLD.turnRank} в КАРИ</div>
+    </div>
+    <div class="metric-card gold-card">
+      <div class="val">${GOLD.length}</div>
+      <div class="lbl">Магазинов золото</div>
+    </div>
+  </div>`;
   html+=`<div class="section-title">Подразделения · Золото</div>
   <div class="table-wrap"><table>
     <tr><th>Подразделение</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.ср</th><th class="r gold">Магазинов</th></tr>`;

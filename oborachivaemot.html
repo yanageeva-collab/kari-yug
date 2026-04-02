@@ -186,8 +186,11 @@ function buildStoreMetrics(s,g,isGold){
   } else {
     // Gold section
     const podG=POD_GOLD[g.pod]||{};
+    const diffG=g.turn&&podG.turnover?Math.round(g.turn-podG.turnover):null;
+    const dSignG=diffG!=null?(diffG>0?'+':''):'';
+    const dClsG=diffG==null?'':(diffG<=0?'fill-ok':diffG<=5?'fill-warn':'fill-bad');
     let html=`<div class="metrics">
-      <div class="metric-card gold-card">
+      <div class="metric-card gold-card highlight">
         <div class="val">${g.turn!=null?Math.round(g.turn):'—'}</div>
         <div class="lbl">Оборачиваемость, нед</div>
         <div class="sub">ЮГ ср: ${REG_GOLD.turnover} нед</div>
@@ -203,11 +206,17 @@ function buildStoreMetrics(s,g,isGold){
         <div class="sub">ЮГ: ${REG_GOLD.sales} шт</div>
       </div>
       <div class="metric-card gold-card">
-        <div class="val">${g.rating!=null?'#'+Math.round(g.rating):'—'}</div>
-        <div class="lbl">Рейтинг КАРИ</div>
-        <div class="sub">${g.share!=null?'Доля ТО: '+(g.share*100).toFixed(1)+'%':''}</div>
+        <div class="val">${num(g.stock)}</div>
+        <div class="lbl">Физ. запас, шт</div>
+        <div class="sub">Модулей: ${num(g.modules)}</div>
       </div>
     </div>`;
+    if(diffG!=null){
+      html+=`<div class="store-header" style="padding:10px 14px;margin-bottom:12px">
+        <div style="font-size:12px;color:#666">Подразделение <b>${g.pod}</b>: ${podG.turnover} нед</div>
+        <div style="font-size:13px;font-weight:600;margin-top:3px">Ваш магазин: <span class="${dClsG}">${dSignG}${diffG} нед ${diffG<0?'(лучше ✓)':diffG===0?'(= среднему)':'(хуже)'}</span></div>
+      </div>`;
+    }
     html+=buildCatTable(g,true);
     return html;
   }
@@ -285,7 +294,17 @@ function renderPod(podName){
   const top3=sortedS.slice(0,3);
   const bot3=sortedS.slice(-3).reverse();
 
-  let html=`<div class="metrics">
+  const hasG=storesG.length>0;
+  // Сначала таб-бар, потом содержимое вкладок
+  let html=`<div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('pod','ser',this)">🥈 Серебро (${stores.length})</button>
+    ${hasG?`<button class="tab-btn gold-tab" onclick="switchTab('pod','gold',this)">⭐ Золото (${storesG.length})</button>`:''}
+  </div>`;
+
+  // Вкладка серебро — метрики и топ/антитоп только здесь
+  const allS=[...stores].sort((a,b)=>(a.turn||999)-(b.turn||999));
+  html+=`<div class="tab-pane active" id="pod-tab-ser">
+  <div class="metrics">
     <div class="metric-card highlight">
       <div class="val">${podS.turnover||'—'}</div>
       <div class="lbl">Оборачиваемость серебро</div>
@@ -304,7 +323,6 @@ function renderPod(podName){
       <div class="lbl">Магазинов золото</div>
     </div>
   </div>`;
-
   html+=`<div class="topbot">
     <div class="topbot-card"><h3 class="top">✅ Топ-3</h3>`;
   top3.forEach(s=>{
@@ -317,42 +335,33 @@ function renderPod(podName){
     html+=`<div class="topbot-row"><span class="topbot-name" title="${s.tc}"><b>${s.mag}</b> ${city}</span>${turnTag(s.turn,false)}</div>`;
   });
   html+=`</div></div>`;
-
-  const hasG=storesG.length>0;
-  html+=`<div class="tabs-bar">
-    <button class="tab-btn active" onclick="switchTab('pod','ser',this)">🥈 Серебро (${stores.length})</button>
-    ${hasG?`<button class="tab-btn gold-tab" onclick="switchTab('pod','gold',this)">⭐ Золото (${storesG.length})</button>`:''}
-  </div>`;
-
-  // Таблица серебро
-  const allS=[...stores].sort((a,b)=>(a.turn||999)-(b.turn||999));
-  html+=`<div class="tab-pane active" id="pod-tab-ser">
-  <div class="table-wrap"><table>
-    <tr><th>Магазин</th><th class="c">Кат</th><th class="c">Оборач.</th><th class="c">Наполн.</th><th class="r">Продажи</th></tr>`;
+  html+=`<div class="table-wrap"><table>
+    <tr><th>Магазин</th><th class="c">Кат</th><th class="c">Оборач.</th><th class="c">Наполн.</th><th class="r">Физ. запас</th><th class="r">Продажи, шт</th></tr>`;
   allS.forEach(s=>{
     html+=`<tr onclick="openMag('${s.mag}')" style="cursor:pointer">
       <td><span class="store-name">${s.mag}</span><span class="store-tc">${s.tc}</span></td>
       <td class="c" style="font-weight:600">${s.catYU!=null?Math.round(s.catYU):'—'}</td>
       <td class="c">${turnTag(s.turn,false)}</td>
       <td class="c">${fillTag(s.fill)}</td>
+      <td class="r">${num(s.stock)}</td>
       <td class="r">${num(s.sales)}</td>
     </tr>`;
   });
   html+=`</table></div></div>`;
 
-  // Таблица золото (идентична серебро + рейтинг)
+  // Таблица золото
   if(hasG){
     const allG=[...storesG].sort((a,b)=>(a.turn||999)-(b.turn||999));
+    const sortedG=[...storesG].filter(g=>g.turn!=null).sort((a,b)=>a.turn-b.turn);
+    const top3G=sortedG.slice(0,3);
+    const bot3G=sortedG.slice(-3).reverse();
     html+=`<div class="tab-pane" id="pod-tab-gold">`;
+    // Метрики золото подразделения
     if(podG){
-      html+=`<div class="metrics" style="margin-bottom:10px">
-        <div class="metric-card gold-card">
-          <div class="val">#${Math.round(podG.rating||0)}</div>
-          <div class="lbl">Рейтинг среди подразд.</div>
-        </div>
-        <div class="metric-card gold-card">
-          <div class="val">${turnTag(podG.turnover,true)}</div>
-          <div class="lbl">Оборачиваемость</div>
+      html+=`<div class="metrics">
+        <div class="metric-card gold-card highlight">
+          <div class="val">${podG.turnover||'—'}</div>
+          <div class="lbl">Оборачиваемость золото</div>
           <div class="sub">ЮГ: ${REG_GOLD.turnover} нед</div>
         </div>
         <div class="metric-card gold-card">
@@ -360,21 +369,36 @@ function renderPod(podName){
           <div class="lbl">Наполненность ср.</div>
         </div>
         <div class="metric-card gold-card">
-          <div class="val">${(podG.share!=null?(podG.share*100).toFixed(1)+'%':'—')}</div>
-          <div class="lbl">Доля золота в ТО</div>
+          <div class="val">${storesG.length}</div>
+          <div class="lbl">Магазинов золото</div>
         </div>
       </div>`;
     }
+    // Топ/Антитоп золото
+    if(top3G.length>0){
+      html+=`<div class="topbot">
+        <div class="topbot-card"><h3 class="top">✅ Топ-3</h3>`;
+      top3G.forEach(g=>{
+        const city=g.tc.split(',')[0].trim();
+        html+=`<div class="topbot-row"><span class="topbot-name" title="${g.tc}"><b>${g.mag}</b> ${city}</span>${turnTag(g.turn,true)}</div>`;
+      });
+      html+=`</div><div class="topbot-card"><h3 class="bot">🔴 Антитоп-3</h3>`;
+      bot3G.forEach(g=>{
+        const city=g.tc.split(',')[0].trim();
+        html+=`<div class="topbot-row"><span class="topbot-name" title="${g.tc}"><b>${g.mag}</b> ${city}</span>${turnTag(g.turn,true)}</div>`;
+      });
+      html+=`</div></div>`;
+    }
     html+=`<div class="table-wrap"><table>
-      <tr><th>Магазин</th><th class="c gold">Кат</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.</th><th class="c gold">Рейтинг</th><th class="r gold">Доля ТО</th></tr>`;
+      <tr><th>Магазин</th><th class="c gold">Кат</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.</th><th class="r gold">Физ. запас</th><th class="r gold">Продажи, шт</th></tr>`;
     allG.forEach(g=>{
       html+=`<tr onclick="openMag('${g.mag}')" style="cursor:pointer">
         <td><span class="store-name">${g.mag}</span><span class="store-tc">${g.tc}</span></td>
         <td class="c" style="font-weight:600">${g.catYU!=null?Math.round(g.catYU):'—'}</td>
         <td class="c">${turnTag(g.turn,true)}</td>
         <td class="c">${fillTag(g.fill)}</td>
-        <td class="c">${g.rating!=null?'<span class="rank-badge gold">#'+Math.round(g.rating)+'</span>':'—'}</td>
-        <td class="r">${g.share!=null?(g.share*100).toFixed(1)+'%':'—'}</td>
+        <td class="r">${num(g.stock)}</td>
+        <td class="r">${num(g.sales)}</td>
       </tr>`;
     });
     html+=`</table></div></div>`;
@@ -393,11 +417,23 @@ function renderRegion(){
 
   const pods=['Краснодар','Черноморское','Кавказ','Крым','Ростов','Сочи'];
 
-  let html=`<div class="metrics">
+  // Сначала таб-бар
+  let html=`<div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('reg','ser',this)">🥈 Серебро</button>
+    <button class="tab-btn gold-tab" onclick="switchTab('reg','gold',this)">⭐ Золото</button>
+  </div>`;
+
+  // Вкладка Серебро — метрики только здесь
+  html+=`<div class="tab-pane active" id="reg-tab-ser">`;
+  html+=`<div class="metrics">
     <div class="metric-card highlight">
       <div class="val">${REG_SER.turnover}</div>
       <div class="lbl">Оборачиваемость серебро</div>
       <div class="sub">Место #${REG_SER.rating||2} в КАРИ</div>
+    </div>
+    <div class="metric-card">
+      <div class="val">${SILVER.length}</div>
+      <div class="lbl">Магазинов серебро</div>
     </div>
     <div class="metric-card gold-card">
       <div class="val">${REG_GOLD.turnover}</div>
@@ -405,22 +441,10 @@ function renderRegion(){
       <div class="sub">Место #${REG_GOLD.turnRank} в КАРИ</div>
     </div>
     <div class="metric-card">
-      <div class="val">${SILVER.length}</div>
-      <div class="lbl">Магазинов серебро</div>
-    </div>
-    <div class="metric-card">
       <div class="val">${GOLD.length}</div>
       <div class="lbl">Магазинов золото</div>
     </div>
   </div>`;
-
-  html+=`<div class="tabs-bar">
-    <button class="tab-btn active" onclick="switchTab('reg','ser',this)">🥈 Серебро</button>
-    <button class="tab-btn gold-tab" onclick="switchTab('reg','gold',this)">⭐ Золото</button>
-  </div>`;
-
-  // Вкладка Серебро
-  html+=`<div class="tab-pane active" id="reg-tab-ser">`;
   html+=`<div class="section-title">Подразделения</div>
   <div class="table-wrap"><table>
     <tr><th>Подразделение</th><th class="c">Оборач.</th><th class="c">Наполн.ср</th><th class="r">Магазинов</th></tr>`;
@@ -439,7 +463,7 @@ function renderRegion(){
   
   html+=`<div class="section-title">Все магазины · Серебро</div>
   <div class="table-wrap"><table>
-    <tr><th>Магазин</th><th>Подразд.</th><th class="c">Кат</th><th class="c">Оборач.</th><th class="c">Наполн.</th></tr>`;
+    <tr><th>Магазин</th><th>Подразд.</th><th class="c">Кат</th><th class="c">Оборач.</th><th class="c">Наполн.</th><th class="r">Физ. запас</th><th class="r">Продажи, шт</th></tr>`;
   [...SILVER].sort((a,b)=>(a.turn||999)-(b.turn||999)).forEach(s=>{
     html+=`<tr onclick="openMag('${s.mag}')" style="cursor:pointer">
       <td><span class="store-name">${s.mag}</span><span class="store-tc">${s.tc}</span></td>
@@ -447,44 +471,33 @@ function renderRegion(){
       <td class="c" style="font-weight:600">${s.catYU!=null?Math.round(s.catYU):'—'}</td>
       <td class="c">${turnTag(s.turn,false)}</td>
       <td class="c">${fillTag(s.fill)}</td>
+      <td class="r">${num(s.stock)}</td>
+      <td class="r">${num(s.sales)}</td>
     </tr>`;
   });
   html+=`</table></div></div>`;
 
   // Вкладка Золото (идентична серебро по структуре)
   html+=`<div class="tab-pane" id="reg-tab-gold">`;
-  html+=`<div class="metrics" style="margin-bottom:12px">
-    <div class="metric-card gold-card">
-      <div class="val">#${Math.round(REG_GOLD.rating)}</div>
-      <div class="lbl">Место ЮГ среди регионов</div>
-      <div class="sub">Общий рейтинг: ${Math.round(REG_GOLD.total)}</div>
-    </div>
-    <div class="metric-card gold-card">
-      <div class="val">${(REG_GOLD.share*100).toFixed(1)}%</div>
-      <div class="lbl">Доля золота в ТО</div>
-      <div class="sub">Место #${Math.round(REG_GOLD.shareRank)} в КАРИ</div>
-    </div>
-  </div>`;
-
   html+=`<div class="section-title">Подразделения · Золото</div>
   <div class="table-wrap"><table>
-    <tr><th>Подразделение</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.ср</th><th class="c gold">Рейтинг</th><th class="r gold">Доля ТО</th></tr>`;
+    <tr><th>Подразделение</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.ср</th><th class="r gold">Магазинов</th></tr>`;
   const podsGSorted=pods.filter(p=>POD_GOLD[p]).sort((a,b)=>(POD_GOLD[a].turnover||999)-(POD_GOLD[b].turnover||999));
   podsGSorted.forEach(pod=>{
     const pg=POD_GOLD[pod];
+    const cntG=GOLD.filter(g=>g.pod===pod).length;
     html+=`<tr onclick="openPod('${pod}')" style="cursor:pointer">
       <td style="font-weight:700;color:var(--pink)">${pod}</td>
       <td class="c">${turnTag(pg.turnover,true)}</td>
       <td class="c">${pg.fill_avg!=null?fillTag(pg.fill_avg):'—'}</td>
-      <td class="c"><span class="rank-badge gold">#${Math.round(pg.rating)}</span></td>
-      <td class="r">${(pg.share*100).toFixed(1)}%</td>
+      <td class="r">${cntG}</td>
     </tr>`;
   });
   html+=`</table></div>`;
 
   html+=`<div class="section-title">Все магазины · Золото</div>
   <div class="table-wrap"><table>
-    <tr><th>Магазин</th><th>Подразд.</th><th class="c gold">Кат</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.</th><th class="c gold">Рейтинг</th><th class="r gold">Доля ТО</th></tr>`;
+    <tr><th>Магазин</th><th>Подразд.</th><th class="c gold">Кат</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.</th><th class="r gold">Физ. запас</th><th class="r gold">Продажи, шт</th></tr>`;
   [...GOLD].sort((a,b)=>(a.turn||999)-(b.turn||999)).forEach(g=>{
     html+=`<tr onclick="openMag('${g.mag}')" style="cursor:pointer">
       <td><span class="store-name">${g.mag}</span><span class="store-tc">${g.tc}</span></td>
@@ -492,8 +505,8 @@ function renderRegion(){
       <td class="c" style="font-weight:600">${g.catYU!=null?Math.round(g.catYU):'—'}</td>
       <td class="c">${turnTag(g.turn,true)}</td>
       <td class="c">${fillTag(g.fill)}</td>
-      <td class="c">${g.rating!=null?'<span class="rank-badge gold">#'+Math.round(g.rating)+'</span>':'—'}</td>
-      <td class="r">${g.share!=null?(g.share*100).toFixed(1)+'%':'—'}</td>
+      <td class="r">${num(g.stock)}</td>
+      <td class="r">${num(g.sales)}</td>
     </tr>`;
   });
   html+=`</table></div></div>`;

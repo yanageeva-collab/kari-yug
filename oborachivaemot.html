@@ -105,8 +105,10 @@ tr:hover td{background:#fafafa}
     }
   })();
   function checkPw(){
-    const v=document.getElementById('pwInput').value.trim().toUpperCase();
-    if(v==='ЮИ'||v==='YUI'||v==='UI'){
+    const v=document.getElementById('pwInput').value.trim().toLowerCase();
+    // Принимаем: юи / ЮИ / Юи / yui / ui / кари
+    const ok=['юи','yui','ui','кари','kari'];
+    if(ok.includes(v)){
       localStorage.setItem('yuiAuth','ok');
       document.getElementById('pwScreen').style.display='none';
     } else {

@@ -80,6 +80,43 @@ tr:hover td{background:#fafafa}
 </style>
 </head>
 <body>
+
+<!-- ══ ЭКРАН ПАРОЛЯ ══════════════════════════════════════════════ -->
+<div id="pwScreen" style="position:fixed;inset:0;background:#f8f0f6;display:flex;align-items:center;justify-content:center;z-index:9999">
+  <div style="background:#fff;border-radius:16px;padding:32px 28px;box-shadow:0 4px 20px rgba(0,0,0,.12);text-align:center;width:280px">
+    <div style="font-size:28px;margin-bottom:8px">🥈⭐</div>
+    <div style="font-size:18px;font-weight:700;color:#ad1472;margin-bottom:4px">KARI · ЮИ</div>
+    <div style="font-size:13px;color:#666;margin-bottom:20px">Оборачиваемость</div>
+    <input id="pwInput" type="password" placeholder="Введите пароль"
+      style="width:100%;box-sizing:border-box;padding:10px 14px;border:2px solid #e0c8d8;border-radius:10px;font-size:15px;outline:none;text-align:center"
+      onkeydown="if(event.key==='Enter')checkPw()">
+    <div id="pwErr" style="color:#dc2626;font-size:12px;margin-top:8px;min-height:16px"></div>
+    <button onclick="checkPw()"
+      style="margin-top:12px;width:100%;padding:11px;background:#ad1472;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer">
+      Войти
+    </button>
+  </div>
+</div>
+<script>
+  (function(){
+    // Проверяем сохранённый пароль
+    if(localStorage.getItem('yuiAuth')==='ok'){
+      document.getElementById('pwScreen').style.display='none';
+    }
+  })();
+  function checkPw(){
+    const v=document.getElementById('pwInput').value.trim().toUpperCase();
+    if(v==='ЮИ'||v==='YUI'||v==='UI'){
+      localStorage.setItem('yuiAuth','ok');
+      document.getElementById('pwScreen').style.display='none';
+    } else {
+      document.getElementById('pwErr').textContent='Неверный пароль';
+      document.getElementById('pwInput').value='';
+      document.getElementById('pwInput').focus();
+    }
+  }
+</script>
+<!-- ══════════════════════════════════════════════════════════════ -->
 <div class="header">
   <div style="flex:1">
     <div style="font-size:16px;font-weight:700" id="headerTitle">ЮИ · Оборачиваемость</div>

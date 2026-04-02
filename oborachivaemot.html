@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>ЮИ · Оборачиваемость КАРИ ЮГ v1</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f7;color:#1c1c1e;font-size:14px}
+:root{--pink:#ad1472;--pink-light:#f5e6f0;--gold-bg:#fffbeb;--gold-text:#92400e;
+  --g:#16a34a;--g-bg:#dcfce7;--g-text:#14532d;
+  --lg-bg:#dcfce7;--lg-text:#14532d;
+  --y-bg:#fef9c3;--y-text:#713f12;
+  --r-bg:#fee2e2;--r-text:#7f1d1d;
+  --dr-bg:#7f1d1d;--dr-text:#fecaca;
+  --n-bg:#f3f4f6;--n-text:#374151}
+.header{background:var(--pink);color:#fff;padding:12px 16px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:10px}
+.header h1{font-size:16px;font-weight:700;flex:1}
+.header .period{font-size:11px;opacity:.8}
+.back-btn{background:rgba(255,255,255,.2);border:none;color:#fff;padding:6px 12px;border-radius:8px;font-size:13px;cursor:pointer;display:none}
+.screen{display:none;padding:12px;max-width:700px;margin:0 auto}
+.screen.active{display:block}
+
+/* Карточки метрик */
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.metrics.three{grid-template-columns:repeat(3,1fr)}
+.metric-card{background:#fff;border-radius:12px;padding:12px 10px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.metric-card .val{font-size:22px;font-weight:700;line-height:1.1}
+.metric-card .lbl{font-size:11px;color:#666;margin-top:3px}
+.metric-card .sub{font-size:10px;color:#999;margin-top:2px}
+.metric-card.highlight{background:var(--pink);color:#fff}
+.metric-card.highlight .lbl,.metric-card.highlight .sub{color:rgba(255,255,255,.8)}
+.metric-card.gold-card{background:var(--gold-bg)}
+.metric-card.gold-card .val{color:var(--gold-text)}
+
+/* Таблицы */
+.section-title{font-size:13px;font-weight:700;color:var(--pink);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.5px}
+.table-wrap{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:12px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--pink);color:#fff;padding:8px 6px;text-align:left;font-weight:600;font-size:11px;white-space:nowrap}
+th.r, td.r{text-align:right}
+th.c, td.c{text-align:center}
+td{padding:7px 6px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa}
+.store-name{font-weight:600;font-size:12px}
+.store-tc{font-size:10px;color:#888;display:block}
+
+/* Цвета оборачиваемости */
+.tG {background:var(--g-bg);color:var(--g-text);border-radius:6px;padding:2px 6px;font-weight:700;display:inline-block}
+.tLG{background:var(--lg-bg);color:var(--lg-text);border-radius:6px;padding:2px 6px;font-weight:600;display:inline-block}
+.tY {background:var(--y-bg);color:var(--y-text);border-radius:6px;padding:2px 6px;font-weight:600;display:inline-block}
+.tR {background:var(--r-bg);color:var(--r-text);border-radius:6px;padding:2px 6px;font-weight:600;display:inline-block}
+.tDR{background:var(--dr-bg);color:var(--dr-text);border-radius:6px;padding:2px 6px;font-weight:600;display:inline-block}
+.tN {background:var(--n-bg);color:var(--n-text);border-radius:6px;padding:2px 6px;display:inline-block}
+.fill-ok{color:#16a34a;font-weight:700}
+.fill-warn{color:#d97706;font-weight:600}
+.fill-bad{color:#dc2626;font-weight:700}
+
+/* Вкладки серебро/золото */
+.tabs-bar{display:flex;gap:6px;margin-bottom:12px}
+.tab-btn{flex:1;padding:8px;border:2px solid var(--pink);border-radius:10px;background:#fff;color:var(--pink);font-size:13px;font-weight:600;cursor:pointer}
+.tab-btn.active{background:var(--pink);color:#fff}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* Золото бейдж */
+.gold-dot{display:inline-block;width:8px;height:8px;background:#d97706;border-radius:50%;margin-right:4px;vertical-align:middle}
+.gold-badge{background:var(--gold-bg);color:var(--gold-text);border-radius:6px;padding:2px 7px;font-size:11px;font-weight:600}
+
+/* Карточка магазина */
+.store-header{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.store-header .mag-num{font-size:12px;color:#999;font-weight:500}
+.store-header .mag-name{font-size:17px;font-weight:700;margin:3px 0}
+.store-header .mag-pod{font-size:13px;color:var(--pink);font-weight:600}
+
+/* Таблица категорий */
+.cat-table th{font-size:10px}
+.cat-table td{font-size:11px}
+
+/* Топ/Антитоп блок */
+.topbot{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.topbot-card{background:#fff;border-radius:12px;padding:10px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.topbot-card h3{font-size:11px;font-weight:700;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #f0f0f0}
+.topbot-card h3.top{color:#16a34a;border-color:#dcfce7}
+.topbot-card h3.bot{color:#dc2626;border-color:#fee2e2}
+.topbot-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #f9f9f9;font-size:11px}
+.topbot-row:last-child{border-bottom:none}
+.topbot-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:4px}
+
+/* Сравнение с регионом */
+.compare-bar{height:6px;background:#e5e7eb;border-radius:3px;margin-top:4px;overflow:hidden}
+.compare-fill{height:100%;border-radius:3px;background:var(--pink)}
+
+/* Пустой экран */
+.empty{text-align:center;padding:40px 20px;color:#999}
+.empty h2{font-size:16px;margin-bottom:8px;color:#666}
+
+/* Подразделение кнопки */
+.pod-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.pod-btn{background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);cursor:pointer;border:2px solid transparent;text-align:left}
+.pod-btn:hover{border-color:var(--pink)}
+.pod-btn .pod-name{font-size:14px;font-weight:700;color:var(--pink);margin-bottom:4px}
+.pod-btn .pod-stats{font-size:11px;color:#666}
+
+/* Рейтинг место */
+.rank-badge{display:inline-block;background:var(--pink);color:#fff;border-radius:8px;padding:3px 8px;font-size:12px;font-weight:700}
+.rank-badge.gold{background:#d97706}
+
+/* Плашка периода */
+.period-badge{display:inline-block;background:rgba(255,255,255,.15);border-radius:6px;padding:2px 8px;font-size:11px;margin-left:6px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="flex:1">
+    <div style="font-size:16px;font-weight:700" id="headerTitle">ЮИ · Оборачиваемость</div>
+    <div style="font-size:11px;opacity:.8" id="headerSub">КАРИ ЮГ</div>
+  </div>
+  <button class="back-btn" id="backBtn" onclick="goBack()">← Назад</button>
+</div>
+
+<!-- ЭКРАН 1: Карточка магазина -->
+<div class="screen" id="screenMag">
+  <div id="magContent"></div>
+</div>
+
+<!-- ЭКРАН 2: Подразделение -->
+<div class="screen" id="screenPod">
+  <div id="podContent"></div>
+</div>
+
+<!-- ЭКРАН 3: Весь регион (Яна) -->
+<div class="screen" id="screenRegion">
+  <div id="regionContent"></div>
+</div>
+
+<!-- ЭКРАН 404 -->
+<div class="screen" id="screenNotFound">
+  <div class="empty">
+    <h2>Магазин не найден</h2>
+    <p id="notFoundMsg"></p>
+  </div>
+</div>
+
+<script>
+// ===== ДАННЫЕ =====
+const SILVER = [{"pod": "Черноморское", "mag": "10013", "tc": "Краснодар, Мегацентр Красная площадь", "sales": 436.0, "turn": 31.0, "stock": 3405.0, "catYU": 4.0, "fill": 98.0, "fillKor": 103.0, "modules": 6.0, "cat": {"Кольца": {"fact": 812.0, "stock": 1902.0, "turn": 73.0}, "Серьги": {"fact": 616.0, "stock": 617.0, "turn": 15.0}, "Цепочки": {"fact": 193.0, "stock": 402.0, "turn": 28.0}, "Браслеты": {"fact": 121.0, "stock": 185.0, "turn": 13.0}, "Колье": {"fact": 118.0, "stock": 120.0, "turn": 120.0}, "Подвески": {"fact": 183.0, "stock": 183.0, "turn": 52.0}}}, {"pod": "Ростов", "mag": "10045", "tc": "Шахты, ЦУМ", "sales": 140.0, "turn": 57.0, "stock": 1989.0, "catYU": 3.0, "fill": 192.0, "fillKor": 192.0, "modules": 6.0, "cat": {"Кольца": {"fact": 453.0, "stock": 983.0, "turn": 76.0}, "Серьги": {"fact": 364.0, "stock": 364.0, "turn": 40.0}, "Цепочки": {"fact": 119.0, "stock": 242.0, "turn": 19.0}, "Браслеты": {"fact": 101.0, "stock": 169.0, "turn": 56.0}, "Колье": {"fact": 55.0, "stock": 57.0, "turn": 0.0}, "Подвески": {"fact": 75.0, "stock": 75.0, "turn": 38.0}}}, {"pod": "Сочи", "mag": "10090", "tc": "Минеральные Воды, ТРЦ Вершина", "sales": 193.0, "turn": 56.0, "stock": 2690.0, "catYU": 4.0, "fill": 197.0, "fillKor": 197.0, "modules": 8.0, "cat": {"Кольца": {"fact": 738.0, "stock": 1615.0, "turn": 92.0}, "Серьги": {"fact": 397.0, "stock": 399.0, "turn": 42.0}, "Цепочки": {"fact": 162.0, "stock": 310.0, "turn": 56.0}, "Браслеты": {"fact": 90.0, "stock": 152.0, "turn": 76.0}, "Колье": {"fact": 109.0, "stock": 113.0, "turn": 75.0}, "Подвески": {"fact": 127.0, "stock": 127.0, "turn": 127.0}}}, {"pod": "Кавказ", "mag": "10105", "tc": "Ставрополь, ТЦ Обувь Сити", "sales": 176.0, "turn": 40.0, "stock": 1743.0, "catYU": 2.0, "fill": 141.0, "fillKor": 124.0, "modules": 7.0, "cat": {"Кольца": {"fact": 398.0, "stock": 822.0, "turn": 118.0}, "Серьги": {"fact": 253.0, "stock": 254.0, "turn": 33.0}, "Цепочки": {"fact": 150.0, "stock": 334.0, "turn": 48.0}, "Браслеты": {"fact": 65.0, "stock": 100.0, "turn": 20.0}, "Колье": {"fact": 40.0, "stock": 47.0, "turn": 47.0}, "Подвески": {"fact": 97.0, "stock": 97.0, "turn": 25.0}}}, {"pod": "Кавказ", "mag": "10187", "tc": "Нальчик, ТРЦ Дея", "sales": 269.0, "turn": 45.0, "stock": 3053.0, "catYU": 3.0, "fill": 141.0, "fillKor": 141.0, "modules": 12.0, "cat": {"Кольца": {"fact": 615.0, "stock": 1540.0, "turn": 96.0}, "Серьги": {"fact": 621.0, "stock": 634.0, "turn": 26.0}, "Цепочки": {"fact": 194.0, "stock": 437.0, "turn": 44.0}, "Браслеты": {"fact": 101.0, "stock": 168.0, "turn": 37.0}, "Колье": {"fact": 83.0, "stock": 90.0, "turn": 60.0}, "Подвески": {"fact": 204.0, "stock": 205.0, "turn": 46.0}}}, {"pod": "Сочи", "mag": "10261", "tc": "Сочи, ТЦ Дом торговли", "sales": 165.0, "turn": 50.0, "stock": 2079.0, "catYU": 4.0, "fill": 205.0, "fillKor": 205.0, "modules": 6.0, "cat": {"Кольца": {"fact": 493.0, "stock": 1067.0, "turn": 65.0}, "Серьги": {"fact": 340.0, "stock": 376.0, "turn": 47.0}, "Цепочки": {"fact": 162.0, "stock": 318.0, "turn": 45.0}, "Браслеты": {"fact": 72.0, "stock": 105.0, "turn": 11.0}, "Колье": {"fact": 69.0, "stock": 74.0, "turn": 49.0}, "Подвески": {"fact": 96.0, "stock": 96.0, "turn": 48.0}}}, {"pod": "Ростов", "mag": "10262", "tc": "Кореновск, ТЦ Квартал", "sales": 161.0, "turn": 47.0, "stock": 1873.0, "catYU": 2.0, "fill": 230.0, "fillKor": 166.0, "modules": 5.0, "cat": {"Кольца": {"fact": 459.0, "stock": 897.0, "turn": 75.0}, "Серьги": {"fact": 394.0, "stock": 395.0, "turn": 32.0}, "Цепочки": {"fact": 115.0, "stock": 254.0, "turn": 39.0}, "Браслеты": {"fact": 58.0, "stock": 89.0, "turn": 11.0}, "Колье": {"fact": 47.0, "stock": 47.0, "turn": 31.0}, "Подвески": {"fact": 136.0, "stock": 136.0, "turn": 30.0}}}, {"pod": "Краснодар", "mag": "10279", "tc": "Краснодар, ул.Ставропольская, д.100", "sales": 223.0, "turn": 41.0, "stock": 2258.0, "catYU": 3.0, "fill": 188.0, "fillKor": 188.0, "modules": 8.0, "cat": {"Кольца": {"fact": 504.0, "stock": 1039.0, "turn": 77.0}, "Серьги": {"fact": 535.0, "stock": 543.0, "turn": 40.0}, "Цепочки": {"fact": 147.0, "stock": 324.0, "turn": 28.0}, "Браслеты": {"fact": 88.0, "stock": 139.0, "turn": 17.0}, "Колье": {"fact": 52.0, "stock": 54.0, "turn": 22.0}, "Подвески": {"fact": 143.0, "stock": 144.0, "turn": 144.0}}}, {"pod": "Черноморское", "mag": "10340", "tc": "Усть-Лабинск, ТЦ Детский мир", "sales": 188.0, "turn": 34.0, "stock": 1603.0, "catYU": 2.0, "fill": 203.0, "fillKor": 177.0, "modules": 6.0, "cat": {"Кольца": {"fact": 423.0, "stock": 835.0, "turn": 84.0}, "Серьги": {"fact": 323.0, "stock": 324.0, "turn": 27.0}, "Цепочки": {"fact": 97.0, "stock": 181.0, "turn": 17.0}, "Браслеты": {"fact": 73.0, "stock": 109.0, "turn": 24.0}, "Колье": {"fact": 30.0, "stock": 30.0, "turn": 15.0}, "Подвески": {"fact": 115.0, "stock": 115.0, "turn": 33.0}}}, {"pod": "Ростов", "mag": "10347", "tc": "Батайск, ул. Кирова, д. 9/1", "sales": 140.0, "turn": 42.0, "stock": 1464.0, "catYU": 2.0, "fill": 183.0, "fillKor": 183.0, "modules": 5.0, "cat": {"Кольца": {"fact": 387.0, "stock": 750.0, "turn": 88.0}, "Серьги": {"fact": 294.0, "stock": 307.0, "turn": 32.0}, "Цепочки": {"fact": 107.0, "stock": 196.0, "turn": 23.0}, "Браслеты": {"fact": 65.0, "stock": 97.0, "turn": 65.0}, "Колье": {"fact": 24.0, "stock": 25.0, "turn": 0.0}, "Подвески": {"fact": 83.0, "stock": 84.0, "turn": 42.0}}}, {"pod": "Краснодар", "mag": "10355", "tc": "Славянск-на-Кубани, ТЦ Империя", "sales": 288.0, "turn": 38.0, "stock": 2713.0, "catYU": 4.0, "fill": 83.0, "fillKor": 83.0, "modules": 6.0, "cat": {"Кольца": {"fact": 561.0, "stock": 1251.0, "turn": 76.0}, "Серьги": {"fact": 593.0, "stock": 593.0, "turn": 38.0}, "Цепочки": {"fact": 196.0, "stock": 430.0, "turn": 61.0}, "Браслеты": {"fact": 122.0, "stock": 186.0, "turn": 23.0}, "Колье": {"fact": 100.0, "stock": 102.0, "turn": 68.0}, "Подвески": {"fact": 154.0, "stock": 155.0, "turn": 28.0}}}, {"pod": "Черноморское", "mag": "10362", "tc": "Армавир, ТРЦ Красная площадь", "sales": 166.0, "turn": 71.0, "stock": 2952.0, "catYU": 3.0, "fill": 173.0, "fillKor": 173.0, "modules": 10.0, "cat": {"Кольца": {"fact": 642.0, "stock": 1429.0, "turn": 150.0}, "Серьги": {"fact": 682.0, "stock": 732.0, "turn": 61.0}, "Цепочки": {"fact": 180.0, "stock": 366.0, "turn": 73.0}, "Браслеты": {"fact": 113.0, "stock": 174.0, "turn": 50.0}, "Колье": {"fact": 93.0, "stock": 102.0, "turn": 0.0}, "Подвески": {"fact": 156.0, "stock": 156.0, "turn": 78.0}}}, {"pod": "Сочи", "mag": "10373", "tc": "Геленджик, ТЦ BB Passage", "sales": 165.0, "turn": 42.0, "stock": 1741.0, "catYU": 3.0, "fill": 274.0, "fillKor": 274.0, "modules": 4.0, "cat": {"Кольца": {"fact": 450.0, "stock": 869.0, "turn": 83.0}, "Серьги": {"fact": 294.0, "stock": 304.0, "turn": 30.0}, "Цепочки": {"fact": 161.0, "stock": 329.0, "turn": 60.0}, "Браслеты": {"fact": 85.0, "stock": 141.0, "turn": 94.0}, "Колье": {"fact": 40.0, "stock": 41.0, "turn": 41.0}, "Подвески": {"fact": 71.0, "stock": 71.0, "turn": 20.0}}}, {"pod": "Черноморское", "mag": "10374", "tc": "Ростов-на-Дону, ТЦ Миллениум", "sales": 99.0, "turn": 79.0, "stock": 1965.0, "catYU": 3.0, "fill": 198.0, "fillKor": 198.0, "modules": 6.0, "cat": {"Кольца": {"fact": 508.0, "stock": 943.0, "turn": 126.0}, "Серьги": {"fact": 386.0, "stock": 386.0, "turn": 71.0}, "Цепочки": {"fact": 133.0, "stock": 300.0, "turn": 300.0}, "Браслеты": {"fact": 94.0, "stock": 153.0, "turn": 102.0}, "Колье": {"fact": 41.0, "stock": 41.0, "turn": 0.0}, "Подвески": {"fact": 100.0, "stock": 100.0, "turn": 100.0}}}, {"pod": "Кавказ", "mag": "10401", "tc": "Нальчик, ЦУМ", "sales": 242.0, "turn": 38.0, "stock": 2323.0, "catYU": 3.0, "fill": 215.0, "fillKor": 215.0, "modules": 6.0, "cat": {"Кольца": {"fact": 552.0, "stock": 1337.0, "turn": 69.0}, "Серьги": {"fact": 424.0, "stock": 426.0, "turn": 30.0}, "Цепочки": {"fact": 134.0, "stock": 286.0, "turn": 29.0}, "Браслеты": {"fact": 70.0, "stock": 131.0, "turn": 20.0}, "Колье": {"fact": 45.0, "stock": 48.0, "turn": 32.0}, "Подвески": {"fact": 120.0, "stock": 120.0, "turn": 34.0}}}, {"pod": "Кавказ", "mag": "10557", "tc": "Георгиевск, ТЦ Россия", "sales": 190.0, "turn": 57.0, "stock": 2690.0, "catYU": 4.0, "fill": 142.0, "fillKor": 142.0, "modules": 12.0, "cat": {"Кольца": {"fact": 591.0, "stock": 1250.0, "turn": 119.0}, "Серьги": {"fact": 631.0, "stock": 631.0, "turn": 47.0}, "Цепочки": {"fact": 171.0, "stock": 323.0, "turn": 27.0}, "Браслеты": {"fact": 125.0, "stock": 200.0, "turn": 67.0}, "Колье": {"fact": 108.0, "stock": 109.0, "turn": 218.0}, "Подвески": {"fact": 161.0, "stock": 161.0, "turn": 161.0}}}, {"pod": "Кавказ", "mag": "10595", "tc": "Владикавказ, ЦУМ", "sales": 187.0, "turn": 49.0, "stock": 2305.0, "catYU": 2.0, "fill": 171.0, "fillKor": 171.0, "modules": 8.0, "cat": {"Кольца": {"fact": 594.0, "stock": 1376.0, "turn": 162.0}, "Серьги": {"fact": 465.0, "stock": 466.0, "turn": 39.0}, "Цепочки": {"fact": 131.0, "stock": 240.0, "turn": 20.0}, "Браслеты": {"fact": 61.0, "stock": 90.0, "turn": 16.0}, "Колье": {"fact": 35.0, "stock": 39.0, "turn": 26.0}, "Подвески": {"fact": 112.0, "stock": 112.0, "turn": 32.0}}}, {"pod": "Краснодар", "mag": "10628", "tc": "Краснодар, ТЦ Юбилейный", "sales": 140.0, "turn": 39.0, "stock": 1361.0, "catYU": 2.0, "fill": 201.0, "fillKor": 201.0, "modules": 5.0, "cat": {"Кольца": {"fact": 316.0, "stock": 569.0, "turn": 42.0}, "Серьги": {"fact": 277.0, "stock": 277.0, "turn": 43.0}, "Цепочки": {"fact": 119.0, "stock": 239.0, "turn": 34.0}, "Браслеты": {"fact": 50.0, "stock": 72.0, "turn": 18.0}, "Колье": {"fact": 58.0, "stock": 62.0, "turn": 0.0}, "Подвески": {"fact": 162.0, "stock": 162.0, "turn": 46.0}}}, {"pod": "Кавказ", "mag": "10640", "tc": "Махачкала, ТЦ Седьмой континент", "sales": 246.8, "turn": 60.0, "stock": 3688.0, "catYU": 4.0, "fill": 136.0, "fillKor": 136.0, "modules": 14.0, "cat": {"Кольца": {"fact": 698.0, "stock": 1527.0, "turn": 133.0}, "Серьги": {"fact": 775.0, "stock": 778.0, "turn": 54.0}, "Цепочки": {"fact": 193.0, "stock": 388.0, "turn": 22.0}, "Браслеты": {"fact": 112.0, "stock": 201.0, "turn": 16.0}, "Колье": {"fact": 97.0, "stock": 103.0, "turn": 26.0}, "Подвески": {"fact": 152.0, "stock": 152.0, "turn": 38.0}}}, {"pod": "Краснодар", "mag": "10745", "tc": "Краснодар, ТЦ Московский", "sales": 348.0, "turn": 32.0, "stock": 2787.0, "catYU": 4.0, "fill": 206.0, "fillKor": 206.0, "modules": 9.0, "cat": {"Кольца": {"fact": 576.0, "stock": 1300.0, "turn": 65.0}, "Серьги": {"fact": 554.0, "stock": 555.0, "turn": 19.0}, "Цепочки": {"fact": 186.0, "stock": 432.0, "turn": 41.0}, "Браслеты": {"fact": 124.0, "stock": 220.0, "turn": 21.0}, "Колье": {"fact": 84.0, "stock": 85.0, "turn": 170.0}, "Подвески": {"fact": 147.0, "stock": 147.0, "turn": 29.0}}}, {"pod": "Ростов", "mag": "10775", "tc": "Тихорецк, ТЦ Империя", "sales": 132.0, "turn": 47.0, "stock": 1566.0, "catYU": 2.0, "fill": 233.0, "fillKor": 188.0, "modules": 4.0, "cat": {"Кольца": {"fact": 414.0, "stock": 869.0, "turn": 79.0}, "Серьги": {"fact": 277.0, "stock": 277.0, "turn": 46.0}, "Цепочки": {"fact": 110.0, "stock": 207.0, "turn": 59.0}, "Браслеты": {"fact": 54.0, "stock": 73.0, "turn": 24.0}, "Колье": {"fact": 32.0, "stock": 34.0, "turn": 0.0}, "Подвески": {"fact": 98.0, "stock": 99.0, "turn": 40.0}}}, {"pod": "Крым", "mag": "10810", "tc": "Анапа, ТРЦ Красная площадь", "sales": 338.0, "turn": 33.0, "stock": 2768.0, "catYU": 4.0, "fill": 179.0, "fillKor": 179.0, "modules": 9.0, "cat": {"Кольца": {"fact": 655.0, "stock": 1463.0, "turn": 81.0}, "Серьги": {"fact": 548.0, "stock": 552.0, "turn": 25.0}, "Цепочки": {"fact": 155.0, "stock": 320.0, "turn": 16.0}, "Браслеты": {"fact": 117.0, "stock": 201.0, "turn": 27.0}, "Колье": {"fact": 89.0, "stock": 89.0, "turn": 59.0}, "Подвески": {"fact": 162.0, "stock": 165.0, "turn": 24.0}}}, {"pod": "Сочи", "mag": "10812", "tc": "Сочи, ТЦ Мелодия", "sales": 191.0, "turn": 53.0, "stock": 2551.0, "catYU": 3.0, "fill": 127.0, "fillKor": 127.0, "modules": 12.0, "cat": {"Кольца": {"fact": 598.0, "stock": 1311.0, "turn": 97.0}, "Серьги": {"fact": 589.0, "stock": 593.0, "turn": 59.0}, "Цепочки": {"fact": 156.0, "stock": 335.0, "turn": 84.0}, "Браслеты": {"fact": 95.0, "stock": 162.0, "turn": 46.0}, "Колье": {"fact": 77.0, "stock": 78.0, "turn": 52.0}, "Подвески": {"fact": 149.0, "stock": 150.0, "turn": 75.0}}}, {"pod": "Кавказ", "mag": "10816", "tc": "Ставрополь, ТЦ Европейский-2", "sales": 249.0, "turn": 44.0, "stock": 2758.0, "catYU": 3.0, "fill": 134.0, "fillKor": 134.0, "modules": 13.0, "cat": {"Кольца": {"fact": 615.0, "stock": 1353.0, "turn": 77.0}, "Серьги": {"fact": 641.0, "stock": 641.0, "turn": 58.0}, "Цепочки": {"fact": 156.0, "stock": 340.0, "turn": 31.0}, "Браслеты": {"fact": 97.0, "stock": 165.0, "turn": 66.0}, "Колье": {"fact": 105.0, "stock": 107.0, "turn": 71.0}, "Подвески": {"fact": 158.0, "stock": 158.0, "turn": 45.0}}}, {"pod": "Сочи", "mag": "10849", "tc": "Сочи, ТЦ Бирюза", "sales": 89.0, "turn": 124.0, "stock": 2759.0, "catYU": 4.0, "fill": 162.0, "fillKor": 162.0, "modules": 10.0, "cat": {"Кольца": {"fact": 590.0, "stock": 1327.0, "turn": 295.0}, "Серьги": {"fact": 585.0, "stock": 585.0, "turn": 167.0}, "Цепочки": {"fact": 192.0, "stock": 366.0, "turn": 244.0}, "Браслеты": {"fact": 115.0, "stock": 197.0, "turn": 131.0}, "Колье": {"fact": 111.0, "stock": 117.0, "turn": 234.0}, "Подвески": {"fact": 166.0, "stock": 166.0, "turn": 83.0}}}, {"pod": "Кавказ", "mag": "10879", "tc": "Ставрополь, ТРЦ Европейский", "sales": 212.0, "turn": 48.0, "stock": 2563.0, "catYU": 4.0, "fill": 187.0, "fillKor": 187.0, "modules": 8.0, "cat": {"Кольца": {"fact": 648.0, "stock": 1409.0, "turn": 94.0}, "Серьги": {"fact": 446.0, "stock": 446.0, "turn": 25.0}, "Цепочки": {"fact": 192.0, "stock": 391.0, "turn": 39.0}, "Браслеты": {"fact": 91.0, "stock": 156.0, "turn": 62.0}, "Колье": {"fact": 89.0, "stock": 92.0, "turn": 61.0}, "Подвески": {"fact": 106.0, "stock": 106.0, "turn": 71.0}}}, {"pod": "Кавказ", "mag": "10888", "tc": "Ставрополь, ТРЦ Москва", "sales": 207.0, "turn": 52.0, "stock": 2707.0, "catYU": 3.0, "fill": 187.0, "fillKor": 187.0, "modules": 8.0, "cat": {"Кольца": {"fact": 657.0, "stock": 1424.0, "turn": 114.0}, "Серьги": {"fact": 466.0, "stock": 468.0, "turn": 25.0}, "Цепочки": {"fact": 178.0, "stock": 379.0, "turn": 69.0}, "Браслеты": {"fact": 102.0, "stock": 160.0, "turn": 17.0}, "Колье": {"fact": 70.0, "stock": 74.0, "turn": 49.0}, "Подвески": {"fact": 113.0, "stock": 113.0, "turn": 75.0}}}, {"pod": "Сочи", "mag": "10933", "tc": "Сочи, ТЦ 10Дарья", "sales": 130.0, "turn": 56.0, "stock": 1804.0, "catYU": 2.0, "fill": 180.0, "fillKor": 180.0, "modules": 6.0, "cat": {"Кольца": {"fact": 470.0, "stock": 959.0, "turn": 101.0}, "Серьги": {"fact": 345.0, "stock": 354.0, "turn": 37.0}, "Цепочки": {"fact": 117.0, "stock": 233.0, "turn": 52.0}, "Браслеты": {"fact": 57.0, "stock": 93.0, "turn": 186.0}, "Колье": {"fact": 49.0, "stock": 51.0, "turn": 102.0}, "Подвески": {"fact": 119.0, "stock": 119.0, "turn": 48.0}}}, {"pod": "Ростов", "mag": "10942", "tc": "Новочеркасск, ТЦ Батон", "sales": 146.0, "turn": 72.0, "stock": 2617.0, "catYU": 4.0, "fill": 155.0, "fillKor": 174.0, "modules": 11.0, "cat": {"Кольца": {"fact": 681.0, "stock": 1287.0, "turn": 215.0}, "Серьги": {"fact": 578.0, "stock": 653.0, "turn": 69.0}, "Цепочки": {"fact": 133.0, "stock": 228.0, "turn": 22.0}, "Браслеты": {"fact": 98.0, "stock": 160.0, "turn": 40.0}, "Колье": {"fact": 110.0, "stock": 116.0, "turn": 116.0}, "Подвески": {"fact": 150.0, "stock": 150.0, "turn": 300.0}}}, {"pod": "Кавказ", "mag": "10956", "tc": "Каспийск, ТЦ Ривьера", "sales": 243.70000000000002, "turn": 44.0, "stock": 2694.0, "catYU": 4.0, "fill": 208.0, "fillKor": 208.0, "modules": 8.0, "cat": {"Кольца": {"fact": 632.0, "stock": 1426.0, "turn": 110.0}, "Серьги": {"fact": 568.0, "stock": 578.0, "turn": 41.0}, "Цепочки": {"fact": 133.0, "stock": 253.0, "turn": 36.0}, "Браслеты": {"fact": 98.0, "stock": 161.0, "turn": 25.0}, "Колье": {"fact": 38.0, "stock": 41.0, "turn": 0.0}, "Подвески": {"fact": 148.0, "stock": 149.0, "turn": 33.0}}}, {"pod": "Ростов", "mag": "10969", "tc": "Шахты, ОДЦ Город будущего", "sales": 124.0, "turn": 73.0, "stock": 2255.0, "catYU": 3.0, "fill": 205.0, "fillKor": 205.0, "modules": 8.0, "cat": {"Кольца": {"fact": 588.0, "stock": 1110.0, "turn": 171.0}, "Серьги": {"fact": 513.0, "stock": 513.0, "turn": 57.0}, "Цепочки": {"fact": 150.0, "stock": 303.0, "turn": 76.0}, "Браслеты": {"fact": 101.0, "stock": 153.0, "turn": 77.0}, "Колье": {"fact": 69.0, "stock": 72.0, "turn": 0.0}, "Подвески": {"fact": 111.0, "stock": 111.0, "turn": 74.0}}}, {"pod": "Кавказ", "mag": "10985", "tc": "Ставрополь, ТРЦ Мегацентр Kosmos", "sales": 394.0, "turn": 33.0, "stock": 3263.0, "catYU": 4.0, "fill": 130.0, "fillKor": 130.0, "modules": 4.0, "cat": {"Кольца": {"fact": 792.0, "stock": 1830.0, "turn": 57.0}, "Серьги": {"fact": 566.0, "stock": 566.0, "turn": 14.0}, "Цепочки": {"fact": 192.0, "stock": 365.0, "turn": 27.0}, "Браслеты": {"fact": 110.0, "stock": 184.0, "turn": 23.0}, "Колье": {"fact": 92.0, "stock": 93.0, "turn": 23.0}, "Подвески": {"fact": 165.0, "stock": 165.0, "turn": 25.0}}}, {"pod": "Кавказ", "mag": "11047", "tc": "Махачкала, ТЦ", "sales": 112.0, "turn": 65.0, "stock": 1820.0, "catYU": 3.0, "fill": 208.0, "fillKor": 208.0, "modules": 5.0, "cat": {"Кольца": {"fact": 322.0, "stock": 601.0, "turn": 63.0}, "Серьги": {"fact": 347.0, "stock": 349.0, "turn": 54.0}, "Цепочки": {"fact": 112.0, "stock": 211.0, "turn": 30.0}, "Браслеты": {"fact": 51.0, "stock": 84.0, "turn": 56.0}, "Колье": {"fact": 78.0, "stock": 86.0, "turn": 43.0}, "Подвески": {"fact": 173.0, "stock": 173.0, "turn": 49.0}}}, {"pod": "Сочи", "mag": "11127", "tc": "Майкоп, ул. Пролетарская д.211Б", "sales": 203.0, "turn": 35.0, "stock": 1756.0, "catYU": 2.0, "fill": 239.0, "fillKor": 239.0, "modules": 6.0, "cat": {"Кольца": {"fact": 457.0, "stock": 902.0, "turn": 60.0}, "Серьги": {"fact": 341.0, "stock": 344.0, "turn": 30.0}, "Цепочки": {"fact": 95.0, "stock": 182.0, "turn": 10.0}, "Браслеты": {"fact": 74.0, "stock": 114.0, "turn": 21.0}, "Колье": {"fact": 46.0, "stock": 49.0, "turn": 98.0}, "Подвески": {"fact": 102.0, "stock": 102.0, "turn": 41.0}}}, {"pod": "Черноморское", "mag": "11160", "tc": "Кропоткин, ул. Ворошилова д.22А", "sales": 197.0, "turn": 35.0, "stock": 1740.0, "catYU": 3.0, "fill": 202.0, "fillKor": 202.0, "modules": 5.0, "cat": {"Кольца": {"fact": 520.0, "stock": 1031.0, "turn": 206.0}, "Серьги": {"fact": 289.0, "stock": 289.0, "turn": 34.0}, "Цепочки": {"fact": 116.0, "stock": 217.0, "turn": 19.0}, "Браслеты": {"fact": 84.0, "stock": 125.0, "turn": 36.0}, "Колье": {"fact": 33.0, "stock": 35.0, "turn": 70.0}, "Подвески": {"fact": 57.0, "stock": 57.0, "turn": 38.0}}}, {"pod": "Ростов", "mag": "11193", "tc": "Белая Калитва, ул. Ростовская д.1", "sales": 302.0, "turn": 36.0, "stock": 2735.0, "catYU": 4.0, "fill": 184.0, "fillKor": 184.0, "modules": 9.0, "cat": {"Кольца": {"fact": 652.0, "stock": 1315.0, "turn": 60.0}, "Серьги": {"fact": 640.0, "stock": 640.0, "turn": 38.0}, "Цепочки": {"fact": 172.0, "stock": 407.0, "turn": 30.0}, "Браслеты": {"fact": 104.0, "stock": 171.0, "turn": 17.0}, "Колье": {"fact": 119.0, "stock": 120.0, "turn": 0.0}, "Подвески": {"fact": 102.0, "stock": 102.0, "turn": 26.0}}}, {"pod": "Ростов", "mag": "11208", "tc": "Азов, ул. Мира д. 22", "sales": 205.0, "turn": 45.0, "stock": 2283.0, "catYU": 3.0, "fill": 193.0, "fillKor": 193.0, "modules": 7.0, "cat": {"Кольца": {"fact": 513.0, "stock": 1127.0, "turn": 107.0}, "Серьги": {"fact": 482.0, "stock": 482.0, "turn": 25.0}, "Цепочки": {"fact": 146.0, "stock": 351.0, "turn": 31.0}, "Браслеты": {"fact": 97.0, "stock": 169.0, "turn": 48.0}, "Колье": {"fact": 59.0, "stock": 64.0, "turn": 128.0}, "Подвески": {"fact": 105.0, "stock": 105.0, "turn": 26.0}}}, {"pod": "Черноморское", "mag": "11209", "tc": "Курганинск, ул.Комсомольская д.87", "sales": 151.0, "turn": 36.0, "stock": 1347.0, "catYU": 2.0, "fill": 222.0, "fillKor": 222.0, "modules": 5.0, "cat": {"Кольца": {"fact": 349.0, "stock": 696.0, "turn": 58.0}, "Серьги": {"fact": 224.0, "stock": 224.0, "turn": 21.0}, "Цепочки": {"fact": 96.0, "stock": 216.0, "turn": 36.0}, "Браслеты": {"fact": 56.0, "stock": 89.0, "turn": 89.0}, "Колье": {"fact": 30.0, "stock": 35.0, "turn": 0.0}, "Подвески": {"fact": 72.0, "stock": 72.0, "turn": 21.0}}}, {"pod": "Сочи", "mag": "11240", "tc": "Крымск, ул. Троицкая д.121А", "sales": 191.0, "turn": 31.0, "stock": 1477.0, "catYU": 2.0, "fill": 179.0, "fillKor": 179.0, "modules": 7.0, "cat": {"Кольца": {"fact": 417.0, "stock": 833.0, "turn": 98.0}, "Серьги": {"fact": 317.0, "stock": 317.0, "turn": 24.0}, "Цепочки": {"fact": 82.0, "stock": 158.0, "turn": 13.0}, "Браслеты": {"fact": 44.0, "stock": 57.0, "turn": 10.0}, "Колье": {"fact": 19.0, "stock": 20.0, "turn": 40.0}, "Подвески": {"fact": 82.0, "stock": 82.0, "turn": 18.0}}}, {"pod": "Сочи", "mag": "11253", "tc": "Абинск, ул. Горького д.26", "sales": 103.0, "turn": 58.0, "stock": 1481.0, "catYU": 2.0, "fill": 183.0, "fillKor": 183.0, "modules": 5.0, "cat": {"Кольца": {"fact": 382.0, "stock": 779.0, "turn": 111.0}, "Серьги": {"fact": 290.0, "stock": 302.0, "turn": 67.0}, "Цепочки": {"fact": 92.0, "stock": 184.0, "turn": 26.0}, "Браслеты": {"fact": 70.0, "stock": 97.0, "turn": 49.0}, "Колье": {"fact": 27.0, "stock": 28.0, "turn": 0.0}, "Подвески": {"fact": 88.0, "stock": 88.0, "turn": 35.0}}}, {"pod": "Краснодар", "mag": "11254", "tc": "Каневская, ТЦ Каневчанка", "sales": 174.0, "turn": 47.0, "stock": 2045.0, "catYU": 3.0, "fill": 193.0, "fillKor": 193.0, "modules": 7.0, "cat": {"Кольца": {"fact": 489.0, "stock": 1023.0, "turn": 114.0}, "Серьги": {"fact": 393.0, "stock": 395.0, "turn": 22.0}, "Цепочки": {"fact": 139.0, "stock": 278.0, "turn": 70.0}, "Браслеты": {"fact": 91.0, "stock": 138.0, "turn": 35.0}, "Колье": {"fact": 49.0, "stock": 52.0, "turn": 106.0}, "Подвески": {"fact": 91.0, "stock": 91.0, "turn": 26.0}}}, {"pod": "Краснодар", "mag": "11256", "tc": "Павловская, Торговый центр", "sales": 107.0, "turn": 70.0, "stock": 1881.0, "catYU": 2.0, "fill": 138.0, "fillKor": 169.0, "modules": 9.0, "cat": {"Кольца": {"fact": 524.0, "stock": 931.0, "turn": 133.0}, "Серьги": {"fact": 484.0, "stock": 484.0, "turn": 97.0}, "Цепочки": {"fact": 95.0, "stock": 186.0, "turn": 27.0}, "Браслеты": {"fact": 63.0, "stock": 85.0, "turn": 57.0}, "Колье": {"fact": 77.0, "stock": 79.0, "turn": 158.0}, "Подвески": {"fact": 113.0, "stock": 113.0, "turn": 45.0}}}, {"pod": "Кавказ", "mag": "11259", "tc": "Буденновск, ул. Октябрьская д.64А", "sales": 158.0, "turn": 42.0, "stock": 1641.0, "catYU": 3.0, "fill": 213.0, "fillKor": 213.0, "modules": 5.0, "cat": {"Кольца": {"fact": 394.0, "stock": 746.0, "turn": 55.0}, "Серьги": {"fact": 340.0, "stock": 350.0, "turn": 37.0}, "Цепочки": {"fact": 131.0, "stock": 270.0, "turn": 42.0}, "Браслеты": {"fact": 76.0, "stock": 113.0, "turn": 38.0}, "Колье": {"fact": 72.0, "stock": 76.0, "turn": 0.0}, "Подвески": {"fact": 92.0, "stock": 92.0, "turn": 46.0}}}, {"pod": "Ростов", "mag": "11267", "tc": "Донецк, ТЦ Велес", "sales": 157.0, "turn": 46.0, "stock": 1812.0, "catYU": 2.0, "fill": 110.0, "fillKor": 173.0, "modules": 10.0, "cat": {"Кольца": {"fact": 478.0, "stock": 878.0, "turn": 84.0}, "Серьги": {"fact": 371.0, "stock": 371.0, "turn": 39.0}, "Цепочки": {"fact": 97.0, "stock": 192.0, "turn": 38.0}, "Браслеты": {"fact": 79.0, "stock": 115.0, "turn": 77.0}, "Колье": {"fact": 84.0, "stock": 86.0, "turn": 0.0}, "Подвески": {"fact": 103.0, "stock": 103.0, "turn": 52.0}}}, {"pod": "Краснодар", "mag": "11334", "tc": "Темрюк, ТРК Калейдоскоп", "sales": 251.0, "turn": 35.0, "stock": 2173.0, "catYU": 2.0, "fill": 119.0, "fillKor": 119.0, "modules": 11.0, "cat": {"Кольца": {"fact": 528.0, "stock": 1157.0, "turn": 53.0}, "Серьги": {"fact": 522.0, "stock": 522.0, "turn": 33.0}, "Цепочки": {"fact": 115.0, "stock": 196.0, "turn": 16.0}, "Браслеты": {"fact": 31.0, "stock": 43.0, "turn": 12.0}, "Колье": {"fact": 90.0, "stock": 90.0, "turn": 180.0}, "Подвески": {"fact": 117.0, "stock": 117.0, "turn": 33.0}}}, {"pod": "Ростов", "mag": "11338", "tc": "Динская, ТЦ Центральный", "sales": 135.0, "turn": 52.0, "stock": 1759.0, "catYU": 2.0, "fill": 157.0, "fillKor": 157.0, "modules": 7.0, "cat": {"Кольца": {"fact": 480.0, "stock": 969.0, "turn": 81.0}, "Серьги": {"fact": 375.0, "stock": 375.0, "turn": 39.0}, "Цепочки": {"fact": 110.0, "stock": 221.0, "turn": 49.0}, "Браслеты": {"fact": 55.0, "stock": 79.0, "turn": 20.0}, "Колье": {"fact": 45.0, "stock": 45.0, "turn": 90.0}, "Подвески": {"fact": 73.0, "stock": 73.0, "turn": 29.0}}}, {"pod": "Сочи", "mag": "11350", "tc": "Кисловодск, ул. Горького д.15", "sales": 72.0, "turn": 89.0, "stock": 1602.0, "catYU": 2.0, "fill": 174.0, "fillKor": 216.0, "modules": 6.0, "cat": {"Кольца": {"fact": 422.0, "stock": 838.0, "turn": 239.0}, "Серьги": {"fact": 347.0, "stock": 352.0, "turn": 352.0}, "Цепочки": {"fact": 78.0, "stock": 144.0, "turn": 48.0}, "Браслеты": {"fact": 63.0, "stock": 96.0, "turn": 0.0}, "Колье": {"fact": 69.0, "stock": 78.0, "turn": 0.0}, "Подвески": {"fact": 112.0, "stock": 113.0, "turn": 113.0}}}, {"pod": "Крым", "mag": "11376", "tc": "Ростов-на-Дону, ТРЦ Золотой Вавилон", "sales": 120.0, "turn": 74.0, "stock": 2206.0, "catYU": 3.0, "fill": 125.0, "fillKor": 181.0, "modules": 11.0, "cat": {"Кольца": {"fact": 528.0, "stock": 993.0, "turn": 199.0}, "Серьги": {"fact": 488.0, "stock": 497.0, "turn": 66.0}, "Цепочки": {"fact": 155.0, "stock": 288.0, "turn": 72.0}, "Браслеты": {"fact": 75.0, "stock": 113.0, "turn": 32.0}, "Колье": {"fact": 84.0, "stock": 84.0, "turn": 0.0}, "Подвески": {"fact": 133.0, "stock": 134.0, "turn": 134.0}}}, {"pod": "Крым", "mag": "11397", "tc": "Ростов-на-Дону, ТРК Горизонт", "sales": 290.0, "turn": 37.0, "stock": 2650.0, "catYU": 3.0, "fill": 149.0, "fillKor": 137.0, "modules": 12.0, "cat": {"Кольца": {"fact": 566.0, "stock": 1123.0, "turn": 44.0}, "Серьги": {"fact": 723.0, "stock": 726.0, "turn": 45.0}, "Цепочки": {"fact": 148.0, "stock": 324.0, "turn": 21.0}, "Браслеты": {"fact": 92.0, "stock": 151.0, "turn": 13.0}, "Колье": {"fact": 104.0, "stock": 106.0, "turn": 24.0}, "Подвески": {"fact": 171.0, "stock": 171.0, "turn": 34.0}}}, {"pod": "Крым", "mag": "11412", "tc": "Таганрог, ТЦ Лето", "sales": 231.0, "turn": 35.0, "stock": 2009.0, "catYU": 2.0, "fill": 169.0, "fillKor": 169.0, "modules": 7.0, "cat": {"Кольца": {"fact": 520.0, "stock": 1012.0, "turn": 78.0}, "Серьги": {"fact": 359.0, "stock": 360.0, "turn": 21.0}, "Цепочки": {"fact": 124.0, "stock": 218.0, "turn": 13.0}, "Браслеты": {"fact": 78.0, "stock": 112.0, "turn": 28.0}, "Колье": {"fact": 76.0, "stock": 86.0, "turn": 0.0}, "Подвески": {"fact": 88.0, "stock": 88.0, "turn": 25.0}}}, {"pod": "Кавказ", "mag": "11428", "tc": "Владикавказ, ТЦ Алания Молл", "sales": 119.0, "turn": 69.0, "stock": 2053.0, "catYU": 2.0, "fill": 141.0, "fillKor": 186.0, "modules": 9.0, "cat": {"Кольца": {"fact": 644.0, "stock": 1298.0, "turn": 130.0}, "Серьги": {"fact": 396.0, "stock": 402.0, "turn": 57.0}, "Цепочки": {"fact": 98.0, "stock": 165.0, "turn": 37.0}, "Браслеты": {"fact": 45.0, "stock": 72.0, "turn": 36.0}, "Колье": {"fact": 27.0, "stock": 28.0, "turn": 0.0}, "Подвески": {"fact": 95.0, "stock": 97.0, "turn": 97.0}}}, {"pod": "Сочи", "mag": "11429", "tc": "Новороссийск, ТРЦ Грин Парк", "sales": 232.0, "turn": 51.0, "stock": 2978.0, "catYU": 4.0, "fill": 173.0, "fillKor": 158.0, "modules": 10.0, "cat": {"Кольца": {"fact": 696.0, "stock": 1514.0, "turn": 98.0}, "Серьги": {"fact": 623.0, "stock": 625.0, "turn": 52.0}, "Цепочки": {"fact": 191.0, "stock": 415.0, "turn": 52.0}, "Браслеты": {"fact": 110.0, "stock": 179.0, "turn": 30.0}, "Колье": {"fact": 100.0, "stock": 104.0, "turn": 35.0}, "Подвески": {"fact": 162.0, "stock": 163.0, "turn": 82.0}}}, {"pod": "Кавказ", "mag": "11430", "tc": "Грозный, ТРЦ Грозный Молл", "sales": 299.7, "turn": 41.0, "stock": 3102.0, "catYU": 3.0, "fill": 149.0, "fillKor": 137.0, "modules": 11.0, "cat": {"Кольца": {"fact": 558.0, "stock": 1069.0, "turn": 36.0}, "Серьги": {"fact": 657.0, "stock": 668.0, "turn": 36.0}, "Цепочки": {"fact": 166.0, "stock": 353.0, "turn": 40.0}, "Браслеты": {"fact": 71.0, "stock": 126.0, "turn": 8.0}, "Колье": {"fact": 73.0, "stock": 76.0, "turn": 22.0}, "Подвески": {"fact": 167.0, "stock": 173.0, "turn": 87.0}}}, {"pod": "Черноморское", "mag": "11431", "tc": "Лабинск, ТЦ", "sales": 212.0, "turn": 35.0, "stock": 1862.0, "catYU": 2.0, "fill": 170.0, "fillKor": 170.0, "modules": 7.0, "cat": {"Кольца": {"fact": 521.0, "stock": 952.0, "turn": 66.0}, "Серьги": {"fact": 399.0, "stock": 400.0, "turn": 40.0}, "Цепочки": {"fact": 130.0, "stock": 271.0, "turn": 27.0}, "Браслеты": {"fact": 65.0, "stock": 95.0, "turn": 15.0}, "Колье": {"fact": 50.0, "stock": 54.0, "turn": 0.0}, "Подвески": {"fact": 105.0, "stock": 105.0, "turn": 18.0}}}, {"pod": "Ростов", "mag": "11497", "tc": "Каменск-Шахтинский, Карла Маркса пр-кт, д. 67а", "sales": 203.0, "turn": 28.0, "stock": 1435.0, "catYU": 2.0, "fill": 224.0, "fillKor": 224.0, "modules": 6.0, "cat": {"Кольца": {"fact": 382.0, "stock": 722.0, "turn": 41.0}, "Серьги": {"fact": 272.0, "stock": 307.0, "turn": 21.0}, "Цепочки": {"fact": 114.0, "stock": 221.0, "turn": 22.0}, "Браслеты": {"fact": 54.0, "stock": 77.0, "turn": 22.0}, "Колье": {"fact": 22.0, "stock": 24.0, "turn": 24.0}, "Подвески": {"fact": 100.0, "stock": 101.0, "turn": 29.0}}}, {"pod": "Кавказ", "mag": "11498", "tc": "Невинномысск, Гагарина ул., д. 63", "sales": 132.0, "turn": 44.0, "stock": 1442.0, "catYU": 2.0, "fill": 180.0, "fillKor": 180.0, "modules": 4.0, "cat": {"Кольца": {"fact": 349.0, "stock": 905.0, "turn": 106.0}, "Серьги": {"fact": 187.0, "stock": 187.0, "turn": 22.0}, "Цепочки": {"fact": 93.0, "stock": 189.0, "turn": 25.0}, "Браслеты": {"fact": 43.0, "stock": 66.0, "turn": 22.0}, "Колье": {"fact": 18.0, "stock": 18.0, "turn": 36.0}, "Подвески": {"fact": 71.0, "stock": 71.0, "turn": 36.0}}}, {"pod": "Черноморское", "mag": "11500", "tc": "Ростов-на-Дону, ТРЦ Парк", "sales": 327.0, "turn": 36.0, "stock": 2976.0, "catYU": 4.0, "fill": 83.0, "fillKor": 83.0, "modules": 7.0, "cat": {"Кольца": {"fact": 673.0, "stock": 1564.0, "turn": 73.0}, "Серьги": {"fact": 636.0, "stock": 642.0, "turn": 29.0}, "Цепочки": {"fact": 153.0, "stock": 317.0, "turn": 10.0}, "Браслеты": {"fact": 112.0, "stock": 201.0, "turn": 27.0}, "Колье": {"fact": 106.0, "stock": 109.0, "turn": 73.0}, "Подвески": {"fact": 175.0, "stock": 176.0, "turn": 29.0}}}, {"pod": "Черноморское", "mag": "11510", "tc": "Черкесск, ТРЦ Россия", "sales": 219.0, "turn": 43.0, "stock": 2359.0, "catYU": 3.0, "fill": 186.0, "fillKor": 186.0, "modules": 8.0, "cat": {"Кольца": {"fact": 610.0, "stock": 1320.0, "turn": 139.0}, "Серьги": {"fact": 442.0, "stock": 442.0, "turn": 21.0}, "Цепочки": {"fact": 148.0, "stock": 313.0, "turn": 31.0}, "Браслеты": {"fact": 76.0, "stock": 129.0, "turn": 15.0}, "Колье": {"fact": 49.0, "stock": 50.0, "turn": 50.0}, "Подвески": {"fact": 127.0, "stock": 127.0, "turn": 64.0}}}, {"pod": "Сочи", "mag": "11514", "tc": "Белореченск, ТЦ Центр Города", "sales": 158.0, "turn": 50.0, "stock": 1967.0, "catYU": 3.0, "fill": 193.0, "fillKor": 193.0, "modules": 7.0, "cat": {"Кольца": {"fact": 535.0, "stock": 995.0, "turn": 133.0}, "Серьги": {"fact": 376.0, "stock": 377.0, "turn": 38.0}, "Цепочки": {"fact": 152.0, "stock": 296.0, "turn": 59.0}, "Браслеты": {"fact": 91.0, "stock": 149.0, "turn": 60.0}, "Колье": {"fact": 48.0, "stock": 49.0, "turn": 0.0}, "Подвески": {"fact": 109.0, "stock": 109.0, "turn": 110.0}}}, {"pod": "Крым", "mag": "11519", "tc": "Таганрог, ТРЦ Мармелад", "sales": 188.0, "turn": 31.0, "stock": 1454.0, "catYU": 3.0, "fill": 210.0, "fillKor": 210.0, "modules": 5.0, "cat": {"Кольца": {"fact": 371.0, "stock": 709.0, "turn": 55.0}, "Серьги": {"fact": 318.0, "stock": 322.0, "turn": 59.0}, "Цепочки": {"fact": 106.0, "stock": 178.0, "turn": 13.0}, "Браслеты": {"fact": 66.0, "stock": 110.0, "turn": 18.0}, "Колье": {"fact": 55.0, "stock": 56.0, "turn": 28.0}, "Подвески": {"fact": 95.0, "stock": 96.0, "turn": 32.0}}}, {"pod": "Черноморское", "mag": "11520", "tc": "Ростов-на-Дону, ТОЦ Джанфида", "sales": 147.0, "turn": 44.0, "stock": 1617.0, "catYU": 2.0, "fill": 142.0, "fillKor": 142.0, "modules": 7.0, "cat": {"Кольца": {"fact": 374.0, "stock": 847.0, "turn": 141.0}, "Серьги": {"fact": 321.0, "stock": 321.0, "turn": 29.0}, "Цепочки": {"fact": 103.0, "stock": 221.0, "turn": 44.0}, "Браслеты": {"fact": 52.0, "stock": 78.0, "turn": 52.0}, "Колье": {"fact": 46.0, "stock": 49.0, "turn": 49.0}, "Подвески": {"fact": 99.0, "stock": 99.0, "turn": 20.0}}}, {"pod": "Кавказ", "mag": "11532", "tc": "Назрань, ТЦ АлифМолл", "sales": 219.5, "turn": 45.0, "stock": 2468.0, "catYU": 3.0, "fill": 138.0, "fillKor": 128.0, "modules": 12.0, "cat": {"Кольца": {"fact": 436.0, "stock": 1007.0, "turn": 45.0}, "Серьги": {"fact": 721.0, "stock": 721.0, "turn": 61.0}, "Цепочки": {"fact": 147.0, "stock": 280.0, "turn": 48.0}, "Браслеты": {"fact": 59.0, "stock": 98.0, "turn": 18.0}, "Колье": {"fact": 108.0, "stock": 116.0, "turn": 59.0}, "Подвески": {"fact": 223.0, "stock": 223.0, "turn": 223.0}}}, {"pod": "Черноморское", "mag": "11541", "tc": "Краснодар, ТРЦ Галактика", "sales": 199.0, "turn": 52.0, "stock": 2578.0, "catYU": 4.0, "fill": 125.0, "fillKor": 117.0, "modules": 14.0, "cat": {"Кольца": {"fact": 596.0, "stock": 1163.0, "turn": 93.0}, "Серьги": {"fact": 604.0, "stock": 604.0, "turn": 38.0}, "Цепочки": {"fact": 163.0, "stock": 328.0, "turn": 36.0}, "Браслеты": {"fact": 130.0, "stock": 211.0, "turn": 84.0}, "Колье": {"fact": 112.0, "stock": 114.0, "turn": 33.0}, "Подвески": {"fact": 167.0, "stock": 167.0, "turn": 84.0}}}, {"pod": "Сочи", "mag": "11551", "tc": "Сочи, ТЦ Олимп", "sales": 112.0, "turn": 59.0, "stock": 1644.0, "catYU": 2.0, "fill": 122.0, "fillKor": 122.0, "modules": 9.0, "cat": {"Кольца": {"fact": 426.0, "stock": 785.0, "turn": 157.0}, "Серьги": {"fact": 301.0, "stock": 319.0, "turn": 46.0}, "Цепочки": {"fact": 114.0, "stock": 255.0, "turn": 85.0}, "Браслеты": {"fact": 63.0, "stock": 97.0, "turn": 49.0}, "Колье": {"fact": 35.0, "stock": 36.0, "turn": 36.0}, "Подвески": {"fact": 110.0, "stock": 111.0, "turn": 44.0}}}, {"pod": "Сочи", "mag": "11555", "tc": "Ессентуки, ТЦ Новое время", "sales": 192.0, "turn": 35.0, "stock": 1703.0, "catYU": 3.0, "fill": 323.0, "fillKor": 261.0, "modules": 4.0, "cat": {"Кольца": {"fact": 410.0, "stock": 909.0, "turn": 71.0}, "Серьги": {"fact": 304.0, "stock": 305.0, "turn": 19.0}, "Цепочки": {"fact": 75.0, "stock": 121.0, "turn": 16.0}, "Браслеты": {"fact": 70.0, "stock": 103.0, "turn": 11.0}, "Колье": {"fact": 42.0, "stock": 45.0, "turn": 30.0}, "Подвески": {"fact": 79.0, "stock": 79.0, "turn": 53.0}}}, {"pod": "Сочи", "mag": "11585", "tc": "Майкоп, ТЦ Европейский", "sales": 114.0, "turn": 82.0, "stock": 2345.0, "catYU": 3.0, "fill": 134.0, "fillKor": 134.0, "modules": 9.0, "cat": {"Кольца": {"fact": 610.0, "stock": 1240.0, "turn": 124.0}, "Серьги": {"fact": 523.0, "stock": 525.0, "turn": 62.0}, "Цепочки": {"fact": 129.0, "stock": 238.0, "turn": 95.0}, "Браслеты": {"fact": 86.0, "stock": 130.0, "turn": 37.0}, "Колье": {"fact": 68.0, "stock": 70.0, "turn": 0.0}, "Подвески": {"fact": 122.0, "stock": 122.0, "turn": 244.0}}}, {"pod": "Черноморское", "mag": "11595", "tc": "Краснодар, им. Валерия Гассия ул., д. 2А", "sales": 160.0, "turn": 37.0, "stock": 1485.0, "catYU": 2.0, "fill": 145.0, "fillKor": 196.0, "modules": 7.0, "cat": {"Кольца": {"fact": 405.0, "stock": 704.0, "turn": 94.0}, "Серьги": {"fact": 274.0, "stock": 286.0, "turn": 38.0}, "Цепочки": {"fact": 121.0, "stock": 251.0, "turn": 56.0}, "Браслеты": {"fact": 65.0, "stock": 102.0, "turn": 41.0}, "Колье": {"fact": 32.0, "stock": 36.0, "turn": 72.0}, "Подвески": {"fact": 104.0, "stock": 108.0, "turn": 31.0}}}, {"pod": "Сочи", "mag": "11607", "tc": "Геленджик, Островского ул., д. 147", "sales": 90.0, "turn": 63.0, "stock": 1421.0, "catYU": 3.0, "fill": 207.0, "fillKor": 207.0, "modules": 6.0, "cat": {"Кольца": {"fact": 371.0, "stock": 682.0, "turn": 124.0}, "Серьги": {"fact": 314.0, "stock": 314.0, "turn": 63.0}, "Цепочки": {"fact": 99.0, "stock": 180.0, "turn": 72.0}, "Браслеты": {"fact": 37.0, "stock": 57.0, "turn": 114.0}, "Колье": {"fact": 47.0, "stock": 49.0, "turn": 49.0}, "Подвески": {"fact": 101.0, "stock": 102.0, "turn": 51.0}}}, {"pod": "Черноморское", "mag": "11622", "tc": "Новоалександровск, Карла Маркса ул., д. 233 Б", "sales": 170.0, "turn": 45.0, "stock": 1918.0, "catYU": 4.0, "fill": 185.0, "fillKor": 185.0, "modules": 9.0, "cat": {"Кольца": {"fact": 517.0, "stock": 1083.0, "turn": 98.0}, "Серьги": {"fact": 320.0, "stock": 320.0, "turn": 25.0}, "Цепочки": {"fact": 143.0, "stock": 298.0, "turn": 100.0}, "Браслеты": {"fact": 55.0, "stock": 89.0, "turn": 25.0}, "Колье": {"fact": 44.0, "stock": 46.0, "turn": 92.0}, "Подвески": {"fact": 83.0, "stock": 83.0, "turn": 86.0}}}, {"pod": "Сочи", "mag": "11638", "tc": "Новороссийск, ТРК Красная площадь", "sales": 199.0, "turn": 49.0, "stock": 2420.0, "catYU": 3.0, "fill": 170.0, "fillKor": 170.0, "modules": 10.0, "cat": {"Кольца": {"fact": 646.0, "stock": 1295.0, "turn": 113.0}, "Серьги": {"fact": 461.0, "stock": 461.0, "turn": 44.0}, "Цепочки": {"fact": 159.0, "stock": 283.0, "turn": 22.0}, "Браслеты": {"fact": 108.0, "stock": 163.0, "turn": 54.0}, "Колье": {"fact": 94.0, "stock": 94.0, "turn": 63.0}, "Подвески": {"fact": 113.0, "stock": 113.0, "turn": 28.0}}}, {"pod": "Черноморское", "mag": "11643", "tc": "Краснодар, им. Петра Метальникова ул., д. 32/1", "sales": 256.0, "turn": 39.0, "stock": 2519.0, "catYU": 4.0, "fill": 51.0, "fillKor": 53.0, "modules": 14.0, "cat": {"Кольца": {"fact": 585.0, "stock": 1316.0, "turn": 97.0}, "Серьги": {"fact": 515.0, "stock": 515.0, "turn": 30.0}, "Цепочки": {"fact": 158.0, "stock": 272.0, "turn": 19.0}, "Браслеты": {"fact": 95.0, "stock": 164.0, "turn": 55.0}, "Колье": {"fact": 92.0, "stock": 92.0, "turn": 92.0}, "Подвески": {"fact": 144.0, "stock": 144.0, "turn": 22.0}}}, {"pod": "Краснодар", "mag": "11648", "tc": "Краснодар, ТЦ Oz Mall", "sales": 471.0, "turn": 33.0, "stock": 3838.0, "catYU": 4.0, "fill": 226.0, "fillKor": 226.0, "modules": 6.0, "cat": {"Кольца": {"fact": 891.0, "stock": 2146.0, "turn": 67.0}, "Серьги": {"fact": 735.0, "stock": 763.0, "turn": 22.0}, "Цепочки": {"fact": 209.0, "stock": 433.0, "turn": 21.0}, "Браслеты": {"fact": 113.0, "stock": 192.0, "turn": 11.0}, "Колье": {"fact": 132.0, "stock": 145.0, "turn": 97.0}, "Подвески": {"fact": 209.0, "stock": 229.0, "turn": 42.0}}}, {"pod": "Краснодар", "mag": "11650", "tc": "Ейск, Победы ул., д. 76/2", "sales": 212.0, "turn": 38.0, "stock": 2000.0, "catYU": 2.0, "fill": 143.0, "fillKor": 143.0, "modules": 8.0, "cat": {"Кольца": {"fact": 576.0, "stock": 1018.0, "turn": 62.0}, "Серьги": {"fact": 484.0, "stock": 484.0, "turn": 33.0}, "Цепочки": {"fact": 113.0, "stock": 214.0, "turn": 17.0}, "Браслеты": {"fact": 69.0, "stock": 105.0, "turn": 35.0}, "Колье": {"fact": 78.0, "stock": 79.0, "turn": 40.0}, "Подвески": {"fact": 93.0, "stock": 93.0, "turn": 21.0}}}, {"pod": "Сочи", "mag": "11654", "tc": "Туапсе, ТЦ Победа", "sales": 139.0, "turn": 56.0, "stock": 1932.0, "catYU": 4.0, "fill": 190.0, "fillKor": 190.0, "modules": 8.0, "cat": {"Кольца": {"fact": 545.0, "stock": 1204.0, "turn": 120.0}, "Серьги": {"fact": 321.0, "stock": 323.0, "turn": 54.0}, "Цепочки": {"fact": 78.0, "stock": 130.0, "turn": 17.0}, "Браслеты": {"fact": 88.0, "stock": 148.0, "turn": 33.0}, "Колье": {"fact": 47.0, "stock": 52.0, "turn": 104.0}, "Подвески": {"fact": 66.0, "stock": 66.0, "turn": 26.0}}}, {"pod": "Ростов", "mag": "11666", "tc": "Тимашевск, Братская ул., д. 174", "sales": 234.0, "turn": 43.0, "stock": 2493.0, "catYU": 1.0, "fill": 130.0, "fillKor": 130.0, "modules": 7.0, "cat": {"Кольца": {"fact": 653.0, "stock": 1349.0, "turn": 112.0}, "Серьги": {"fact": 423.0, "stock": 423.0, "turn": 29.0}, "Цепочки": {"fact": 139.0, "stock": 296.0, "turn": 24.0}, "Браслеты": {"fact": 108.0, "stock": 185.0, "turn": 31.0}, "Колье": {"fact": 89.0, "stock": 91.0, "turn": 26.0}, "Подвески": {"fact": 128.0, "stock": 128.0, "turn": 128.0}}}, {"pod": "Ростов", "mag": "11667", "tc": "Батайск, ТЦ Оранжерея", "sales": 115.0, "turn": 54.0, "stock": 1565.0, "catYU": 1.0, "fill": 135.0, "fillKor": 212.0, "modules": 7.0, "cat": {"Кольца": {"fact": 490.0, "stock": 1004.0, "turn": 91.0}, "Серьги": {"fact": 257.0, "stock": 261.0, "turn": 58.0}, "Цепочки": {"fact": 75.0, "stock": 133.0, "turn": 22.0}, "Браслеты": {"fact": 57.0, "stock": 83.0, "turn": 55.0}, "Колье": {"fact": 33.0, "stock": 37.0, "turn": 37.0}, "Подвески": {"fact": 55.0, "stock": 55.0, "turn": 22.0}}}, {"pod": "Ростов", "mag": "11682", "tc": "Новочеркасск, Ермака пр-т., д. 44", "sales": 62.0, "turn": 93.0, "stock": 1445.0, "catYU": 3.0, "fill": 182.0, "fillKor": 182.0, "modules": 7.0, "cat": {"Кольца": {"fact": 387.0, "stock": 866.0, "turn": 133.0}, "Серьги": {"fact": 242.0, "stock": 247.0, "turn": 73.0}, "Цепочки": {"fact": 92.0, "stock": 182.0, "turn": 40.0}, "Браслеты": {"fact": 33.0, "stock": 48.0, "turn": 48.0}, "Колье": {"fact": 50.0, "stock": 59.0, "turn": 59.0}, "Подвески": {"fact": 44.0, "stock": 44.0, "turn": 29.0}}}, {"pod": "Ростов", "mag": "11694", "tc": "Гуково, Карла Маркса ул., д. 53Д", "sales": 183.0, "turn": 42.0, "stock": 1936.0, "catYU": 3.0, "fill": 186.0, "fillKor": 186.0, "modules": 8.0, "cat": {"Кольца": {"fact": 535.0, "stock": 987.0, "turn": 46.0}, "Серьги": {"fact": 403.0, "stock": 403.0, "turn": 42.0}, "Цепочки": {"fact": 122.0, "stock": 273.0, "turn": 61.0}, "Браслеты": {"fact": 91.0, "stock": 131.0, "turn": 131.0}, "Колье": {"fact": 65.0, "stock": 69.0, "turn": 28.0}, "Подвески": {"fact": 77.0, "stock": 77.0, "turn": 11.0}}}, {"pod": "Краснодар", "mag": "11724", "tc": "Краснодар, ТЦ Новый горизонт", "sales": 201.0, "turn": 46.0, "stock": 2321.0, "catYU": 3.0, "fill": 88.0, "fillKor": 78.0, "modules": 14.0, "cat": {"Кольца": {"fact": 570.0, "stock": 1134.0, "turn": 87.0}, "Серьги": {"fact": 512.0, "stock": 514.0, "turn": 26.0}, "Цепочки": {"fact": 158.0, "stock": 314.0, "turn": 42.0}, "Браслеты": {"fact": 105.0, "stock": 172.0, "turn": 57.0}, "Колье": {"fact": 60.0, "stock": 62.0, "turn": 62.0}, "Подвески": {"fact": 130.0, "stock": 130.0, "turn": 52.0}}}, {"pod": "Сочи", "mag": "11757", "tc": "Сочи, ТЦ Александрия", "sales": 153.0, "turn": 52.0, "stock": 1972.0, "catYU": 3.0, "fill": 224.0, "fillKor": 194.0, "modules": 6.0, "cat": {"Кольца": {"fact": 475.0, "stock": 984.0, "turn": 62.0}, "Серьги": {"fact": 439.0, "stock": 441.0, "turn": 38.0}, "Цепочки": {"fact": 118.0, "stock": 196.0, "turn": 25.0}, "Браслеты": {"fact": 78.0, "stock": 115.0, "turn": 58.0}, "Колье": {"fact": 67.0, "stock": 68.0, "turn": 136.0}, "Подвески": {"fact": 147.0, "stock": 147.0, "turn": 74.0}}}, {"pod": "Краснодар", "mag": "11783", "tc": "Кущевская, Ленина ул., д. 21", "sales": 240.0, "turn": 39.0, "stock": 2353.0, "catYU": 4.0, "fill": 188.0, "fillKor": 188.0, "modules": 9.0, "cat": {"Кольца": {"fact": 647.0, "stock": 1424.0, "turn": 142.0}, "Серьги": {"fact": 490.0, "stock": 490.0, "turn": 61.0}, "Цепочки": {"fact": 108.0, "stock": 236.0, "turn": 14.0}, "Браслеты": {"fact": 69.0, "stock": 103.0, "turn": 15.0}, "Колье": {"fact": 82.0, "stock": 82.0, "turn": 164.0}, "Подвески": {"fact": 58.0, "stock": 58.0, "turn": 17.0}}}, {"pod": "Ростов", "mag": "11840", "tc": "Миллерово, ТЦ", "sales": 237.0, "turn": 43.0, "stock": 2567.0, "catYU": 3.0, "fill": 264.0, "fillKor": 264.0, "modules": 5.0, "cat": {"Кольца": {"fact": 620.0, "stock": 1107.0, "turn": 89.0}, "Серьги": {"fact": 678.0, "stock": 678.0, "turn": 39.0}, "Цепочки": {"fact": 159.0, "stock": 333.0, "turn": 61.0}, "Браслеты": {"fact": 104.0, "stock": 156.0, "turn": 62.0}, "Колье": {"fact": 84.0, "stock": 84.0, "turn": 168.0}, "Подвески": {"fact": 100.0, "stock": 100.0, "turn": 22.0}}}, {"pod": "Черноморское", "mag": "11858", "tc": "Изобильный,  Семыкина ул., стр. 17", "sales": 221.0, "turn": 29.0, "stock": 1575.0, "catYU": 3.0, "fill": 191.0, "fillKor": 171.0, "modules": 8.0, "cat": {"Кольца": {"fact": 379.0, "stock": 729.0, "turn": 47.0}, "Серьги": {"fact": 277.0, "stock": 277.0, "turn": 16.0}, "Цепочки": {"fact": 146.0, "stock": 320.0, "turn": 32.0}, "Браслеты": {"fact": 75.0, "stock": 120.0, "turn": 80.0}, "Колье": {"fact": 47.0, "stock": 50.0, "turn": 0.0}, "Подвески": {"fact": 99.0, "stock": 99.0, "turn": 33.0}}}, {"pod": "Кавказ", "mag": "11869", "tc": "Владикавказ, ТЦ Столица", "sales": 220.0, "turn": 48.0, "stock": 2615.0, "catYU": 2.0, "fill": 225.0, "fillKor": 188.0, "modules": 5.0, "cat": {"Кольца": {"fact": 604.0, "stock": 1308.0, "turn": 109.0}, "Серьги": {"fact": 558.0, "stock": 558.0, "turn": 54.0}, "Цепочки": {"fact": 127.0, "stock": 214.0, "turn": 17.0}, "Браслеты": {"fact": 68.0, "stock": 99.0, "turn": 21.0}, "Колье": {"fact": 67.0, "stock": 71.0, "turn": 144.0}, "Подвески": {"fact": 184.0, "stock": 184.0, "turn": 93.0}}}, {"pod": "Черноморское", "mag": "11880", "tc": "Мостовской, ТЦ Вита", "sales": 150.0, "turn": 45.0, "stock": 1677.0, "catYU": 2.0, "fill": 154.0, "fillKor": 154.0, "modules": 9.0, "cat": {"Кольца": {"fact": 418.0, "stock": 814.0, "turn": 63.0}, "Серьги": {"fact": 385.0, "stock": 402.0, "turn": 80.0}, "Цепочки": {"fact": 121.0, "stock": 223.0, "turn": 50.0}, "Браслеты": {"fact": 59.0, "stock": 91.0, "turn": 46.0}, "Колье": {"fact": 36.0, "stock": 39.0, "turn": 78.0}, "Подвески": {"fact": 114.0, "stock": 114.0, "turn": 33.0}}}, {"pod": "Черноморское", "mag": "11894", "tc": "Ростов-на-Дону, ТЦ Таллер", "sales": 144.0, "turn": 58.0, "stock": 2085.0, "catYU": 2.0, "fill": 148.0, "fillKor": 189.0, "modules": 6.0, "cat": {"Кольца": {"fact": 531.0, "stock": 988.0, "turn": 68.0}, "Серьги": {"fact": 490.0, "stock": 493.0, "turn": 110.0}, "Цепочки": {"fact": 144.0, "stock": 289.0, "turn": 64.0}, "Браслеты": {"fact": 51.0, "stock": 73.0, "turn": 16.0}, "Колье": {"fact": 64.0, "stock": 69.0, "turn": 138.0}, "Подвески": {"fact": 144.0, "stock": 144.0, "turn": 72.0}}}, {"pod": "Ростов", "mag": "11895", "tc": "Новошахтинск, ТЦ Городок", "sales": 132.0, "turn": 45.0, "stock": 1481.0, "catYU": 4.0, "fill": 192.0, "fillKor": 192.0, "modules": 8.0, "cat": {"Кольца": {"fact": 439.0, "stock": 755.0, "turn": 108.0}, "Серьги": {"fact": 245.0, "stock": 248.0, "turn": 29.0}, "Цепочки": {"fact": 96.0, "stock": 275.0, "turn": 110.0}, "Браслеты": {"fact": 65.0, "stock": 98.0, "turn": 39.0}, "Колье": {"fact": 24.0, "stock": 25.0, "turn": 0.0}, "Подвески": {"fact": 84.0, "stock": 84.0, "turn": 56.0}}}, {"pod": "Кавказ", "mag": "11903", "tc": "Михайловск, Ленина ул., д. 87", "sales": 411.0, "turn": 26.0, "stock": 2656.0, "catYU": 3.0, "fill": 190.0, "fillKor": 190.0, "modules": 5.0, "cat": {"Кольца": {"fact": 654.0, "stock": 1410.0, "turn": 42.0}, "Серьги": {"fact": 532.0, "stock": 532.0, "turn": 18.0}, "Цепочки": {"fact": 172.0, "stock": 370.0, "turn": 21.0}, "Браслеты": {"fact": 68.0, "stock": 120.0, "turn": 10.0}, "Колье": {"fact": 56.0, "stock": 60.0, "turn": 40.0}, "Подвески": {"fact": 135.0, "stock": 135.0, "turn": 39.0}}}, {"pod": "Крым", "mag": "11904", "tc": "Ростов-на-Дону, ТРЦ ЖК Суворовский", "sales": 174.0, "turn": 35.0, "stock": 1509.0, "catYU": 3.0, "fill": 176.0, "fillKor": 176.0, "modules": 7.0, "cat": {"Кольца": {"fact": 402.0, "stock": 731.0, "turn": 91.0}, "Серьги": {"fact": 235.0, "stock": 250.0, "turn": 18.0}, "Цепочки": {"fact": 117.0, "stock": 240.0, "turn": 20.0}, "Браслеты": {"fact": 59.0, "stock": 93.0, "turn": 27.0}, "Колье": {"fact": 47.0, "stock": 49.0, "turn": 98.0}, "Подвески": {"fact": 58.0, "stock": 59.0, "turn": 24.0}}}, {"pod": "Краснодар", "mag": "11913", "tc": "Краснодар,  Восточно-Кругликовская ул., дом 26", "sales": 155.0, "turn": 51.0, "stock": 1985.0, "catYU": 2.0, "fill": 105.0, "fillKor": 105.0, "modules": 12.0, "cat": {"Кольца": {"fact": 504.0, "stock": 1002.0, "turn": 134.0}, "Серьги": {"fact": 430.0, "stock": 432.0, "turn": 66.0}, "Цепочки": {"fact": 146.0, "stock": 300.0, "turn": 67.0}, "Браслеты": {"fact": 81.0, "stock": 119.0, "turn": 40.0}, "Колье": {"fact": 50.0, "stock": 50.0, "turn": 50.0}, "Подвески": {"fact": 107.0, "stock": 107.0, "turn": 31.0}}}, {"pod": "Краснодар", "mag": "11949", "tc": "Краснодар, ТЦ WestMall", "sales": 174.0, "turn": 42.0, "stock": 1840.0, "catYU": 4.0, "fill": 192.0, "fillKor": 192.0, "modules": 7.0, "cat": {"Кольца": {"fact": 477.0, "stock": 864.0, "turn": 49.0}, "Серьги": {"fact": 428.0, "stock": 445.0, "turn": 27.0}, "Цепочки": {"fact": 103.0, "stock": 201.0, "turn": 40.0}, "Браслеты": {"fact": 45.0, "stock": 67.0, "turn": 15.0}, "Колье": {"fact": 76.0, "stock": 79.0, "turn": 158.0}, "Подвески": {"fact": 123.0, "stock": 123.0, "turn": 62.0}}}, {"pod": "Краснодар", "mag": "11972", "tc": "Приморско-Ахтарск, Космонавтов ул., д. 61", "sales": 181.0, "turn": 47.0, "stock": 2107.0, "catYU": 3.0, "fill": 157.0, "fillKor": 142.0, "modules": 9.0, "cat": {"Кольца": {"fact": 577.0, "stock": 1127.0, "turn": 90.0}, "Серьги": {"fact": 473.0, "stock": 476.0, "turn": 60.0}, "Цепочки": {"fact": 137.0, "stock": 264.0, "turn": 26.0}, "Браслеты": {"fact": 101.0, "stock": 155.0, "turn": 31.0}, "Колье": {"fact": 54.0, "stock": 58.0, "turn": 39.0}, "Подвески": {"fact": 55.0, "stock": 55.0, "turn": 12.0}}}, {"pod": "Черноморское", "mag": "11980", "tc": "Ростов-на-Дону, ТРЦ МегаМаг", "sales": 230.0, "turn": 34.0, "stock": 1956.0, "catYU": 3.0, "fill": 174.0, "fillKor": 174.0, "modules": 10.0, "cat": {"Кольца": {"fact": 480.0, "stock": 812.0, "turn": 65.0}, "Серьги": {"fact": 513.0, "stock": 532.0, "turn": 28.0}, "Цепочки": {"fact": 143.0, "stock": 268.0, "turn": 26.0}, "Браслеты": {"fact": 92.0, "stock": 136.0, "turn": 16.0}, "Колье": {"fact": 83.0, "stock": 84.0, "turn": 168.0}, "Подвески": {"fact": 146.0, "stock": 148.0, "turn": 33.0}}}, {"pod": "Ростов", "mag": "13034", "tc": "Волгодонск, ТЦ Весенний", "sales": 224.0, "turn": 46.0, "stock": 2559.0, "catYU": 3.0, "fill": 104.0, "fillKor": 104.0, "modules": 15.0, "cat": {"Кольца": {"fact": 607.0, "stock": 1121.0, "turn": 125.0}, "Серьги": {"fact": 662.0, "stock": 684.0, "turn": 49.0}, "Цепочки": {"fact": 167.0, "stock": 323.0, "turn": 50.0}, "Браслеты": {"fact": 110.0, "stock": 172.0, "turn": 86.0}, "Колье": {"fact": 106.0, "stock": 108.0, "turn": 108.0}, "Подвески": {"fact": 176.0, "stock": 181.0, "turn": 362.0}}}, {"pod": "Черноморское", "mag": "13040", "tc": "Краснодар, ТК Центр Города", "sales": 189.0, "turn": 51.0, "stock": 2395.0, "catYU": 3.0, "fill": 126.0, "fillKor": 126.0, "modules": 13.0, "cat": {"Кольца": {"fact": 581.0, "stock": 1074.0, "turn": 90.0}, "Серьги": {"fact": 509.0, "stock": 513.0, "turn": 27.0}, "Цепочки": {"fact": 177.0, "stock": 383.0, "turn": 77.0}, "Браслеты": {"fact": 104.0, "stock": 162.0, "turn": 54.0}, "Колье": {"fact": 109.0, "stock": 112.0, "turn": 224.0}, "Подвески": {"fact": 149.0, "stock": 149.0, "turn": 99.0}}}, {"pod": "Краснодар", "mag": "13048", "tc": "Ейск, ТЦ Сердце Ейска", "sales": 199.0, "turn": 50.0, "stock": 2510.0, "catYU": 3.0, "fill": 89.0, "fillKor": 89.0, "modules": 18.0, "cat": {"Кольца": {"fact": 584.0, "stock": 1105.0, "turn": 78.0}, "Серьги": {"fact": 640.0, "stock": 641.0, "turn": 56.0}, "Цепочки": {"fact": 156.0, "stock": 360.0, "turn": 51.0}, "Браслеты": {"fact": 69.0, "stock": 98.0, "turn": 29.0}, "Колье": {"fact": 112.0, "stock": 112.0, "turn": 112.0}, "Подвески": {"fact": 124.0, "stock": 125.0, "turn": 31.0}}}, {"pod": "Черноморское", "mag": "13057", "tc": "Краснодар, ТРЦ Любимово Молл", "sales": 222.0, "turn": 41.0, "stock": 2277.0, "catYU": 2.0, "fill": 149.0, "fillKor": 135.0, "modules": 9.0, "cat": {"Кольца": {"fact": 517.0, "stock": 940.0, "turn": 43.0}, "Серьги": {"fact": 649.0, "stock": 650.0, "turn": 36.0}, "Цепочки": {"fact": 153.0, "stock": 275.0, "turn": 26.0}, "Браслеты": {"fact": 96.0, "stock": 148.0, "turn": 30.0}, "Колье": {"fact": 87.0, "stock": 87.0, "turn": 174.0}, "Подвески": {"fact": 163.0, "stock": 163.0, "turn": 109.0}}}, {"pod": "Сочи", "mag": "13071", "tc": "Апшеронск,ТЦ", "sales": 129.0, "turn": 57.0, "stock": 1842.0, "catYU": 2.0, "fill": 142.0, "fillKor": 142.0, "modules": 7.0, "cat": {"Кольца": {"fact": 475.0, "stock": 822.0, "turn": 117.0}, "Серьги": {"fact": 518.0, "stock": 518.0, "turn": 58.0}, "Цепочки": {"fact": 100.0, "stock": 154.0, "turn": 26.0}, "Браслеты": {"fact": 61.0, "stock": 89.0, "turn": 14.0}, "Колье": {"fact": 108.0, "stock": 121.0, "turn": 0.0}, "Подвески": {"fact": 139.0, "stock": 139.0, "turn": 70.0}}}, {"pod": "Сочи", "mag": "13091", "tc": "Горячий ключ, Ленина ул., д. 193Г", "sales": 84.0, "turn": 77.0, "stock": 1613.0, "catYU": 1.0, "fill": 130.0, "fillKor": 218.0, "modules": 8.0, "cat": {"Кольца": {"fact": 486.0, "stock": 918.0, "turn": 115.0}, "Серьги": {"fact": 346.0, "stock": 346.0, "turn": 49.0}, "Цепочки": {"fact": 85.0, "stock": 145.0, "turn": 48.0}, "Браслеты": {"fact": 46.0, "stock": 67.0, "turn": 134.0}, "Колье": {"fact": 34.0, "stock": 37.0, "turn": 25.0}, "Подвески": {"fact": 66.0, "stock": 66.0, "turn": 132.0}}}, {"pod": "Сочи", "mag": "13097", "tc": "Туапсе, ТРЦ Красная Площадь", "sales": 40.0, "turn": 164.0, "stock": 1640.0, "catYU": 3.0, "fill": 127.0, "fillKor": 161.0, "modules": 11.0, "cat": {"Кольца": {"fact": 511.0, "stock": 937.0, "turn": 312.0}, "Серьги": {"fact": 305.0, "stock": 309.0, "turn": 124.0}, "Цепочки": {"fact": 94.0, "stock": 183.0, "turn": 122.0}, "Браслеты": {"fact": 65.0, "stock": 89.0, "turn": 45.0}, "Колье": {"fact": 46.0, "stock": 47.0, "turn": 94.0}, "Подвески": {"fact": 72.0, "stock": 72.0, "turn": 144.0}}}, {"pod": "Кавказ", "mag": "13111", "tc": "Прохладный,ТЦ", "sales": 140.0, "turn": 56.0, "stock": 1959.0, "catYU": 4.0, "fill": 165.0, "fillKor": 165.0, "modules": 10.0, "cat": {"Кольца": {"fact": 453.0, "stock": 840.0, "turn": 99.0}, "Серьги": {"fact": 600.0, "stock": 600.0, "turn": 86.0}, "Цепочки": {"fact": 124.0, "stock": 215.0, "turn": 43.0}, "Браслеты": {"fact": 55.0, "stock": 81.0, "turn": 18.0}, "Колье": {"fact": 87.0, "stock": 87.0, "turn": 0.0}, "Подвески": {"fact": 138.0, "stock": 139.0, "turn": 46.0}}}, {"pod": "Ростов", "mag": "13125", "tc": "ТЦ, Элиста", "sales": 222.0, "turn": 42.0, "stock": 2349.0, "catYU": 3.0, "fill": 102.0, "fillKor": 102.0, "modules": 14.0, "cat": {"Кольца": {"fact": 498.0, "stock": 943.0, "turn": 79.0}, "Серьги": {"fact": 640.0, "stock": 650.0, "turn": 65.0}, "Цепочки": {"fact": 151.0, "stock": 260.0, "turn": 40.0}, "Браслеты": {"fact": 104.0, "stock": 156.0, "turn": 78.0}, "Колье": {"fact": 127.0, "stock": 132.0, "turn": 132.0}, "Подвески": {"fact": 200.0, "stock": 203.0, "turn": 203.0}}}, {"pod": "Кавказ", "mag": "13130", "tc": "ТЦ, Невинномысск", "sales": 106.0, "turn": 79.0, "stock": 2082.0, "catYU": 3.0, "fill": 176.0, "fillKor": 176.0, "modules": 9.0, "cat": {"Кольца": {"fact": 505.0, "stock": 896.0, "turn": 149.0}, "Серьги": {"fact": 559.0, "stock": 560.0, "turn": 53.0}, "Цепочки": {"fact": 134.0, "stock": 228.0, "turn": 114.0}, "Браслеты": {"fact": 75.0, "stock": 100.0, "turn": 67.0}, "Колье": {"fact": 80.0, "stock": 81.0, "turn": 162.0}, "Подвески": {"fact": 141.0, "stock": 141.0, "turn": 0.0}}}, {"pod": "Крым", "mag": "13131", "tc": "Симферополь, Южная Галлерея", "sales": 209.0, "turn": 52.0, "stock": 2709.0, "catYU": 2.0, "fill": 179.0, "fillKor": 179.0, "modules": 7.0, "cat": {"Кольца": {"fact": 566.0, "stock": 1192.0, "turn": 95.0}, "Серьги": {"fact": 589.0, "stock": 604.0, "turn": 50.0}, "Цепочки": {"fact": 155.0, "stock": 327.0, "turn": 30.0}, "Браслеты": {"fact": 100.0, "stock": 169.0, "turn": 38.0}, "Колье": {"fact": 87.0, "stock": 98.0, "turn": 0.0}, "Подвески": {"fact": 168.0, "stock": 175.0, "turn": 123.0}}}, {"pod": "Крым", "mag": "13133", "tc": "Крым Симферополь", "sales": 119.0, "turn": 67.0, "stock": 2004.0, "catYU": 2.0, "fill": 191.0, "fillKor": 191.0, "modules": 5.0, "cat": {"Кольца": {"fact": 518.0, "stock": 967.0, "turn": 107.0}, "Серьги": {"fact": 468.0, "stock": 495.0, "turn": 40.0}, "Цепочки": {"fact": 129.0, "stock": 267.0, "turn": 53.0}, "Браслеты": {"fact": 84.0, "stock": 123.0, "turn": 62.0}, "Колье": {"fact": 46.0, "stock": 48.0, "turn": 0.0}, "Подвески": {"fact": 81.0, "stock": 81.0, "turn": 54.0}}}, {"pod": "Крым", "mag": "13134", "tc": "Керчь, Торговый квартал", "sales": 134.0, "turn": 45.0, "stock": 1518.0, "catYU": 3.0, "fill": 308.0, "fillKor": 448.0, "modules": 6.0, "cat": {"Кольца": {"fact": 376.0, "stock": 706.0, "turn": 92.0}, "Серьги": {"fact": 273.0, "stock": 317.0, "turn": 40.0}, "Цепочки": {"fact": 106.0, "stock": 188.0, "turn": 30.0}, "Браслеты": {"fact": 59.0, "stock": 85.0, "turn": 43.0}, "Колье": {"fact": 68.0, "stock": 72.0, "turn": 144.0}, "Подвески": {"fact": 73.0, "stock": 73.0, "turn": 52.0}}}, {"pod": "Крым", "mag": "13135", "tc": "Симферополь, Меганом", "sales": 315.0, "turn": 37.0, "stock": 2875.0, "catYU": 3.0, "fill": 198.0, "fillKor": 198.0, "modules": 7.0, "cat": {"Кольца": {"fact": 612.0, "stock": 1025.0, "turn": 55.0}, "Серьги": {"fact": 587.0, "stock": 588.0, "turn": 36.0}, "Цепочки": {"fact": 179.0, "stock": 346.0, "turn": 60.0}, "Браслеты": {"fact": 90.0, "stock": 139.0, "turn": 28.0}, "Колье": {"fact": 64.0, "stock": 64.0, "turn": 38.0}, "Подвески": {"fact": 146.0, "stock": 147.0, "turn": 64.0}}}, {"pod": "Крым", "mag": "13136", "tc": "Ялта, ТЦ Конфетти", "sales": 141.0, "turn": 59.0, "stock": 2063.0, "catYU": 1.0, "fill": 142.0, "fillKor": 282.0, "modules": 6.0, "cat": {"Кольца": {"fact": 530.0, "stock": 1057.0, "turn": 99.0}, "Серьги": {"fact": 397.0, "stock": 398.0, "turn": 37.0}, "Цепочки": {"fact": 157.0, "stock": 253.0, "turn": 41.0}, "Браслеты": {"fact": 74.0, "stock": 124.0, "turn": 53.0}, "Колье": {"fact": 54.0, "stock": 58.0, "turn": 72.0}, "Подвески": {"fact": 94.0, "stock": 94.0, "turn": 75.0}}}, {"pod": "Крым", "mag": "13137", "tc": "Симферополь, ТЦ FM", "sales": 74.0, "turn": 84.0, "stock": 1561.0, "catYU": 2.0, "fill": 155.0, "fillKor": 155.0, "modules": 8.0, "cat": {"Кольца": {"fact": 376.0, "stock": 813.0, "turn": 137.0}, "Серьги": {"fact": 211.0, "stock": 246.0, "turn": 46.0}, "Цепочки": {"fact": 106.0, "stock": 235.0, "turn": 79.0}, "Браслеты": {"fact": 39.0, "stock": 54.0, "turn": 24.0}, "Колье": {"fact": 25.0, "stock": 29.0, "turn": 0.0}, "Подвески": {"fact": 64.0, "stock": 64.0, "turn": 43.0}}}, {"pod": "Крым", "mag": "13138", "tc": "Бахчисарай, Торговый комплекс", "sales": 154.0, "turn": 53.0, "stock": 2055.0, "catYU": 4.0, "fill": 143.0, "fillKor": 165.0, "modules": 15.0, "cat": {"Кольца": {"fact": 517.0, "stock": 997.0, "turn": 59.0}, "Серьги": {"fact": 438.0, "stock": 482.0, "turn": 28.0}, "Цепочки": {"fact": 114.0, "stock": 225.0, "turn": 90.0}, "Браслеты": {"fact": 67.0, "stock": 95.0, "turn": 32.0}, "Колье": {"fact": 38.0, "stock": 39.0, "turn": 0.0}, "Подвески": {"fact": 103.0, "stock": 109.0, "turn": 31.0}}}, {"pod": "Крым", "mag": "13139", "tc": "Евпатория, ТЦ Капитал", "sales": 268.0, "turn": 41.0, "stock": 2728.0, "catYU": 2.0, "fill": 148.0, "fillKor": 148.0, "modules": 8.0, "cat": {"Кольца": {"fact": 587.0, "stock": 1119.0, "turn": 76.0}, "Серьги": {"fact": 720.0, "stock": 725.0, "turn": 46.0}, "Цепочки": {"fact": 177.0, "stock": 363.0, "turn": 63.0}, "Браслеты": {"fact": 128.0, "stock": 214.0, "turn": 74.0}, "Колье": {"fact": 111.0, "stock": 119.0, "turn": 48.0}, "Подвески": {"fact": 188.0, "stock": 190.0, "turn": 66.0}}}, {"pod": "Крым", "mag": "13140", "tc": "Джанкой, Интернациональная ул., д. 74", "sales": 121.0, "turn": 64.0, "stock": 1936.0, "catYU": 3.0, "fill": 175.0, "fillKor": 175.0, "modules": 7.0, "cat": {"Кольца": {"fact": 549.0, "stock": 1036.0, "turn": 115.0}, "Серьги": {"fact": 424.0, "stock": 447.0, "turn": 69.0}, "Цепочки": {"fact": 98.0, "stock": 200.0, "turn": 67.0}, "Браслеты": {"fact": 50.0, "stock": 69.0, "turn": 46.0}, "Колье": {"fact": 22.0, "stock": 22.0, "turn": 44.0}, "Подвески": {"fact": 93.0, "stock": 93.0, "turn": 62.0}}}, {"pod": "Крым", "mag": "13141", "tc": "Алушта, Универмаг", "sales": 97.0, "turn": 80.0, "stock": 1932.0, "catYU": 3.0, "fill": 182.0, "fillKor": 182.0, "modules": 7.0, "cat": {"Кольца": {"fact": 402.0, "stock": 742.0, "turn": 124.0}, "Серьги": {"fact": 483.0, "stock": 503.0, "turn": 63.0}, "Цепочки": {"fact": 131.0, "stock": 343.0, "turn": 98.0}, "Браслеты": {"fact": 81.0, "stock": 118.0, "turn": 0.0}, "Колье": {"fact": 66.0, "stock": 66.0, "turn": 0.0}, "Подвески": {"fact": 135.0, "stock": 138.0, "turn": 138.0}}}, {"pod": "Крым", "mag": "13143", "tc": "Севастополь, Новус Посейдон", "sales": 106.0, "turn": 78.0, "stock": 2078.0, "catYU": 4.0, "fill": 75.0, "fillKor": 75.0, "modules": 8.0, "cat": {"Кольца": {"fact": 515.0, "stock": 978.0, "turn": 77.0}, "Серьги": {"fact": 408.0, "stock": 424.0, "turn": 111.0}, "Цепочки": {"fact": 139.0, "stock": 277.0, "turn": 52.0}, "Браслеты": {"fact": 80.0, "stock": 134.0, "turn": 268.0}, "Колье": {"fact": 59.0, "stock": 63.0, "turn": 65.0}, "Подвески": {"fact": 98.0, "stock": 98.0, "turn": 70.0}}}, {"pod": "Крым", "mag": "13144", "tc": "Севастополь, ТЦ Sea Moll", "sales": 248.0, "turn": 43.0, "stock": 2665.0, "catYU": 4.0, "fill": 287.0, "fillKor": 287.0, "modules": 6.0, "cat": {"Кольца": {"fact": 624.0, "stock": 1178.0, "turn": 84.0}, "Серьги": {"fact": 652.0, "stock": 693.0, "turn": 37.0}, "Цепочки": {"fact": 166.0, "stock": 347.0, "turn": 44.0}, "Браслеты": {"fact": 112.0, "stock": 178.0, "turn": 36.0}, "Колье": {"fact": 98.0, "stock": 102.0, "turn": 52.0}, "Подвески": {"fact": 159.0, "stock": 159.0, "turn": 38.0}}}, {"pod": "Крым", "mag": "13145", "tc": "Севастополь, ТЦ Муссон", "sales": 243.0, "turn": 39.0, "stock": 2346.0, "catYU": 4.0, "fill": 203.0, "fillKor": 203.0, "modules": 5.0, "cat": {"Кольца": {"fact": 547.0, "stock": 1205.0, "turn": 65.0}, "Серьги": {"fact": 434.0, "stock": 434.0, "turn": 35.0}, "Цепочки": {"fact": 170.0, "stock": 342.0, "turn": 43.0}, "Браслеты": {"fact": 96.0, "stock": 151.0, "turn": 20.0}, "Колье": {"fact": 62.0, "stock": 66.0, "turn": 61.0}, "Подвески": {"fact": 140.0, "stock": 142.0, "turn": 53.0}}}, {"pod": "Крым", "mag": "13146", "tc": "Феодосия, Победы ул, 2", "sales": 112.0, "turn": 54.0, "stock": 1504.0, "catYU": 2.0, "fill": 163.0, "fillKor": 163.0, "modules": 7.0, "cat": {"Кольца": {"fact": 312.0, "stock": 596.0, "turn": 79.0}, "Серьги": {"fact": 315.0, "stock": 315.0, "turn": 57.0}, "Цепочки": {"fact": 147.0, "stock": 289.0, "turn": 72.0}, "Браслеты": {"fact": 76.0, "stock": 122.0, "turn": 35.0}, "Колье": {"fact": 53.0, "stock": 54.0, "turn": 108.0}, "Подвески": {"fact": 115.0, "stock": 115.0, "turn": 58.0}}}, {"pod": "Краснодар", "mag": "13153", "tc": "Ст. Ленинградская, ТК Солнечный", "sales": 180.0, "turn": 34.0, "stock": 1538.0, "catYU": 3.0, "fill": 150.0, "fillKor": 150.0, "modules": 8.0, "cat": {"Кольца": {"fact": 331.0, "stock": 567.0, "turn": 42.0}, "Серьги": {"fact": 444.0, "stock": 451.0, "turn": 38.0}, "Цепочки": {"fact": 114.0, "stock": 205.0, "turn": 24.0}, "Браслеты": {"fact": 56.0, "stock": 78.0, "turn": 14.0}, "Колье": {"fact": 69.0, "stock": 70.0, "turn": 140.0}, "Подвески": {"fact": 163.0, "stock": 167.0, "turn": 111.0}}}, {"pod": "Кавказ", "mag": "13154", "tc": "Махачкала, ТРЦ Миркато", "sales": 179.8, "turn": 37.0, "stock": 1685.0, "catYU": 3.0, "fill": 61.0, "fillKor": 61.0, "modules": 9.0, "cat": {"Кольца": {"fact": 288.0, "stock": 507.0, "turn": 92.0}, "Серьги": {"fact": 521.0, "stock": 521.0, "turn": 55.0}, "Цепочки": {"fact": 133.0, "stock": 234.0, "turn": 33.0}, "Браслеты": {"fact": 75.0, "stock": 102.0, "turn": 68.0}, "Колье": {"fact": 92.0, "stock": 92.0, "turn": 0.0}, "Подвески": {"fact": 153.0, "stock": 153.0, "turn": 102.0}}}, {"pod": "Ростов", "mag": "13159", "tc": "Кирова ул., 86, Сальск", "sales": 95.0, "turn": 68.0, "stock": 1618.0, "catYU": 3.0, "fill": 81.0, "fillKor": 81.0, "modules": 9.0, "cat": {"Кольца": {"fact": 437.0, "stock": 765.0, "turn": 46.0}, "Серьги": {"fact": 573.0, "stock": 573.0, "turn": 35.0}, "Цепочки": {"fact": 150.0, "stock": 306.0, "turn": 87.0}, "Браслеты": {"fact": 96.0, "stock": 161.0, "turn": 54.0}, "Колье": {"fact": 76.0, "stock": 78.0, "turn": 156.0}, "Подвески": {"fact": 164.0, "stock": 164.0, "turn": 41.0}}}, {"pod": "Черноморское", "mag": "13164", "tc": "Ростов-на-Дону, ТРЦ РИО", "sales": 209.0, "turn": 39.0, "stock": 2033.0, "catYU": null, "fill": null, "fillKor": null, "modules": null, "cat": {"Кольца": {"fact": 237.0, "stock": 370.0, "turn": 171.0}, "Серьги": {"fact": 161.0, "stock": 168.0, "turn": 50.0}, "Цепочки": {"fact": 36.0, "stock": 48.0, "turn": 127.0}, "Браслеты": {"fact": 33.0, "stock": 40.0, "turn": 67.0}, "Колье": {"fact": 16.0, "stock": 17.0, "turn": 168.0}, "Подвески": {"fact": 71.0, "stock": 71.0, "turn": 70.0}}}, {"pod": "Кавказ", "mag": "13167", "tc": "Ставрополь, ТЦ Солнечный", "sales": 130.3, "turn": 96.0, "stock": 3124.0, "catYU": null, "fill": null, "fillKor": null, "modules": null, "cat": {"Кольца": {"fact": null, "stock": null, "turn": null}, "Серьги": {"fact": null, "stock": null, "turn": null}, "Цепочки": {"fact": null, "stock": null, "turn": null}, "Браслеты": {"fact": null, "stock": null, "turn": null}, "Колье": {"fact": null, "stock": null, "turn": null}, "Подвески": {"fact": null, "stock": null, "turn": null}}}];
+const GOLD   = [{"pod": "Черноморское", "mag": "11500", "tc": "Ростов-на-Дону, ТРЦ Парк", "rating": 454.0, "total": 1332.0, "sales": 9.0, "salesRank": 435.0, "share": 0.010847072854399528, "shareRank": 465.0, "turnover": 180.0, "turnRank": 432.0, "stock": 406.0}, {"pod": "Кавказ", "mag": "10105", "tc": "Ставрополь, ТЦ Обувь Сити", "rating": 448.0, "total": 1308.0, "sales": 5.0, "salesRank": 459.0, "share": 0.035143375068479844, "shareRank": 402.0, "turnover": 218.0, "turnRank": 447.0, "stock": 272.0}, {"pod": "Черноморское", "mag": "10362", "tc": "Армавир, ТРЦ Красная площадь", "rating": 446.0, "total": 1298.0, "sales": 8.0, "salesRank": 441.0, "share": 0.01935302413191944, "shareRank": 449.0, "turnover": 152.0, "turnRank": 408.0, "stock": 304.0}, {"pod": "Черноморское", "mag": "13057", "tc": "Краснодар, ТРЦ Любимово Молл", "rating": 434.0, "total": 1246.0, "sales": 11.0, "salesRank": 413.0, "share": 0.022400489411093516, "shareRank": 441.0, "turnover": 137.0, "turnRank": 392.0, "stock": 377.0}, {"pod": "Черноморское", "mag": "11541", "tc": "Краснодар, ТРЦ Галактика", "rating": 431.0, "total": 1230.0, "sales": 11.0, "salesRank": 413.0, "share": 0.01923917981653626, "shareRank": 450.0, "turnover": 123.0, "turnRank": 367.0, "stock": 338.0}, {"pod": "Кавказ", "mag": "10557", "tc": "Георгиевск, ТЦ Россия", "rating": 426.0, "total": 1219.0, "sales": 9.0, "salesRank": 435.0, "share": 0.033988619836033906, "shareRank": 406.0, "turnover": 129.0, "turnRank": 378.0, "stock": 290.0}, {"pod": "Черноморское", "mag": "10340", "tc": "Усть-Лабинск, ТЦ Детский мир", "rating": 419.0, "total": 1203.0, "sales": 11.0, "salesRank": 413.0, "share": 0.041216061256303206, "shareRank": 386.0, "turnover": 148.0, "turnRank": 404.0, "stock": 406.0}, {"pod": "Сочи", "mag": "13071", "tc": "Апшеронск,ТЦ", "rating": 408.0, "total": 1153.0, "sales": 8.0, "salesRank": 441.0, "share": 0.05159909806286642, "shareRank": 353.0, "turnover": 120.0, "turnRank": 359.0, "stock": 239.0}, {"pod": "Ростов", "mag": "10262", "tc": "Кореновск, ТЦ Квартал", "rating": 377.0, "total": 1062.0, "sales": 12.0, "salesRank": 400.0, "share": 0.03588897945824329, "shareRank": 401.0, "turnover": 87.0, "turnRank": 261.0, "stock": 260.0}, {"pod": "Сочи", "mag": "11757", "tc": "Сочи, ТЦ Александрия", "rating": 375.0, "total": 1056.0, "sales": 12.0, "salesRank": 400.0, "share": 0.04918245726878294, "shareRank": 363.0, "turnover": 95.0, "turnRank": 293.0, "stock": 285.0}, {"pod": "Краснодар", "mag": "11783", "tc": "Кущевская, Ленина ул., д. 21", "rating": 369.0, "total": 1046.0, "sales": 14.0, "salesRank": 387.0, "share": 0.05625205960128281, "shareRank": 343.0, "turnover": 103.0, "turnRank": 316.0, "stock": 361.0}, {"pod": "Черноморское", "mag": "11643", "tc": "Краснодар, им. Петра Метальникова ул., д. 32/1", "rating": 368.0, "total": 1039.0, "sales": 14.0, "salesRank": 387.0, "share": 0.04859479689259231, "shareRank": 364.0, "turnover": 93.0, "turnRank": 288.0, "stock": 327.0}, {"pod": "Черноморское", "mag": "11980", "tc": "Ростов-на-Дону, ТРЦ МегаМаг", "rating": 360.0, "total": 1017.0, "sales": 20.0, "salesRank": 330.0, "share": 0.02411061717333567, "shareRank": 435.0, "turnover": 86.0, "turnRank": 252.0, "stock": 432.0}, {"pod": "Сочи", "mag": "11127", "tc": "Майкоп, ул. Пролетарская д.211Б", "rating": 352.0, "total": 988.0, "sales": 14.0, "salesRank": 387.0, "share": 0.06413870937769932, "shareRank": 308.0, "turnover": 95.0, "turnRank": 293.0, "stock": 333.0}, {"pod": "Ростов", "mag": "10775", "tc": "Тихорецк, ТЦ Империя", "rating": 344.0, "total": 964.0, "sales": 15.0, "salesRank": 378.0, "share": 0.07945153524068245, "shareRank": 262.0, "turnover": 106.0, "turnRank": 324.0, "stock": 399.0}, {"pod": "Кавказ", "mag": "11532", "tc": "Назрань, ТЦ АлифМолл", "rating": 343.0, "total": 962.0, "sales": 16.8, "salesRank": 370.0, "share": 0.06644659181936273, "shareRank": 299.0, "turnover": 95.0, "turnRank": 293.0, "stock": 397.0}, {"pod": "Крым", "mag": "11376", "tc": "Ростов-на-Дону, ТРЦ Золотой Вавилон", "rating": 326.0, "total": 909.0, "sales": 20.0, "salesRank": 330.0, "share": 0.04340087975239644, "shareRank": 377.0, "turnover": 74.0, "turnRank": 202.0, "stock": 369.0}, {"pod": "Сочи", "mag": "11638", "tc": "Новороссийск, ТРК Красная площадь", "rating": 323.0, "total": 902.0, "sales": 24.0, "salesRank": 275.0, "share": 0.0702044033682641, "shareRank": 290.0, "turnover": 110.0, "turnRank": 337.0, "stock": 658.0}, {"pod": "Крым", "mag": "11397", "tc": "Ростов-на-Дону, ТРК Горизонт", "rating": 321.0, "total": 895.0, "sales": 20.0, "salesRank": 330.0, "share": 0.03858282198448433, "shareRank": 392.0, "turnover": 68.0, "turnRank": 173.0, "stock": 342.0}, {"pod": "Кавказ", "mag": "11498", "tc": "Невинномысск, Гагарина ул., д. 63", "rating": 314.0, "total": 879.0, "sales": 15.0, "salesRank": 378.0, "share": 0.1196146738228025, "shareRank": 153.0, "turnover": 114.0, "turnRank": 348.0, "stock": 426.0}, {"pod": "Сочи", "mag": "11429", "tc": "Новороссийск, ТРЦ Грин Парк", "rating": 299.0, "total": 841.0, "sales": 22.0, "salesRank": 305.0, "share": 0.059323744782694234, "shareRank": 323.0, "turnover": 77.0, "turnRank": 213.0, "stock": 426.0}, {"pod": "Кавказ", "mag": "10879", "tc": "Ставрополь, ТРЦ Европейский", "rating": 280.0, "total": 804.0, "sales": 24.0, "salesRank": 275.0, "share": 0.08174353958305607, "shareRank": 252.0, "turnover": 90.0, "turnRank": 277.0, "stock": 538.0}, {"pod": "Сочи", "mag": "11514", "tc": "Белореченск, ТЦ Центр Города", "rating": 258.0, "total": 764.0, "sales": 24.0, "salesRank": 275.0, "share": 0.10701721891247709, "shareRank": 176.0, "turnover": 102.0, "turnRank": 313.0, "stock": 609.0}, {"pod": "Черноморское", "mag": "11160", "tc": "Кропоткин, ул. Ворошилова д.22А", "rating": 256.0, "total": 755.0, "sales": 23.0, "salesRank": 290.0, "share": 0.09690811943398633, "shareRank": 213.0, "turnover": 86.0, "turnRank": 252.0, "stock": 495.0}, {"pod": "Ростов", "mag": "11267", "tc": "Донецк, ТЦ Велес", "rating": 251.0, "total": 743.0, "sales": 22.0, "salesRank": 305.0, "share": 0.10295274654362617, "shareRank": 192.0, "turnover": 85.0, "turnRank": 246.0, "stock": 470.0}, {"pod": "Краснодар", "mag": "11650", "tc": "Ейск, Победы ул., д. 76/2", "rating": 247.0, "total": 727.0, "sales": 23.0, "salesRank": 290.0, "share": 0.09419709148476768, "shareRank": 224.0, "turnover": 77.0, "turnRank": 213.0, "stock": 444.0}, {"pod": "Кавказ", "mag": "11869", "tc": "Владикавказ, ТЦ Столица", "rating": 242.0, "total": 721.0, "sales": 20.0, "salesRank": 330.0, "share": 0.08165766270347087, "shareRank": 253.0, "turnover": 63.0, "turnRank": 138.0, "stock": 317.0}, {"pod": "Сочи", "mag": "10373", "tc": "Геленджик, ТЦ BB Passage", "rating": 235.0, "total": 700.0, "sales": 26.0, "salesRank": 255.0, "share": 0.10455606922766512, "shareRank": 184.0, "turnover": 87.0, "turnRank": 261.0, "stock": 563.0}, {"pod": "Сочи", "mag": "11555", "tc": "Ессентуки, ТЦ Новое время", "rating": 214.0, "total": 667.0, "sales": 22.0, "salesRank": 305.0, "share": 0.08557529718474766, "shareRank": 240.0, "turnover": 61.0, "turnRank": 122.0, "stock": 336.0}, {"pod": "Черноморское", "mag": "10374", "tc": "Ростов-на-Дону, ТЦ Миллениум", "rating": 209.0, "total": 656.0, "sales": 22.0, "salesRank": 305.0, "share": 0.10159853302140769, "shareRank": 199.0, "turnover": 66.0, "turnRank": 152.0, "stock": 363.0}, {"pod": "Сочи", "mag": "10090", "tc": "Минеральные Воды, ТРЦ Вершина", "rating": 208.0, "total": 653.0, "sales": 27.0, "salesRank": 242.0, "share": 0.1079531084732161, "shareRank": 175.0, "turnover": 82.0, "turnRank": 236.0, "stock": 555.0}, {"pod": "Крым", "mag": "11904", "tc": "Ростов-на-Дону, ТРЦ ЖК Суворовский", "rating": 206.0, "total": 650.0, "sales": 29.0, "salesRank": 232.0, "share": 0.06295275937714157, "shareRank": 310.0, "turnover": 58.0, "turnRank": 108.0, "stock": 417.0}, {"pod": "Кавказ", "mag": "11430", "tc": "Грозный, ТРЦ Грозный Молл", "rating": 200.0, "total": 624.0, "sales": 30.1, "salesRank": 220.0, "share": 0.05837434386147073, "shareRank": 330.0, "turnover": 52.0, "turnRank": 74.0, "stock": 392.0}, {"pod": "Крым", "mag": "13145", "tc": "Севастополь, ТЦ Муссон", "rating": 198.0, "total": 621.0, "sales": 35.0, "salesRank": 176.0, "share": 0.1029113418649131, "shareRank": 193.0, "turnover": 86.0, "turnRank": 252.0, "stock": 751.0}, {"pod": "Крым", "mag": "13136", "tc": "Ялта, ТЦ Конфетти", "rating": 196.0, "total": 611.0, "sales": 27.0, "salesRank": 242.0, "share": 0.12944415038646948, "shareRank": 133.0, "turnover": 82.0, "turnRank": 236.0, "stock": 555.0}, {"pod": "Кавказ", "mag": "10985", "tc": "Ставрополь, ТРЦ Мегацентр Kosmos", "rating": 189.0, "total": 592.0, "sales": 34.0, "salesRank": 186.0, "share": 0.07407594692139939, "shareRank": 276.0, "turnover": 62.0, "turnRank": 130.0, "stock": 525.0}, {"pod": "Крым", "mag": "11412", "tc": "Таганрог, ТЦ Лето", "rating": 184.0, "total": 586.0, "sales": 36.0, "salesRank": 171.0, "share": 0.09323648326713867, "shareRank": 227.0, "turnover": 71.0, "turnRank": 188.0, "stock": 641.0}, {"pod": "Ростов", "mag": "11193", "tc": "Белая Калитва, ул. Ростовская д.1", "rating": 176.0, "total": 568.0, "sales": 24.0, "salesRank": 275.0, "share": 0.1206586375256082, "shareRank": 148.0, "turnover": 64.0, "turnRank": 145.0, "stock": 385.0}, {"pod": "Краснодар", "mag": "11972", "tc": "Приморско-Ахтарск, Космонавтов ул., д. 61", "rating": 174.0, "total": 565.0, "sales": 23.0, "salesRank": 290.0, "share": 0.1849435258197215, "shareRank": 54.0, "turnover": 78.0, "turnRank": 221.0, "stock": 449.0}, {"pod": "Кавказ", "mag": "10888", "tc": "Ставрополь, ТРЦ Москва", "rating": 174.0, "total": 565.0, "sales": 32.0, "salesRank": 203.0, "share": 0.13903974119259563, "shareRank": 116.0, "turnover": 85.0, "turnRank": 246.0, "stock": 676.0}, {"pod": "Черноморское", "mag": "11858", "tc": "Изобильный,  Семыкина ул., стр. 17", "rating": 170.0, "total": 550.0, "sales": 27.0, "salesRank": 242.0, "share": 0.11795003786177884, "shareRank": 160.0, "turnover": 65.0, "turnRank": 148.0, "stock": 442.0}, {"pod": "Сочи", "mag": "10261", "tc": "Сочи, ТЦ Дом торговли", "rating": 157.0, "total": 508.0, "sales": 38.0, "salesRank": 154.0, "share": 0.10005339460524462, "shareRank": 202.0, "turnover": 66.0, "turnRank": 152.0, "stock": 623.0}, {"pod": "Сочи", "mag": "10812", "tc": "Сочи, ТЦ Мелодия", "rating": 149.0, "total": 488.0, "sales": 27.0, "salesRank": 242.0, "share": 0.11977117328395163, "shareRank": 152.0, "turnover": 57.0, "turnRank": 94.0, "stock": 384.0}, {"pod": "Черноморское", "mag": "11880", "tc": "Мостовской, ТЦ Вита", "rating": 147.0, "total": 481.0, "sales": 19.0, "salesRank": 342.0, "share": 0.18111571597758847, "shareRank": 58.0, "turnover": 55.0, "turnRank": 81.0, "stock": 260.0}, {"pod": "Крым", "mag": "10810", "tc": "Анапа, ТРЦ Красная площадь", "rating": 144.0, "total": 469.0, "sales": 43.0, "salesRank": 127.0, "share": 0.09885090021140565, "shareRank": 204.0, "turnover": 63.0, "turnRank": 138.0, "stock": 675.0}, {"pod": "Ростов", "mag": "11666", "tc": "Тимашевск, Братская ул., д. 174", "rating": 139.0, "total": 455.0, "sales": 42.0, "salesRank": 137.0, "share": 0.1024449907974111, "shareRank": 196.0, "turnover": 61.0, "turnRank": 122.0, "stock": 636.0}, {"pod": "Крым", "mag": "13144", "tc": "Севастополь, ТЦ Sea Moll", "rating": 128.0, "total": 424.0, "sales": 53.0, "salesRank": 69.0, "share": 0.08355758351519364, "shareRank": 245.0, "turnover": 59.0, "turnRank": 110.0, "stock": 784.0}, {"pod": "Крым", "mag": "13146", "tc": "Феодосия, Победы ул, 2", "rating": 123.0, "total": 404.0, "sales": 32.0, "salesRank": 203.0, "share": 0.16091005754011256, "shareRank": 79.0, "turnover": 61.0, "turnRank": 122.0, "stock": 487.0}, {"pod": "Крым", "mag": "13131", "tc": "Симферополь, Южная Галлерея", "rating": 107.0, "total": 356.0, "sales": 49.0, "salesRank": 89.0, "share": 0.13792691734417803, "shareRank": 119.0, "turnover": 65.0, "turnRank": 148.0, "stock": 791.0}, {"pod": "Ростов", "mag": "11895", "tc": "Новошахтинск, ТЦ Городок", "rating": 106.0, "total": 353.0, "sales": 32.0, "salesRank": 203.0, "share": 0.14988330500415542, "shareRank": 98.0, "turnover": 46.0, "turnRank": 52.0, "stock": 365.0}, {"pod": "Крым", "mag": "13134", "tc": "Керчь, Торговый квартал", "rating": 92.0, "total": 314.0, "sales": 39.0, "salesRank": 151.0, "share": 0.1706313851487023, "shareRank": 69.0, "turnover": 57.0, "turnRank": 94.0, "stock": 553.0}, {"pod": "Краснодар", "mag": "10355", "tc": "Славянск-на-Кубани, ТЦ Империя", "rating": 83.0, "total": 287.0, "sales": 44.0, "salesRank": 119.0, "share": 0.147141158204622, "shareRank": 101.0, "turnover": 50.0, "turnRank": 67.0, "stock": 553.0}, {"pod": "Крым", "mag": "11519", "tc": "Таганрог, ТРЦ Мармелад", "rating": 81.0, "total": 282.0, "sales": 52.0, "salesRank": 74.0, "share": 0.11325951120231706, "shareRank": 167.0, "turnover": 42.0, "turnRank": 41.0, "stock": 542.0}, {"pod": "Черноморское", "mag": "10013", "tc": "Краснодар, Мегацентр Красная площадь", "rating": 59.0, "total": 236.0, "sales": 67.0, "salesRank": 27.0, "share": 0.12946546159093136, "shareRank": 132.0, "turnover": 54.0, "turnRank": 77.0, "stock": 902.0}, {"pod": "Кавказ", "mag": "11903", "tc": "Михайловск, Ленина ул., д. 87", "rating": 53.0, "total": 213.0, "sales": 61.0, "salesRank": 39.0, "share": 0.16061068447177387, "shareRank": 80.0, "turnover": 57.0, "turnRank": 94.0, "stock": 875.0}, {"pod": "Краснодар", "mag": "11648", "tc": "Краснодар, ТЦ Oz Mall", "rating": 34.0, "total": 159.0, "sales": 92.0, "salesRank": 9.0, "share": 0.15582664297688484, "shareRank": 87.0, "turnover": 48.0, "turnRank": 63.0, "stock": 1093.0}, {"pod": "Крым", "mag": "13140", "tc": "Джанкой, Интернациональная ул., д. 74", "rating": 25.0, "total": 132.0, "sales": 51.0, "salesRank": 79.0, "share": 0.326458896600344, "shareRank": 6.0, "turnover": 44.0, "turnRank": 47.0, "stock": 565.0}, {"pod": "Кавказ", "mag": "10401", "tc": "Нальчик, ЦУМ", "rating": 23.0, "total": 129.0, "sales": 51.0, "salesRank": 79.0, "share": 0.21103810477514925, "shareRank": 36.0, "turnover": 33.0, "turnRank": 14.0, "stock": 423.0}, {"pod": "Черноморское", "mag": "11622", "tc": "Новоалександровск, Карла Маркса ул., д. 233 Б", "rating": 21.0, "total": 127.0, "sales": 60.0, "salesRank": 45.0, "share": 0.3527572564137146, "shareRank": 5.0, "turnover": 54.0, "turnRank": 77.0, "stock": 816.0}, {"pod": "Краснодар", "mag": "10745", "tc": "Краснодар, ТЦ Московский", "rating": 9.0, "total": 70.0, "sales": 67.0, "salesRank": 27.0, "share": 0.21530725808831533, "shareRank": 34.0, "turnover": 30.0, "turnRank": 9.0, "stock": 495.0}, {"pod": "Крым", "mag": "13135", "tc": "Симферополь, Меганом", "rating": 2.0, "total": 26.0, "sales": 161.0, "salesRank": 2.0, "share": 0.2562741227915333, "shareRank": 18.0, "turnover": 28.0, "turnRank": 6.0, "stock": 1119.0}, {"pod": "Крым", "mag": "13139", "tc": "Евпатория, ТЦ Капитал", "rating": 1.0, "total": 8.0, "sales": 165.0, "salesRank": 1.0, "share": 0.38608681124369665, "shareRank": 3.0, "turnover": 24.0, "turnRank": 4.0, "stock": 978.0}];
+const POD_SER  = {"Сочи": {"sales": 143.0, "turnover": 55.0, "stock": 1974.0}, "Ростов": {"sales": 167.0, "turnover": 48.0, "stock": 1990.0}, "Крым": {"sales": 191.0, "turnover": 42.0, "stock": 2028.0}, "Черноморское": {"sales": 204.0, "turnover": 41.0, "stock": 2111.0}, "Кавказ": {"sales": 211.0, "turnover": 47.0, "stock": 2454.0}, "Краснодар": {"sales": 222.0, "turnover": 40.0, "stock": 2232.0}};
+const POD_GOLD = {"Сочи": {"rating": 51.0, "total": 143.0, "sales": 22.0, "share": 0.0836, "turnover": 82.0, "stock": 456.0}, "Черноморское": {"rating": 49.0, "total": 142.0, "sales": 23.0, "share": 0.0726, "turnover": 78.0, "stock": 451.0}, "Ростов": {"rating": 37.0, "total": 110.0, "sales": 25.0, "share": 0.0969, "turnover": 68.0, "stock": 419.0}, "Кавказ": {"rating": 36.0, "total": 107.0, "sales": 27.0, "share": 0.096, "turnover": 69.0, "stock": 466.0}, "Краснодар": {"rating": 6.0, "total": 30.0, "sales": 44.0, "share": 0.1418, "turnover": 52.0, "stock": 566.0}, "Крым": {"rating": 5.0, "total": 17.0, "sales": 54.0, "share": 0.14529999999999998, "turnover": 47.0, "stock": 638.0}};
+const REG_SER  = {"sales": 189.0, "turnover": 45.0, "stock": 2132.0};
+const REG_GOLD = {"rating": 3.0, "total": 10.0, "sales": 33.0, "salesRank": 4.0, "share": 0.11220000000000001, "shareRank": 4.0, "turnover": 61.0, "turnRank": 2.0, "stock": 508.0};
+const PERIOD = "02.03.2026 — 29.03.2026";
+
+// Индекс по номеру магазина
+const silverByMag = {};
+SILVER.forEach(s => silverByMag[s.mag] = s);
+const goldByMag = {};
+GOLD.forEach(g => goldByMag[g.mag] = g);
+
+// ===== ВСПОМОГАТЕЛЬНЫЕ =====
+function nav(x) { return x != null ? x : '—'; }
+function pct(x) { return x != null ? Math.round(x) + '%' : '—'; }
+function num(x) { return x != null ? Math.round(x) : '—'; }
+
+// Цвет оборачиваемости серебро: меньше = лучше. Бенчмарк ЮГ = 45 нед
+function turnClass(t, isSer) {
+  if (t == null) return 'tN';
+  if (isSer !== false) {
+    if (t <= 35) return 'tG';
+    if (t <= 45) return 'tLG';
+    if (t <= 55) return 'tY';
+    if (t <= 70) return 'tR';
+    return 'tDR';
+  } else {
+    // золото — бенчмарк ЮГ = 61 нед
+    if (t <= 45) return 'tG';
+    if (t <= 61) return 'tLG';
+    if (t <= 75) return 'tY';
+    if (t <= 90) return 'tR';
+    return 'tDR';
+  }
+}
+function turnLabel(t) {
+  if (t == null) return '<span class="tN">—</span>';
+  return `<span class="${turnClass(t)}">${Math.round(t)} нед</span>`;
+}
+function turnLabelGold(t) {
+  if (t == null) return '<span class="tN">—</span>';
+  return `<span class="${turnClass(t, false)}">${Math.round(t)} нед</span>`;
+}
+function fillClass(f) {
+  if (f == null) return '';
+  if (f >= 100) return 'fill-ok';
+  if (f >= 85) return 'fill-warn';
+  return 'fill-bad';
+}
+function fillLabel(f) {
+  if (f == null) return '—';
+  return `<span class="${fillClass(f)}">${Math.round(f)}%</span>`;
+}
+
+// Навигация
+let _history = [];
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const btn = document.getElementById('backBtn');
+  btn.style.display = _history.length > 0 ? 'block' : 'none';
+}
+function goBack() {
+  if (_history.length === 0) return;
+  const prev = _history.pop();
+  if (prev === 'region') renderRegion();
+  else if (prev.startsWith('pod:')) renderPod(prev.slice(4));
+}
+function pushHistory(state) { _history.push(state); }
+
+// ===== РОУТИНГ =====
+function route() {
+  const params = new URLSearchParams(window.location.search);
+  const mag = params.get('mag');
+  const pod = params.get('pod');
+  if (mag) { renderMag(mag); }
+  else if (pod) { renderPod(pod); }
+  else { renderRegion(); }
+}
+
+// ===== ЭКРАН: МАГАЗИН =====
+function renderMag(magNum) {
+  const s = silverByMag[magNum];
+  const g = goldByMag[magNum];
+  if (!s && !g) {
+    document.getElementById('notFoundMsg').textContent = 'Магазин № ' + magNum + ' не найден в данных ЮГ.';
+    showScreen('screenNotFound');
+    return;
+  }
+
+  const store = s || g;
+  document.getElementById('headerTitle').textContent = '№ ' + magNum;
+  document.getElementById('headerSub').textContent = store.tc;
+  document.getElementById('backBtn').style.display = 'none';
+
+  let html = `
+  <div class="store-header">
+    <div class="mag-num">Магазин № ${magNum}</div>
+    <div class="mag-name">${store.tc}</div>
+    <div class="mag-pod">🏢 ${store.pod} ${g ? '<span class="gold-badge">⭐ Золото</span>' : ''}</div>
+    <div style="font-size:11px;color:#999;margin-top:4px">Период: ${PERIOD}</div>
+  </div>`;
+
+  if (s) {
+    const podS = POD_SER[s.pod] || {};
+    html += `<div class="section-title">🥈 Серебро</div>`;
+    html += `<div class="metrics">
+      <div class="metric-card highlight">
+        <div class="val">${s.turn != null ? Math.round(s.turn) : '—'}</div>
+        <div class="lbl">Оборачиваемость, нед</div>
+        <div class="sub">ЮГ: ${REG_SER.turnover} нед</div>
+      </div>
+      <div class="metric-card">
+        <div class="val ${fillClass(s.fill)}">${s.fill != null ? Math.round(s.fill) + '%' : '—'}</div>
+        <div class="lbl">Наполненность витрины</div>
+        <div class="sub">${s.fillKor != null ? 'Корр: ' + Math.round(s.fillKor) + '%' : ''}</div>
+      </div>
+      <div class="metric-card">
+        <div class="val">${num(s.sales)}</div>
+        <div class="lbl">Продажи, шт/28 дней</div>
+        <div class="sub">ЮГ: ${REG_SER.sales} шт</div>
+      </div>
+      <div class="metric-card">
+        <div class="val">${num(s.stock)}</div>
+        <div class="lbl">Остаток, шт</div>
+        <div class="sub">ЮГ ср: ${REG_SER.stock} шт</div>
+      </div>
+    </div>`;
+
+    // Сравнение с подразделением
+    if (podS.turnover && s.turn) {
+      const diff = Math.round(s.turn - podS.turnover);
+      const sign = diff > 0 ? '+' : '';
+      const cls = diff <= 0 ? 'fill-ok' : diff <= 5 ? 'fill-warn' : 'fill-bad';
+      html += `<div class="store-header" style="padding:10px 14px;margin-bottom:12px">
+        <div style="font-size:12px;color:#666">Подразделение <b>${s.pod}</b>: ${podS.turnover} нед</div>
+        <div style="font-size:13px;font-weight:600;margin-top:3px">Ваш магазин: <span class="${cls}">${sign}${diff} нед ${diff < 0 ? '(лучше подразделения ✓)' : diff === 0 ? '(= среднему)' : '(хуже подразделения)'}</span></div>
+      </div>`;
+    }
+
+    // Категории ЮИ
+    if (s.cat) {
+      html += `<div class="section-title">Категории ЮИ</div>
+      <div class="table-wrap">
+      <table class="cat-table">
+        <tr><th>Категория</th><th class="r">Витрина</th><th class="r">Запас</th><th class="c">Оборачив.</th></tr>`;
+      const cats = ['Кольца','Серьги','Цепочки','Браслеты','Колье','Подвески'];
+      cats.forEach(cat => {
+        const c = s.cat[cat];
+        if (!c) return;
+        html += `<tr>
+          <td style="font-weight:600">${cat}</td>
+          <td class="r">${num(c.fact)}</td>
+          <td class="r">${num(c.stock)}</td>
+          <td class="c">${turnLabel(c.turn)}</td>
+        </tr>`;
+      });
+      html += `</table></div>`;
+    }
+  }
+
+  if (g) {
+    html += `<div class="section-title">⭐ Золото</div>
+    <div class="metrics three">
+      <div class="metric-card gold-card">
+        <div class="val">${g.rating != null ? '#' + Math.round(g.rating) : '—'}</div>
+        <div class="lbl">Место в рейтинге КАРИ</div>
+        <div class="sub">из 473 магазинов</div>
+      </div>
+      <div class="metric-card gold-card">
+        <div class="val">${turnLabelGold(g.turnover)}</div>
+        <div class="lbl">Оборачиваемость</div>
+        <div class="sub">ЮГ: ${REG_GOLD.turnover} нед</div>
+      </div>
+      <div class="metric-card gold-card">
+        <div class="val">${g.share != null ? (g.share * 100).toFixed(1) + '%' : '—'}</div>
+        <div class="lbl">Доля золота в ТО</div>
+        <div class="sub">ЮГ: ${(REG_GOLD.share * 100).toFixed(1)}%</div>
+      </div>
+    </div>
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="val">${num(g.sales)}</div>
+        <div class="lbl">Продажи, шт/28 дней</div>
+        <div class="sub">Место: ${g.salesRank != null ? '#' + Math.round(g.salesRank) : '—'}</div>
+      </div>
+      <div class="metric-card">
+        <div class="val">${num(g.stock)}</div>
+        <div class="lbl">Остаток, шт</div>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('magContent').innerHTML = html;
+  showScreen('screenMag');
+}
+
+// ===== ЭКРАН: ПОДРАЗДЕЛЕНИЕ =====
+function renderPod(podName) {
+  document.getElementById('headerTitle').textContent = podName;
+  document.getElementById('headerSub').textContent = 'Подразделение ЮГ';
+  document.getElementById('backBtn').style.display = 'none';
+
+  const podS = POD_SER[podName] || {};
+  const podG = POD_GOLD[podName];
+  const stores = SILVER.filter(s => s.pod === podName);
+  const storesGold = GOLD.filter(g => g.pod === podName);
+
+  // Сортировка по оборачиваемости (по возрастанию)
+  const sorted = [...stores].filter(s => s.turn != null).sort((a, b) => a.turn - b.turn);
+  const top3 = sorted.slice(0, 3);
+  const bot3 = sorted.slice(-3).reverse();
+
+  let html = `
+  <div class="metrics">
+    <div class="metric-card highlight">
+      <div class="val">${podS.turnover || '—'}</div>
+      <div class="lbl">Оборачиваемость серебро</div>
+      <div class="sub">ЮГ: ${REG_SER.turnover} нед</div>
+    </div>
+    <div class="metric-card">
+      <div class="val">${podS.sales || '—'}</div>
+      <div class="lbl">Продажи, шт/28 дн</div>
+      <div class="sub">ЮГ: ${REG_SER.sales} шт</div>
+    </div>
+    <div class="metric-card">
+      <div class="val">${stores.length}</div>
+      <div class="lbl">Магазинов серебро</div>
+    </div>
+    <div class="metric-card">
+      <div class="val">${storesGold.length}</div>
+      <div class="lbl">Магазинов золото</div>
+    </div>
+  </div>`;
+
+  // Топ/Антитоп
+  html += `<div class="topbot">
+    <div class="topbot-card">
+      <h3 class="top">✅ Топ-3 оборачиваемость</h3>`;
+  top3.forEach((s, i) => {
+    const tc_short = s.tc.replace(/^[^,]+,\s*/, '');
+    html += `<div class="topbot-row">
+      <span class="topbot-name" title="${s.tc}">${tc_short || s.tc}</span>
+      ${turnLabel(s.turn)}
+    </div>`;
+  });
+  html += `</div>
+    <div class="topbot-card">
+      <h3 class="bot">🔴 Антитоп-3</h3>`;
+  bot3.forEach((s, i) => {
+    const tc_short = s.tc.replace(/^[^,]+,\s*/, '');
+    html += `<div class="topbot-row">
+      <span class="topbot-name" title="${s.tc}">${tc_short || s.tc}</span>
+      ${turnLabel(s.turn)}
+    </div>`;
+  });
+  html += `</div></div>`;
+
+  // Вкладки Серебро/Золото
+  const hasGold = storesGold.length > 0;
+  html += `<div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('pod','ser',this)">🥈 Серебро (${stores.length})</button>
+    ${hasGold ? `<button class="tab-btn" onclick="switchTab('pod','gold',this)">⭐ Золото (${storesGold.length})</button>` : ''}
+  </div>`;
+
+  // Таблица серебро
+  const sortedAll = [...stores].sort((a, b) => (a.turn || 999) - (b.turn || 999));
+  html += `<div class="tab-pane active" id="pod-tab-ser">
+  <div class="table-wrap">
+  <table>
+    <tr>
+      <th>Магазин</th>
+      <th class="c">Оборач.</th>
+      <th class="c">Наполн.</th>
+      <th class="r">Продажи</th>
+    </tr>`;
+  sortedAll.forEach(s => {
+    html += `<tr onclick="openMag('${s.mag}')" style="cursor:pointer">
+      <td>
+        <span class="store-name">${s.mag}</span>
+        <span class="store-tc">${s.tc}</span>
+      </td>
+      <td class="c">${turnLabel(s.turn)}</td>
+      <td class="c">${fillLabel(s.fill)}</td>
+      <td class="r">${num(s.sales)}</td>
+    </tr>`;
+  });
+  html += `</table></div></div>`;
+
+  // Таблица золото
+  if (hasGold) {
+    const sortedG = [...storesGold].sort((a, b) => (a.turnover || 999) - (b.turnover || 999));
+    html += `<div class="tab-pane" id="pod-tab-gold">`;
+    if (podG) {
+      html += `<div class="metrics" style="margin-bottom:10px">
+        <div class="metric-card gold-card">
+          <div class="val">#${podG.rating || '—'}</div>
+          <div class="lbl">Рейтинг среди подразд.</div>
+        </div>
+        <div class="metric-card gold-card">
+          <div class="val">${turnLabelGold(podG.turnover)}</div>
+          <div class="lbl">Оборачиваемость</div>
+          <div class="sub">ЮГ: ${REG_GOLD.turnover} нед</div>
+        </div>
+      </div>`;
+    }
+    html += `<div class="table-wrap"><table>
+      <tr>
+        <th>Магазин</th>
+        <th class="c">Рейтинг КАРИ</th>
+        <th class="c">Оборач.</th>
+        <th class="r">Доля ТО</th>
+      </tr>`;
+    sortedG.forEach(g => {
+      html += `<tr onclick="openMag('${g.mag}')" style="cursor:pointer">
+        <td>
+          <span class="store-name">${g.mag}</span>
+          <span class="store-tc">${g.tc}</span>
+        </td>
+        <td class="c">${g.rating != null ? '<span class="rank-badge gold">#' + Math.round(g.rating) + '</span>' : '—'}</td>
+        <td class="c">${turnLabelGold(g.turnover)}</td>
+        <td class="r">${g.share != null ? (g.share*100).toFixed(1)+'%' : '—'}</td>
+      </tr>`;
+    });
+    html += `</table></div></div>`;
+  }
+
+  document.getElementById('podContent').innerHTML = html;
+  showScreen('screenPod');
+}
+
+// ===== ЭКРАН: РЕГИОН (ЯНА) =====
+function renderRegion() {
+  document.getElementById('headerTitle').textContent = 'ЮИ · Оборачиваемость';
+  document.getElementById('headerSub').textContent = 'Регион ЮГ · ' + PERIOD;
+  document.getElementById('backBtn').style.display = 'none';
+  _history = [];
+
+  const pods = ['Краснодар','Черноморское','Кавказ','Крым','Ростов','Сочи'];
+
+  let html = `
+  <div class="metrics">
+    <div class="metric-card highlight">
+      <div class="val">${REG_SER.turnover}</div>
+      <div class="lbl">Оборачиваемость серебро</div>
+      <div class="sub">КАРИ: 52 нед</div>
+    </div>
+    <div class="metric-card gold-card">
+      <div class="val">${REG_GOLD.turnover}</div>
+      <div class="lbl">Оборачиваемость золото</div>
+      <div class="sub">Место #${REG_GOLD.turnRank} в КАРИ</div>
+    </div>
+    <div class="metric-card">
+      <div class="val">${SILVER.length}</div>
+      <div class="lbl">Магазинов серебро</div>
+    </div>
+    <div class="metric-card">
+      <div class="val">${GOLD.length}</div>
+      <div class="lbl">Магазинов золото</div>
+    </div>
+  </div>`;
+
+  // Вкладки
+  html += `<div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('reg','ser',this)">🥈 Серебро</button>
+    <button class="tab-btn" onclick="switchTab('reg','gold',this)">⭐ Золото</button>
+  </div>`;
+
+  // === Вкладка Серебро ===
+  html += `<div class="tab-pane active" id="reg-tab-ser">`;
+  html += `<div class="section-title">Подразделения</div>
+  <div class="table-wrap"><table>
+    <tr><th>Подразделение</th><th class="c">Оборач.</th><th class="r">Продажи</th><th class="r">Магазинов</th></tr>`;
+  const podsSorted = pods.filter(p => POD_SER[p]).sort((a,b) => (POD_SER[a].turnover||999)-(POD_SER[b].turnover||999));
+  podsSorted.forEach(pod => {
+    const ps = POD_SER[pod];
+    const cnt = SILVER.filter(s => s.pod === pod).length;
+    html += `<tr onclick="openPod('${pod}')" style="cursor:pointer">
+      <td style="font-weight:700;color:var(--pink)">${pod}</td>
+      <td class="c">${turnLabel(ps.turnover)}</td>
+      <td class="r">${num(ps.sales)}</td>
+      <td class="r">${cnt}</td>
+    </tr>`;
+  });
+  html += `</table></div>`;
+
+  // Таблица всех магазинов (серебро)
+  html += `<div class="section-title">Все магазины · Серебро</div>
+  <div class="table-wrap"><table>
+    <tr><th>Магазин</th><th>Подразд.</th><th class="c">Оборач.</th><th class="c">Наполн.</th></tr>`;
+  const allSorted = [...SILVER].sort((a,b) => (a.turn||999)-(b.turn||999));
+  allSorted.forEach(s => {
+    html += `<tr onclick="openMag('${s.mag}')" style="cursor:pointer">
+      <td>
+        <span class="store-name">${s.mag}</span>
+        <span class="store-tc">${s.tc}</span>
+      </td>
+      <td style="font-size:11px;color:#666">${s.pod}</td>
+      <td class="c">${turnLabel(s.turn)}</td>
+      <td class="c">${fillLabel(s.fill)}</td>
+    </tr>`;
+  });
+  html += `</table></div></div>`;
+
+  // === Вкладка Золото ===
+  html += `<div class="tab-pane" id="reg-tab-gold">`;
+  html += `<div class="metrics" style="margin-bottom:10px">
+    <div class="metric-card gold-card">
+      <div class="val">#${Math.round(REG_GOLD.rating)}</div>
+      <div class="lbl">Место ЮГ среди регионов</div>
+      <div class="sub">Общий рейтинг: ${Math.round(REG_GOLD.total)}</div>
+    </div>
+    <div class="metric-card gold-card">
+      <div class="val">${(REG_GOLD.share*100).toFixed(1)}%</div>
+      <div class="lbl">Доля золота в ТО</div>
+      <div class="sub">Место #${Math.round(REG_GOLD.shareRank)} в КАРИ</div>
+    </div>
+  </div>`;
+
+  html += `<div class="section-title">Подразделения · Золото</div>
+  <div class="table-wrap"><table>
+    <tr><th>Подразделение</th><th class="c">Рейтинг</th><th class="c">Оборач.</th><th class="r">Доля ТО</th></tr>`;
+  const podsGSorted = pods.filter(p => POD_GOLD[p]).sort((a,b) => (POD_GOLD[a].turnover||999)-(POD_GOLD[b].turnover||999));
+  podsGSorted.forEach(pod => {
+    const pg = POD_GOLD[pod];
+    html += `<tr onclick="openPod('${pod}')" style="cursor:pointer">
+      <td style="font-weight:700;color:var(--pink)">${pod}</td>
+      <td class="c"><span class="rank-badge gold">#${Math.round(pg.rating)}</span></td>
+      <td class="c">${turnLabelGold(pg.turnover)}</td>
+      <td class="r">${(pg.share*100).toFixed(1)}%</td>
+    </tr>`;
+  });
+  html += `</table></div>`;
+
+  html += `<div class="section-title">Все магазины · Золото</div>
+  <div class="table-wrap"><table>
+    <tr><th>Магазин</th><th>Подразд.</th><th class="c">Рейтинг</th><th class="c">Оборач.</th><th class="r">Доля ТО</th></tr>`;
+  const allGSorted = [...GOLD].sort((a,b) => (a.turnover||999)-(b.turnover||999));
+  allGSorted.forEach(g => {
+    html += `<tr onclick="openMag('${g.mag}')" style="cursor:pointer">
+      <td>
+        <span class="store-name">${g.mag}</span>
+        <span class="store-tc">${g.tc}</span>
+      </td>
+      <td style="font-size:11px;color:#666">${g.pod}</td>
+      <td class="c">${g.rating != null ? '<span class="rank-badge gold">#' + Math.round(g.rating) + '</span>' : '—'}</td>
+      <td class="c">${turnLabelGold(g.turnover)}</td>
+      <td class="r">${g.share != null ? (g.share*100).toFixed(1)+'%' : '—'}</td>
+    </tr>`;
+  });
+  html += `</table></div></div>`;
+
+  document.getElementById('regionContent').innerHTML = html;
+  showScreen('screenRegion');
+}
+
+function openMag(mag) {
+  const cur = document.querySelector('.screen.active');
+  if (cur && cur.id === 'screenPod') pushHistory('pod:' + document.getElementById('headerTitle').textContent);
+  else if (cur && cur.id === 'screenRegion') pushHistory('region');
+  renderMag(mag);
+  document.getElementById('backBtn').style.display = 'block';
+}
+function openPod(pod) {
+  pushHistory('region');
+  renderPod(pod);
+  document.getElementById('backBtn').style.display = 'block';
+}
+function switchTab(screen, tab, btn) {
+  const prefix = screen + '-tab-';
+  document.querySelectorAll('[id^="' + prefix + '"]').forEach(el => el.classList.remove('active'));
+  document.getElementById(prefix + tab).classList.add('active');
+  btn.closest('.tabs-bar').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// Запуск
+route();
+</script>
+</body>
+</html>

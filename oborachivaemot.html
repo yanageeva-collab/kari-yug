@@ -326,10 +326,11 @@ function renderPod(podName){
   const allS=[...stores].sort((a,b)=>(a.turn||999)-(b.turn||999));
   html+=`<div class="tab-pane active" id="pod-tab-ser">
   <div class="table-wrap"><table>
-    <tr><th>Магазин</th><th class="c">Оборач.</th><th class="c">Наполн.</th><th class="r">Продажи</th></tr>`;
+    <tr><th>Магазин</th><th class="c">Кат</th><th class="c">Оборач.</th><th class="c">Наполн.</th><th class="r">Продажи</th></tr>`;
   allS.forEach(s=>{
     html+=`<tr onclick="openMag('${s.mag}')" style="cursor:pointer">
       <td><span class="store-name">${s.mag}</span><span class="store-tc">${s.tc}</span></td>
+      <td class="c" style="font-weight:600">${s.catYU!=null?Math.round(s.catYU):'—'}</td>
       <td class="c">${turnTag(s.turn,false)}</td>
       <td class="c">${fillTag(s.fill)}</td>
       <td class="r">${num(s.sales)}</td>
@@ -363,10 +364,11 @@ function renderPod(podName){
       </div>`;
     }
     html+=`<div class="table-wrap"><table>
-      <tr><th>Магазин</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.</th><th class="c gold">Рейтинг</th><th class="r gold">Доля ТО</th></tr>`;
+      <tr><th>Магазин</th><th class="c gold">Кат</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.</th><th class="c gold">Рейтинг</th><th class="r gold">Доля ТО</th></tr>`;
     allG.forEach(g=>{
       html+=`<tr onclick="openMag('${g.mag}')" style="cursor:pointer">
         <td><span class="store-name">${g.mag}</span><span class="store-tc">${g.tc}</span></td>
+        <td class="c" style="font-weight:600">${g.catYU!=null?Math.round(g.catYU):'—'}</td>
         <td class="c">${turnTag(g.turn,true)}</td>
         <td class="c">${fillTag(g.fill)}</td>
         <td class="c">${g.rating!=null?'<span class="rank-badge gold">#'+Math.round(g.rating)+'</span>':'—'}</td>
@@ -435,11 +437,12 @@ function renderRegion(){
   
   html+=`<div class="section-title">Все магазины · Серебро</div>
   <div class="table-wrap"><table>
-    <tr><th>Магазин</th><th>Подразд.</th><th class="c">Оборач.</th><th class="c">Наполн.</th></tr>`;
+    <tr><th>Магазин</th><th>Подразд.</th><th class="c">Кат</th><th class="c">Оборач.</th><th class="c">Наполн.</th></tr>`;
   [...SILVER].sort((a,b)=>(a.turn||999)-(b.turn||999)).forEach(s=>{
     html+=`<tr onclick="openMag('${s.mag}')" style="cursor:pointer">
       <td><span class="store-name">${s.mag}</span><span class="store-tc">${s.tc}</span></td>
       <td style="font-size:11px;color:#666">${s.pod}</td>
+      <td class="c" style="font-weight:600">${s.catYU!=null?Math.round(s.catYU):'—'}</td>
       <td class="c">${turnTag(s.turn,false)}</td>
       <td class="c">${fillTag(s.fill)}</td>
     </tr>`;
@@ -479,11 +482,12 @@ function renderRegion(){
 
   html+=`<div class="section-title">Все магазины · Золото</div>
   <div class="table-wrap"><table>
-    <tr><th>Магазин</th><th>Подразд.</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.</th><th class="c gold">Рейтинг</th><th class="r gold">Доля ТО</th></tr>`;
+    <tr><th>Магазин</th><th>Подразд.</th><th class="c gold">Кат</th><th class="c gold">Оборач.</th><th class="c gold">Наполн.</th><th class="c gold">Рейтинг</th><th class="r gold">Доля ТО</th></tr>`;
   [...GOLD].sort((a,b)=>(a.turn||999)-(b.turn||999)).forEach(g=>{
     html+=`<tr onclick="openMag('${g.mag}')" style="cursor:pointer">
       <td><span class="store-name">${g.mag}</span><span class="store-tc">${g.tc}</span></td>
       <td style="font-size:11px;color:#666">${g.pod}</td>
+      <td class="c" style="font-weight:600">${g.catYU!=null?Math.round(g.catYU):'—'}</td>
       <td class="c">${turnTag(g.turn,true)}</td>
       <td class="c">${fillTag(g.fill)}</td>
       <td class="c">${g.rating!=null?'<span class="rank-badge gold">#'+Math.round(g.rating)+'</span>':'—'}</td>

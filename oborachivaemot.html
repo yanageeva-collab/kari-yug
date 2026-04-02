@@ -153,6 +153,17 @@ function turnCls(t,isGold){
   if(!isGold){if(t<=35)return 'tG';if(t<=45)return 'tLG';if(t<=55)return 'tY';if(t<=70)return 'tR';return 'tDR';}
   else{if(t<=45)return 'tG';if(t<=60)return 'tLG';if(t<=75)return 'tY';if(t<=90)return 'tR';return 'tDR';}
 }
+// Цвет относительно оборачиваемости ЮГ (для таблицы категорий)
+function turnClsRel(t,regTurn){
+  if(t==null)return 'tN';
+  if(t===0)return 'tDR';
+  if(regTurn==null)return 'tN';
+  if(t<=regTurn*0.78)return 'tG';   // значительно лучше ЮГ
+  if(t<=regTurn)return 'tLG';        // лучше или равно ЮГ
+  if(t<=regTurn*1.22)return 'tY';   // до 22% хуже ЮГ
+  if(t<=regTurn*1.56)return 'tR';   // до 56% хуже ЮГ
+  return 'tDR';                       // критично хуже ЮГ
+}
 function turnTag(t,isGold){
   if(t==null)return '<span class="tN">—</span>';
   if(t===0)return '<span class="tDR">нет продаж</span>';
@@ -268,18 +279,14 @@ function buildCatTable(s,isGold,regTurn){
   cats.forEach(cat=>{
     const c=s.cat[cat];
     if(!c)return;
-    let cmpHtml='';
-    if(c.turn!=null&&regTurn!=null){
-      const diff=Math.round(c.turn)-Math.round(regTurn);
-      if(diff>0) cmpHtml=`<br><span style="font-size:10px;color:#e53935">+${diff} нед от ЮГ ↑</span>`;
-      else if(diff<0) cmpHtml=`<br><span style="font-size:10px;color:#43a047">${diff} нед от ЮГ ✓</span>`;
-      else cmpHtml=`<br><span style="font-size:10px;color:#888">= ЮГ</span>`;
-    }
+    const catTurnHtml=c.turn!=null
+      ?`<span class="${turnClsRel(c.turn,regTurn)}">${Math.round(c.turn)} нед</span>`
+      :'<span class="tN">—</span>';
     html+=`<tr>
       <td style="font-weight:600">${cat}</td>
       <td class="r">${num(c.fact)}</td>
       <td class="r">${num(c.stock)}</td>
-      <td class="c">${turnTag(c.turn,isGold)}${cmpHtml}</td>
+      <td class="c">${catTurnHtml}</td>
     </tr>`;
   });
   html+=`</table></div>`;

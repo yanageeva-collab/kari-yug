@@ -1251,7 +1251,8 @@ function hidePods(){
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('on',tabs[i]===_podsTab));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.getElementById('p'+_podsTab).classList.add('on');
-  re(_podsTab);
+  // Перерендерить ВСЕ вкладки — иначе при переключении покажется старый контент подразделения
+  tabs.forEach(t=>re(t));
 }
 function switchPodsView(v){
   _podsView=v;

@@ -308,13 +308,13 @@ function renderPod(podName){
   html+=`<div class="topbot">
     <div class="topbot-card"><h3 class="top">✅ Топ-3</h3>`;
   top3.forEach(s=>{
-    const nm=s.tc.replace(/^[^,]+,\s*/,'');
-    html+=`<div class="topbot-row"><span class="topbot-name" title="${s.tc}">${nm||s.tc}</span>${turnTag(s.turn,false)}</div>`;
+    const city=s.tc.split(',')[0].trim();
+    html+=`<div class="topbot-row"><span class="topbot-name" title="${s.tc}"><b>${s.mag}</b> ${city}</span>${turnTag(s.turn,false)}</div>`;
   });
   html+=`</div><div class="topbot-card"><h3 class="bot">🔴 Антитоп-3</h3>`;
   bot3.forEach(s=>{
-    const nm=s.tc.replace(/^[^,]+,\s*/,'');
-    html+=`<div class="topbot-row"><span class="topbot-name" title="${s.tc}">${nm||s.tc}</span>${turnTag(s.turn,false)}</div>`;
+    const city=s.tc.split(',')[0].trim();
+    html+=`<div class="topbot-row"><span class="topbot-name" title="${s.tc}"><b>${s.mag}</b> ${city}</span>${turnTag(s.turn,false)}</div>`;
   });
   html+=`</div></div>`;
 

@@ -361,16 +361,8 @@ function renderPod(podName){
       <div class="sub">ЮГ: ${REG_SER.turnover} нед</div>
     </div>
     <div class="metric-card">
-      <div class="val">${podS.fill_avg!=null?podS.fill_avg+'%':'—'}</div>
-      <div class="lbl">Наполненность ср.</div>
-    </div>
-    <div class="metric-card">
       <div class="val">${stores.length}</div>
       <div class="lbl">Магазинов серебро</div>
-    </div>
-    <div class="metric-card">
-      <div class="val">${storesG.length}</div>
-      <div class="lbl">Магазинов золото</div>
     </div>
   </div>`;
   html+=`<div class="topbot">
@@ -413,10 +405,6 @@ function renderPod(podName){
           <div class="val">${podG.turnover||'—'}</div>
           <div class="lbl">Оборачиваемость золото</div>
           <div class="sub">ЮГ: ${REG_GOLD.turnover} нед</div>
-        </div>
-        <div class="metric-card gold-card">
-          <div class="val">${podG.fill_avg!=null?podG.fill_avg+'%':'—'}</div>
-          <div class="lbl">Наполненность ср.</div>
         </div>
         <div class="metric-card gold-card">
           <div class="val">${storesG.length}</div>

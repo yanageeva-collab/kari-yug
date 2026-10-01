@@ -138,8 +138,8 @@ const POD_SER={"Краснодар": {"turnover": 53, "sales_avg": 126, "fill_av
 const POD_GOLD={"Краснодар": {"turnover": 100, "sales_avg": 21, "fill_avg": 78.1, "sales": 206, "count": 10, "rating": 127.0, "share": 0.07492413602880463}, "Крым": {"turnover": 84, "sales_avg": 33, "fill_avg": 89.1, "sales": 501, "count": 15, "rating": 166.0, "share": 0.03437588313756475}, "Ростов": {"turnover": 114, "sales_avg": 17, "fill_avg": 54.2, "sales": 99, "count": 6, "rating": 216.0, "share": 0.05227983095729691}, "Сочи": {"turnover": 126, "sales_avg": 17, "fill_avg": 62.9, "sales": 185, "count": 11, "rating": 185.0, "share": 0.03700622172527505}, "Черноморское": {"turnover": 105, "sales_avg": 21, "fill_avg": 63.7, "sales": 250, "count": 12, "rating": 176.0, "share": 0.05568704571699779}};
 const REG_SER={"fill_avg": 86.5, "sales": 17464, "turnover": 47.0, "sales_avg": 174.0, "rating": 2.0, "turnRank": 2.0, "share": 0.0469, "shareRank": 2.0, "total": 6.0};
 const REG_GOLD={"fill_avg": 72.2, "sales": 1241, "turnover": 101.0, "sales_avg": 23.0, "rating": 2.0, "turnRank": 1.0, "share": 0.063, "shareRank": 4.0, "total": 7.0};
-const PERIOD="обновлено 29.09.2026";
-const DATE_UPD="29.09.2026";
+const PERIOD="обновлено 01.10.2026";
+const DATE_UPD="01.10.2026";
 
 const silverByMag={};SILVER.forEach(s=>silverByMag[s.mag]=s);
 const goldByMag={};GOLD.forEach(g=>goldByMag[g.mag]=g);
@@ -453,7 +453,9 @@ function renderRegion(){
   document.getElementById('backBtn').style.display='none';
   _history=[];
 
-  const pods=['Краснодар','Черноморское','Кавказ','Крым','Ростов','Сочи'];
+  // Список подразделений строится динамически из фактических данных (не хардкод),
+  // чтобы дашборд сам подхватывал новые/удалённые подразделения при изменении их количества
+  const pods=[...new Set([...SILVER.map(s=>s.pod),...GOLD.map(g=>g.pod),...Object.keys(POD_SER),...Object.keys(POD_GOLD)])];
 
   // Сначала таб-бар
   let html=`<div class="tabs-bar">
